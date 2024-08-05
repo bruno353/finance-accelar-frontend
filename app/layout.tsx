@@ -8,6 +8,7 @@ import '../styles/index.css'
 import { Providers } from './providers'
 import Header from '@/components/Header'
 import { Web3Modal } from '@/contexts/Web3Modal'
+import StarsCanvas from '@/components/Background'
 
 export default function RootLayout({
   children,
@@ -23,9 +24,10 @@ export default function RootLayout({
       */}
       <head />
 
-      <body className="max-w-screen h-full w-full bg-[#060621]">
+      <body className="max-w-screen h-full w-full bg-[#222529]">
         <Providers>
           <Web3Modal>
+            <StarsCanvas />
             <Header />
             {children}
             <ScrollToTop />

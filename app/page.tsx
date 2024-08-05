@@ -10,6 +10,8 @@ import { useRef, useEffect } from 'react'
 import { RevealWrapper } from 'next-reveal'
 import Login from '@/components/Login'
 import { usePathname, useRouter } from 'next/navigation'
+import Header from '@/components/Header'
+import Explore from '@/components/Explore'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,13 +22,14 @@ export default function Home() {
   const { push } = useRouter()
 
   useEffect(() => {
-    push('/signin')
+    push('/')
   }, [])
 
   return (
     <>
       <ScrollUp />
-      <Login />
+      <Header />
+      <Explore />
       {/* <SuccessStories /> */}
     </>
   )

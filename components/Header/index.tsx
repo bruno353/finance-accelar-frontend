@@ -1,280 +1,165 @@
-/* eslint-disable @next/next/no-img-element */
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useEffect, useState, useContext, useRef } from 'react'
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import ThemeToggler from './ThemeToggler'
 import menuData from './menuData'
-import { parseCookies, destroyCookie, setCookie } from 'nookies'
-import { AccountContext } from '../../contexts/AccountContext'
-import { getCurrentUser } from '@/utils/api'
-import { usePathname, useRouter } from 'next/navigation'
-import Menu from './Menu'
-import NotificationMenu from './NotificationMenu'
 
 const Header = () => {
+  const pathName = usePathname()
+
   // Navbar toggle
   const [navbarOpen, setNavbarOpen] = useState(false)
-  const [notificationOpen, setNotificationOpen] = useState(false)
-
   const navbarToggleHandler = () => {
     setNavbarOpen(!navbarOpen)
-    setMenuOpen(!menuOpen)
-    setNotificationOpen(false)
-  }
-  const notificationToggleHandler = () => {
-    setNotificationOpen(!notificationOpen)
-    setNavbarOpen(false)
-    setMenuOpen(!menuOpen)
   }
 
-  const [menuOpen, setMenuOpen] = useState(false)
-
-  const menuRef = useRef(null)
-
-  const closeMenu = () => {
-    setNotificationOpen(false)
-    setNavbarOpen(false)
-    setMenuOpen(false)
-  }
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        // Clicked outside of the menu, so close it
-        closeMenu()
-      }
-    }
-
-    // Add event listener when the menu is open
-    if (menuOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
+  // Sticky Navbar
+  const [sticky, setSticky] = useState(false)
+  const handleStickyNavbar = () => {
+    if (window.scrollY >= 80) {
+      setSticky(true)
     } else {
-      // Remove event listener when the menu is closed
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [menuOpen])
-
-  const pathname = usePathname()
-
-  const cookies = parseCookies()
-  const userHasAnyCookie = cookies.userSessionToken
-
-  const { user, setUser } = useContext(AccountContext)
-  const { push } = useRouter()
-
-  function cleanData() {
-    destroyCookie(undefined, 'userSessionToken', { path: '/' })
-    destroyCookie(undefined, 'user', { path: '/' })
-    setUser(null)
-  }
-
-  function signOutUser() {
-    cleanData()
-    push('/')
-  }
-
-  async function getUserData() {
-    const { userSessionToken, user } = parseCookies()
-
-    console.log(userSessionToken)
-    if (userSessionToken) {
-      if (user) {
-        console.log('o meu userrrr')
-        console.log(JSON.parse(user))
-        setUser(JSON.parse(user))
-      }
-      try {
-        const dado = await getCurrentUser(userSessionToken)
-        if (dado) {
-          setUser(dado)
-          setCookie(null, 'userSessionToken', dado.sessionToken, {
-            path: '/',
-            maxAge: 30 * 24 * 60 * 60, // Exemplo de validade do cookie: 30 dias
-            secure: true, // Recomendado para produção, garante que o cookie seja enviado apenas por HTTPS
-            sameSite: 'strict', // Recomendado para evitar ataques de CSRF
-          })
-          setCookie(null, 'user', JSON.stringify(dado), {
-            path: '/',
-            maxAge: 30 * 24 * 60 * 60, // Exemplo de validade do cookie: 30 dias
-            secure: true, // Recomendado para produção, garante que o cookie seja enviado apenas por HTTPS
-            sameSite: 'strict', // Recomendado para evitar ataques de CSRF
-          })
-          handleUserPath(true)
-        } else {
-          cleanData()
-          handleUserPath(false)
-        }
-      } catch (err) {
-        cleanData()
-        handleUserPath(false)
-      }
+      setSticky(false)
     }
   }
-
-  function handleUserPath(hasUser: boolean) {
-    if (hasUser) {
-      if (pathname.includes('/signin') || pathname.includes('/signup')) {
-        push('/dashboard')
-      }
-    }
-    if (!hasUser) {
-      if (pathname.includes('/dashboard')) {
-        push('/signin')
-      }
-    }
-  }
-
-  const hasUnreadenInvitation = user?.WorkspaceInvite?.some(
-    (work) => !work.viewed,
-  )
-
   useEffect(() => {
-    if (userHasAnyCookie) {
-      console.log('user has cookis')
-      console.log(userHasAnyCookie)
-      console.log(cookies.userSessionToken)
-      try {
-        getUserData()
-      } catch (err) {
-        cleanData()
-      }
+    window.addEventListener('scroll', handleStickyNavbar)
+  })
+
+  // submenu handler
+  const [openIndex, setOpenIndex] = useState(-1)
+  const handleSubmenu = (index) => {
+    if (openIndex === index) {
+      setOpenIndex(-1)
     } else {
-      console.log('user has no cookies')
-      cleanData()
+      setOpenIndex(index)
     }
-  }, [])
+  }
 
   return (
     <>
       <header
-        className={`header relative !z-[9999] flex h-[10vh] w-full items-center !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-transparent dark:!bg-opacity-60`}
+        className={`header left-0 top-0 z-40 flex w-full items-center bg-transparent ${
+          !sticky
+            ? '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-[#222529] dark:!bg-opacity-100'
+            : '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-[#222529] dark:!bg-opacity-60'
+        }`}
       >
         <div className="container">
           <div className="relative -mx-4 flex items-center justify-between">
-            <div className="w-60 max-w-full px-4 xl:mr-12">
+            <div className="w-40 max-w-full px-4 xl:mr-12">
               <Link
-                onClick={() => {
-                  console.log(user)
-                }}
-                href={user ? '/dashboard' : '/'}
-                className={`header-logo block w-fit py-8`}
+                href="/"
+                className={`header-logo block w-full ${
+                  sticky ? 'py-2 lg:py-1' : 'py-1'
+                } `}
               >
                 <Image
-                  src="/images/logo/logo-icon.svg"
+                  onClick={() => {
+                    console.log(pathName)
+                  }}
+                  src="/images/logo.svg"
                   alt="logo"
-                  width={40}
-                  height={40}
-                  className="hidden w-[40px] dark:block"
+                  width={100}
+                  height={10}
+                  className="hidden w-full dark:block"
                 />
               </Link>
             </div>
-            <div className="flex items-center  justify-end gap-x-[30px]">
-              <div className="relative">
-                {user && user.WorkspaceInvite?.length > 0 && (
-                  <div
-                    onClick={() => {
-                      notificationToggleHandler()
-                    }}
-                  >
-                    {hasUnreadenInvitation ? (
-                      <img
-                        src="/images/header/inviteWithSignal.svg"
-                        alt="image"
-                        className={`w-[45px] cursor-pointer`}
-                      />
-                    ) : (
-                      <img
-                        src="/images/header/inviteWithoutSignal.svg"
-                        alt="image"
-                        className={`w-[45px] cursor-pointer`}
-                      />
-                    )}
-                  </div>
-                )}
-                {user &&
-                  notificationOpen &&
-                  user.WorkspaceInvite?.length > 0 && (
-                    <div className="absolute right-0 top-[50px]" ref={menuRef}>
-                      <NotificationMenu
-                        workspaceInvites={user.WorkspaceInvite}
-                        user={user}
-                        onSignOut={signOutUser}
-                        onCloseNotifications={() => {
-                          setNotificationOpen(false)
-                        }}
-                        onWorkspaceInviteViewed={(value) => {
-                          const updatedUser = { ...user }
-                          const inviteIndex =
-                            updatedUser.WorkspaceInvite.findIndex(
-                              (invite) => invite.id === value,
-                            )
-                          if (inviteIndex !== -1) {
-                            console.log('found')
-                            updatedUser.WorkspaceInvite[inviteIndex] = {
-                              ...updatedUser.WorkspaceInvite[inviteIndex],
-                              viewed: true,
-                            }
-                            setUser(updatedUser)
-                          }
-                        }}
-                        onWorkspaceInviteArchived={(value) => {
-                          const updatedUser = { ...user }
-
-                          const inviteIndex =
-                            updatedUser.WorkspaceInvite.findIndex(
-                              (invite) => invite.id === value,
-                            )
-
-                          if (inviteIndex !== -1) {
-                            console.log('found archived')
-                            const updatedInvites = [
-                              ...updatedUser.WorkspaceInvite,
-                            ]
-                            updatedInvites.splice(inviteIndex, 1)
-                            console.log('final updated invites')
-                            console.log(updatedInvites)
-                            updatedUser.WorkspaceInvite = updatedInvites
-                            setUser(updatedUser)
-                          }
-                        }}
-                      />{' '}
-                    </div>
-                  )}
+            <div className="flex w-full items-center justify-between px-4">
+              <div>
+                <button
+                  onClick={navbarToggleHandler}
+                  id="navbarToggler"
+                  aria-label="Mobile Menu"
+                  className="absolute right-4 top-1/2 block translate-y-[-50%] rounded-lg px-3 py-[6px] ring-primary focus:ring-2 lg:hidden"
+                >
+                  <span
+                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${
+                      navbarOpen ? ' top-[7px] rotate-45' : ' '
+                    }`}
+                  />
+                  <span
+                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${
+                      navbarOpen ? 'opacity-0 ' : ' '
+                    }`}
+                  />
+                  <span
+                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${
+                      navbarOpen ? ' top-[-8px] -rotate-45' : ' '
+                    }`}
+                  />
+                </button>
+                <nav
+                  id="navbarCollapse"
+                  className={`navbar absolute right-0 z-30 w-[250px] rounded border-[.5px] border-body-color/50 bg-white px-6 py-4 duration-300 dark:border-body-color/20 dark:bg-dark lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 ${
+                    navbarOpen
+                      ? 'visibility top-full opacity-100'
+                      : 'invisible top-[120%] opacity-0'
+                  }`}
+                >
+                  <ul className="block lg:flex lg:space-x-12">
+                    {menuData.map((menuItem, index) => (
+                      <li key={menuItem.id} className="group relative">
+                        {menuItem.path ? (
+                          <Link
+                            href={menuItem.path}
+                            onClick={menuItem.onClick} // Adicione isso
+                            className={`${
+                              pathName.includes(menuItem.path)
+                                ? '!text-white underline underline-offset-8'
+                                : ''
+                            } flex py-2 text-base text-dark underline-offset-8 group-hover:underline dark:text-[#adadae] lg:mr-0 lg:inline-flex lg:px-0 lg:py-6`}
+                          >
+                            {menuItem.title}
+                          </Link>
+                        ) : (
+                          <>
+                            <a
+                              onClick={() => handleSubmenu(index)}
+                              className="flex cursor-pointer items-center justify-between py-2 text-base text-dark group-hover:text-[#3A51B0] dark:text-white lg:mr-0 lg:inline-flex lg:px-0 lg:py-6"
+                            >
+                              {menuItem.title}
+                              <span className="pl-3">
+                                <svg width="15" height="14" viewBox="0 0 15 14">
+                                  <path
+                                    d="M7.81602 9.97495C7.68477 9.97495 7.57539 9.9312 7.46602 9.8437L2.43477 4.89995C2.23789 4.70308 2.23789 4.39683 2.43477 4.19995C2.63164 4.00308 2.93789 4.00308 3.13477 4.19995L7.81602 8.77183L12.4973 4.1562C12.6941 3.95933 13.0004 3.95933 13.1973 4.1562C13.3941 4.35308 13.3941 4.65933 13.1973 4.8562L8.16601 9.79995C8.05664 9.90933 7.94727 9.97495 7.81602 9.97495Z"
+                                    fill="currentColor"
+                                  />
+                                </svg>
+                              </span>
+                            </a>
+                            <div
+                              className={`submenu relative left-0 top-full rounded-md bg-white transition-[top] duration-300 group-hover:opacity-100 dark:bg-dark lg:invisible lg:absolute lg:top-[110%] lg:block lg:w-[250px] lg:p-4 lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full ${
+                                openIndex === index ? 'block' : 'hidden'
+                              }`}
+                            >
+                              {menuItem.submenu.map((submenuItem) => (
+                                <Link
+                                  href={submenuItem.path}
+                                  key={submenuItem.id}
+                                  className="block rounded py-2.5 text-sm text-dark hover:text-[#3A51B0] dark:text-white lg:px-3"
+                                >
+                                  {submenuItem.title}
+                                </Link>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
               </div>
-              <div className="relative flex items-center justify-end pr-16 lg:pr-0">
-                {user && (
-                  <div
-                    onClick={() => {
-                      navbarToggleHandler()
-                    }}
-                    className="flex cursor-pointer gap-x-[15px]"
-                  >
-                    <img
-                      alt="ethereum avatar"
-                      src={user.profilePicture}
-                      className="w-[40px] max-w-[40px] rounded-full"
-                    ></img>
-                    <img
-                      alt="arrow"
-                      src="/images/header/arrow.svg"
-                      className="w-[15px] rounded-full"
-                    ></img>
-                  </div>
-                )}
+              <div className="flex items-center justify-end pr-16 lg:pr-0">
+                <div className="cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-white hover:bg-[#3A51B0]">
+                  Connect wallet
+                </div>
                 {/* <div>
                   <ThemeToggler />
                 </div> */}
-                {user && navbarOpen && (
-                  <div className="absolute top-[50px]" ref={menuRef}>
-                    <Menu user={user} onSignOut={signOutUser} />{' '}
-                  </div>
-                )}
               </div>
             </div>
           </div>
