@@ -32,3 +32,9 @@
     @apply opacity-100;
   }
 }
+
+@layer utilities {
+  .pause {
+    animation-play-state: paused;
+  }
+}

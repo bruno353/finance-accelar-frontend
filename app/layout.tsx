@@ -24,10 +24,10 @@ export default function RootLayout({
       */}
       <head />
 
-      <body className="max-w-screen h-full w-full bg-[#222529]">
+      <body className="max-w-screen h-full w-full bg-gradient-to-b from-[#222529] to-[#16171C]">
         <Providers>
           <Web3Modal>
-            <StarsCanvas />
+            {/* <StarsCanvas /> */}
             <Header />
             {children}
             <ScrollToTop />

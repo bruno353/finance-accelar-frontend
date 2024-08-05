@@ -29,99 +29,74 @@ import ScrollToTop from '../ScrollToTop/index'
 import { SigninForm, SignupForm } from '@/types/user'
 import { createUser, googleRedirect, loginUser } from '@/utils/api'
 
-const Explore = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [passwordVisibility, setPasswordVisibility] = useState<boolean>(true)
+const DepinTemplates = () => {
   const [animate, setAnimate] = useState<boolean>(true)
 
   const { push } = useRouter()
 
   const feats = [
     {
-      title: 'DePin',
-      description: 'Cloud computing capabilities on-chain',
-      subDescription: '+1000 templates',
+      title: 'BERT',
+      description:
+        'This repository contains the necessary files to deploy a Flask application that uses the BERT language model on the Akash network. BERT is a powerful language model that can understand and generate text in English.',
+      dockerImage: 'clydedevv/bert-base-uncased:0.0.8',
+      cpu: '4',
+      memorySize: '4Gi',
+      gpu: 'Nvidia v100 - 1',
+      price: 'U$ 370,56 / month',
       imgSource: '/images/explore/cloud.svg',
       imgStyle: 'w-6',
       active: true,
     },
     {
-      title: 'Synthetics',
-      description: 'Trade synthetic assets at Crossfi',
-      subDescription: '12 assets',
-      imgSource: '/images/explore/money.svg',
+      title: 'Minecraft',
+      description:
+        'Launch a Minecraft server on the Akash blockchain. It can be easily configured with only changes to deploy.yaml, and supports any Minecraft version, including multiple modded server types.',
+      dockerImage: 'itzg/minecraft-server',
+      cpu: '2',
+      memorySize: '5Gi',
+      price: 'U$ 5,28 / month',
+      imgSource: '/images/explore/cloud.svg',
       imgStyle: 'w-6',
-      active: false,
+      active: true,
     },
     {
-      title: 'Real State',
-      description: 'Trade USA real state price movements',
-      subDescription: '30 markets',
-      imgSource: '/images/explore/real-state.svg',
+      title: 'Falcon-7B',
+      description:
+        'Falcon-7B-Instruct is a 7B parameters causal decoder-only model built by TII based on Falcon-7B and finetuned on a mixture of chat/instruct datasets. It is made available under the Apache 2.0 license.',
+      dockerImage: 'andrey01/falcon7b:0.4',
+      cpu: '8',
+      memorySize: '100Gi',
+      gpu: 'Nvidia a100 - 1',
+      price: 'U$ 510,20 / month',
+      imgSource: '/images/explore/cloud.svg',
       imgStyle: 'w-6',
-      active: false,
+      active: true,
     },
     {
-      title: 'Credit',
-      description: 'Trade and participate on loans pools',
-      subDescription: '23 pools',
-      imgSource: '/images/explore/bank.svg',
+      title: 'Cosmos Hub',
+      description: 'Deploy a set of the cosmos chain.',
+      dockerImage:
+        'ghcr.io/akash-network/cosmos-omnibus:v0.4.23-cosmoshub-v18.1.0',
+      cpu: '4',
+      memorySize: '100Gi',
+      price: 'U$ 11,89 / month',
+      imgSource: '/images/explore/cloud.svg',
       imgStyle: 'w-6',
-      active: false,
-    },
-  ]
-
-  const stockToImg = {
-    DePin: {
-      imgSource: '/images/explore/cloud-white.svg',
-      imgStyle: 'w-[30px] p-1 bg-[#4766EA] rounded-full flex-0',
-    },
-    Synthetic: {
-      imgSource: '/images/explore/money-white.svg',
-      imgStyle: 'w-[30px] p-1 bg-[#4766EA] rounded-full flex-0',
-    },
-    'Real State': {
-      imgSource: '/images/explore/real-state-white.svg',
-      imgStyle: 'w-[30px] p-1 bg-[#4766EA] rounded-full flex-0',
-    },
-  }
-
-  const stocks = [
-    {
-      title: 'GPU H100',
-      type: 'DePin',
-      priceDif: -20,
-      priceArray: [5, 10, 5, 20, 25, 18, 12, 5, 1, 20, 30, 50, 10, 15, 0],
+      active: true,
     },
     {
-      title: 'Gold',
-      type: 'Synthetic',
-      priceDif: 22,
-      priceArray: [5, 10, 5, 15, 25, 2, 30, 5, 20, 60, 30, 50, 20, 15, 50],
-    },
-    {
-      title: 'GPU A100',
-      type: 'DePin',
-      priceDif: 10,
-      priceArray: [5, 10, 5, 20, 25, 18, 12, 5, 12, 20, 30, 50, 20, 15, 25],
-    },
-    {
-      title: 'Los Angeles',
-      type: 'Real State',
-      priceDif: -8,
-      priceArray: [5, 10, 5, 15, 10, 2, 30, 5, 20, 60, 10, 50, 20, 40, 10],
-    },
-    {
-      title: 'GPU RTX 4090',
-      type: 'DePin',
-      priceDif: -6,
-      priceArray: [5, 10, 5, 5, 25, 18, 6, 5, 12, 20, 30, 50, 5, 15, 3],
-    },
-    {
-      title: 'GPU RTX 3090',
-      type: 'DePin',
-      priceDif: 13,
-      priceArray: [5, 10, 5, 15, 25, 2, 12, 5, 12, 20, 30, 50, 20, 15, 50],
+      title: 'Stable Diffusion',
+      description:
+        'The easiest way to install and use Stable Diffusion on your computer. Does not require technical knowledge, does not require pre-installed software. 1-click install, powerful features, friendly community.',
+      dockerImage: 'ghcr.io/spacepotahto/qbittorrent:1.0.0',
+      cpu: '16',
+      memorySize: '32Gi',
+      gpu: 'Nvidia rtx4090 - 1',
+      price: 'U$ 341,06 / month',
+      imgSource: '/images/explore/cloud.svg',
+      imgStyle: 'w-6',
+      active: true,
     },
   ]
 
@@ -321,4 +296,4 @@ const Explore = () => {
   )
 }
 
-export default Explore
+export default DepinTemplates
