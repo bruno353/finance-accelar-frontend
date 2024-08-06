@@ -28,6 +28,7 @@ import { createHash } from 'crypto'
 import ScrollToTop from '../ScrollToTop/index'
 import { SigninForm, SignupForm } from '@/types/user'
 import { createUser, googleRedirect, loginUser } from '@/utils/api'
+import DepinTemplates from './DepinTemplates'
 
 const Explore = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -315,6 +316,7 @@ const Explore = () => {
               ))}
             </ul>
           </div>
+          <DepinTemplates />
         </div>
       </section>
     </>

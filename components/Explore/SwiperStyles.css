@@ -1,0 +1,22 @@
+.mySwiper {
+    position: relative;
+    padding-left: 50px; /* Espaço para a seta esquerda */
+    padding-right: 50px; /* Espaço para a seta direita */
+}
+
+.swiper-button-next, .swiper-button-prev {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px; /* Largura do botão, ajuste conforme necessário */
+    height: 30px; /* Altura do botão, ajuste conforme necessário */
+    z-index: 10; /* Garantir que esteja acima dos slides */
+}
+
+.swiper-button-next {
+    right: -30px; /* Ajuste para mover a seta para fora do contêiner à direita */
+}
+
+.swiper-button-prev {
+    left: -30px; /* Ajuste para mover a seta para fora do contêiner à esquerda */
+}
