@@ -29,6 +29,7 @@ import ScrollToTop from '../ScrollToTop/index'
 import { SigninForm, SignupForm } from '@/types/user'
 import { createUser, googleRedirect, loginUser } from '@/utils/api'
 import DepinTemplates from './DepinTemplates'
+import Trending from './Trending'
 
 const Explore = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -85,6 +86,10 @@ const Explore = () => {
       imgSource: '/images/explore/real-state-white.svg',
       imgStyle: 'w-[30px] p-1 bg-[#4766EA] rounded-full flex-0',
     },
+    Credit: {
+      imgSource: '/images/explore/bank.svg',
+      imgStyle: 'w-[30px] p-1 bg-[#4766EA] rounded-full flex-0',
+    },
   }
 
   const stocks = [
@@ -129,7 +134,10 @@ const Explore = () => {
   return (
     <>
       <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 lg:pt-20">
-        <div className="absolute -right-44 bottom-0 z-[-1] rotate-45">
+        <div className="absolute -right-44 top-0 z-[-1] rotate-45">
+          <img src="/images/video/shape.svg" alt="shape" className="w-full" />
+        </div>
+        <div className="absolute -right-44 bottom-36 z-[-1] rotate-180">
           <img src="/images/video/shape.svg" alt="shape" className="w-full" />
         </div>
         <div className="container">
@@ -317,6 +325,7 @@ const Explore = () => {
             </ul>
           </div>
           <DepinTemplates />
+          <Trending />
         </div>
       </section>
     </>
