@@ -4,10 +4,9 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import ThemeToggler from './ThemeToggler'
-import menuData from './menuData'
-import SubHeader from './SubHeader'
+import subMenuData from './subMenuData'
 
-const Header = () => {
+const SubHeader = () => {
   const pathName = usePathname()
 
   // Navbar toggle
@@ -42,32 +41,16 @@ const Header = () => {
   return (
     <>
       <header
-        className={`header left-0 top-0 z-40 flex w-full items-center bg-gradient-to-b from-[#222529] to-[#1a1d20] bg-transparent ${
+        className={`header left-0 top-0 mt-16 z-40 flex w-full items-center bg-gradient-to-b from-[#1a1d20] to-[#16171C] ${
           !sticky
-            ? '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-100'
-            : '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-60'
+            ? '!fixed !z-[9999] !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-100'
+            : '!fixed !z-[9999] !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-60'
         }`}
       >
         <div className="container">
           <div className="relative -mx-4 flex items-center justify-between">
             <div className="w-40 max-w-full px-4 xl:mr-12">
-              <Link
-                href="/"
-                className={`header-logo block w-full ${
-                  sticky ? 'py-2 lg:py-1' : 'py-1'
-                } `}
-              >
-                <Image
-                  onClick={() => {
-                    console.log(pathName)
-                  }}
-                  src="/images/logo.svg"
-                  alt="logo"
-                  width={100}
-                  height={10}
-                  className="hidden w-full dark:block"
-                />
-              </Link>
+              
             </div>
             <div className="flex w-full items-center justify-between px-4">
               <div>
@@ -102,7 +85,7 @@ const Header = () => {
                   }`}
                 >
                   <ul className="block lg:flex lg:space-x-12">
-                    {menuData.map((menuItem, index) => (
+                    {subMenuData.map((menuItem, index) => (
                       <li key={menuItem.id} className="group relative">
                         {menuItem.path ? (
                           <Link
@@ -116,7 +99,7 @@ const Header = () => {
                               pathName?.length <= 1 && pathName.includes(menuItem.path)
                                 ? '!text-white border-b-[1px] border-[#fff]'
                                 : ''
-                            } flex py-2 text-base text-dark group-hover:border-b-[1px] group-hover:border-[#adadae] dark:text-[#adadae] lg:mr-0 lg:inline-flex lg:px-0 lg:py-6`}
+                            } flex py-2 text-sm text-dark group-hover:border-b-[1px] group-hover:border-[#adadae] dark:text-[#adadae] lg:mr-0 lg:inline-flex lg:px-0 lg:py-3`}
                           >
                             {menuItem.title}
                           </Link>
@@ -158,22 +141,13 @@ const Header = () => {
                   </ul>
                 </nav>
               </div>
-              <div className="flex items-center justify-end pr-16 lg:pr-0">
-                <div className="cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-white hover:bg-[#3A51B0]">
-                  Connect wallet
-                </div>
-                {/* <div>
-                  <ThemeToggler />
-                </div> */}
-              </div>
             </div>
           </div>
 
         </div>
       </header>
-     <SubHeader />
     </>
   )
 }
 
-export default Header
+export default SubHeader
