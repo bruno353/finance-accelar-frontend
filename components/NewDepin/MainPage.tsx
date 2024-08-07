@@ -32,7 +32,7 @@ import Dropdown, { ValueObject } from '../Modals/Dropdown'
 import { depinOptionsFeatures, depinOptionsNetwork } from '@/types/consts/depin'
 import { callAxiosBackend } from '@/utils/general-api'
 import { DepinDeploymentProps, LeasesProps, NewDepinDeploymentProps } from '@/types/depin'
-import { formatDate, transformString } from '@/utils/functions'
+import { blockHeightToDate, formatDate, transformString } from '@/utils/functions'
 
 const MainPage = ({ id }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -108,7 +108,7 @@ const MainPage = ({ id }) => {
             }
         })
     
-
+      setLeases(finalDataLeases?.leases)
       setDepins(finalData?.deployments) //
 
       //getting leases
@@ -142,51 +142,72 @@ const MainPage = ({ id }) => {
              Deployments
             </div>
             <div className="mt-10">
-                <div className="flex w-full text-gray text-sm px-[15px] py-4 border-y-[0.5px] border-[#c9c9cb10]">
-                  <div className="w-full max-w-[20%]">Name</div>
-                  <div className="w-full max-w-[25%]">dseq</div>
+                <div className="flex w-full text-gray text-xs px-[15px] py-4 border-y-[0.5px] border-[#c9c9cb10]">
+                  <div className="w-full max-w-[20%]">Dseq</div>
+                  <div className="w-full max-w-[25%]">Specs</div>
                   <div className="w-full max-w-[15%]">Token Id</div>
                   <div className="w-full max-w-[20%]">Akash hash</div>
-                  <div className="w-full max-w-[10%]">created at</div>
+                  <div className="w-full max-w-[10%]">Block height</div>
                 </div>
             </div>
             {depins?.map((app, index) => (
                     <div
                       onClick={(event) => {
-                        // handleClickApp(app.id, event)
+                        console.log(app)
+                        console.log(leases)
                       }}
                       key={index}
                       className={`flex items-center  ${
                         index !== depins?.length - 1 &&
                         'border-b-[1px] border-[#c5c4c41a]'
-                      } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal hover:bg-[#7775840c]`}
+                      } cursor-pointer text-gray gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal hover:bg-[#7775840c]`}
                     >
                       <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                        {app.name}
+                        {app?.deployment?.deployment_id.dseq}
                       </div>
-                      <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap hover:text-[#566cec]">
-                        <a
-                          href={`http://${app.hostURI}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {transformString(app.hostURI)}
-                        </a>
+                      <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                        <div className='rounded-md relative text-xs border-[1px] border-[#c9c9cb49] w-fit px-5 py-2 grid gap-y-1'>
+                            <div className="flex items-center gap-x-1">
+                                <img
+                                alt="image"
+                                src="/images/explore/cpu.svg"
+                                className="w-3"
+                                />
+                                <div>0.5 cpu</div>
+                            </div>
+                            <div className="flex items-center gap-x-1">
+                                <img
+                                alt="image"
+                                src="/images/explore/storage.svg"
+                                className="w-3"
+                                />
+                                <div>564 mb</div>
+                            </div>
+                            <div className="flex items-center gap-x-1">
+                                <img
+                                alt="image"
+                                src="/images/explore/memory.svg"
+                                className="w-3"
+                                />
+                                <div>564 mb</div>
+                            </div>
+                            <div className="absolute right-1 top-1 h-2 w-2 animate-pulse rounded-full bg-[#6FD572]"></div>
+                        </div>
                       </div>
                       <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                        {app.tokenId}
+                        {app?.groups[0]?.group_spec?.resources[0]?.resource?.cpu?.units?.val}
                       </div>
                       <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap hover:text-[#566cec]">
                         <a
-                          href={`https://atomscan.com/akash/transactions/${app.akashHash}`}
+                          href={`https://atomscan.com/akash/transactions/${app?.deployment?.dseq}`}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          {transformString(app.akashHash)}
+                          {transformString(app?.deployment?.dseq)}
                         </a>
                       </div>
                       <div className="w-full max-w-[10%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                        {formatDate(app.createdAt)}
+                        {app?.deployment?.created_at}
                       </div>
                       <div className="ml-auto w-full max-w-[10%]">
                         {' '}
