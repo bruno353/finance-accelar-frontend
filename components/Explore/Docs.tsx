@@ -182,6 +182,9 @@ const Docs = () => {
   return (
     <>
       <section className="relative z-10 h-full overflow-hidden  pb-52 pt-2 lg:pt-40">
+      <div className="absolute -right-44 top-10 opacity-55 z-[-1] rotate-180">
+          <img src="/images/video/shape.svg" alt="shape" className="w-full" />
+        </div>
         <div className="mx-auto flex w-[1000px] items-center gap-x-5 text-4xl text-white mb-10">
           <div className="">
           <svg width="40" height="45" viewBox="0 0 40 45" className="fill-[#4766EA]">
