@@ -30,6 +30,8 @@ import { SigninForm, SignupForm } from '@/types/user'
 import { createUser, googleRedirect, loginUser } from '@/utils/api'
 import DepinTemplates from './DepinTemplates'
 import Trending from './Trending'
+import Docs from './Docs'
+import Footer from '../Footer'
 
 const Explore = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -135,9 +137,6 @@ const Explore = () => {
     <>
       <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 lg:pt-20">
         <div className="absolute -right-44 top-0 z-[-1] rotate-45">
-          <img src="/images/video/shape.svg" alt="shape" className="w-full" />
-        </div>
-        <div className="absolute -right-44 bottom-36 z-[-1] rotate-180">
           <img src="/images/video/shape.svg" alt="shape" className="w-full" />
         </div>
         <div className="container">
@@ -326,8 +325,10 @@ const Explore = () => {
           </div>
           <DepinTemplates />
           <Trending />
+          <Docs />
         </div>
       </section>
+      <Footer />
     </>
   )
 }

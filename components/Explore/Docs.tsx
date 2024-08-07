@@ -34,7 +34,7 @@ import 'swiper/css/navigation' // Estilos de navegação
 import './SwiperStyles.css'
 import { Sparklines, SparklinesLine } from 'react-sparklines'
 
-const Trending = () => {
+const Docs = () => {
   const [animate, setAnimate] = useState<boolean>(true)
   const swiperRef = useRef(null)
   const [mySwiper, setMySwiper] = useState<any>({})
@@ -181,7 +181,7 @@ const Trending = () => {
 
   return (
     <>
-      <section className="relative z-10 h-full overflow-hidden  pb-10 pt-2 lg:pt-40">
+      <section className="relative z-10 h-full overflow-hidden  pb-52 pt-2 lg:pt-40">
         <div className="mx-auto flex w-[1000px] items-center gap-x-5 text-4xl text-white mb-10">
           <div className="">
           <svg width="40" height="45" viewBox="0 0 40 45" className="fill-[#4766EA]">
@@ -194,92 +194,82 @@ const Trending = () => {
           </div>
           <div>Docs</div>
         </div>
-        <div className="gap-y-10 grid grid-cols-2">
-        {
-        trendingAssets.map((option, index) => ( 
-            <div key={index}>
-                <div className="cursor-pointer rounded-md px-3 py-4 hover:bg-[#1d1f23b6] w-fit mx-auto">
-            <div className='w-[500px]'>
-            <Sparklines
-              data={option?.chartData}
-              width={400}
-              max={100}
-              min={0}
-              height={100}
-            >
-              <SparklinesLine
-                style={{
-                  strokeWidth: 2,
-                  stroke: option?.priceDif > 0 ? '#6FD572' : '#FE886D',
-                  fill:  option?.priceDif > 0 ? '#89d38a9d' : '#FE886D',
-                }}
-              />
-            </Sparklines>
-            </div>
-
-            <div className='flex items-center  mt-4'>
-        <div className="flex items-center gap-x-4">
-            <img
-              alt="image"
-              src={option?.imgSource}
-              className={option?.imgStyle}
-            ></img>
-            <div>
-              <div className='text-white text-lg'>{option.title}</div>
-              <div className='text-[#adadae] text-sm'>{option.type}</div>
-            </div>
-          </div>
-          <div className='ml-10 grid gap-y-2'>
-          <div className=' text-[#adadae] text-sm'>
-            {option?.desc}
-          </div>
-          <div className=' text-[#adadae] text-sm flex gap-x-2 items-center'>
-            <img
-              alt="image"
-              src="/images/workspace/crossfi.png"
-              className="flex-0 w-[20px]"
-            ></img>
-            <div>
-                Pool address: <a href={option?.linkPoolAddress} target='_blank' className='underline text-[#4766EA]'>{option?.poolAddress}</a>
-            </div>
-          </div>
-          </div>
-          <div className='grid gap-y-1 ml-10'>
-          <div className="flex items-center gap-x-2 font-medium ml-auto">
-            <div
-                className={`${
-                option?.priceDif > 0
-                    ? 'rotate-45  font-bold text-[#6FD572]'
-                    : '-rotate-45 font-bold text-[#FE886D]'
-                }`}
-            >
-                {option?.priceDif > 0 ? '↑' : '↓'}
-            </div>
-            <div
-                className={`text-sm ${
-                option?.priceDif > 0
-                    ? 'text-[#6FD572]'
-                    : 'text-[#FE886D]'
-                }`}
-            >
-                {option?.priceDif}%
-            </div>
-            </div>
-            <div className='text-sm text-white'>
-                ${option?.valueAmount}
+        <div className="gap-y-10 grid grid-cols-2 gap-x-20 px-20 justify-center">
+            <div className='relative w-full'>
+                <img
+                alt="image"
+                src='/images/explore/network.webp'
+                className='w-full h-[200px] rounded-lg opacity-30 transition-transform duration-300 ease-in-out hover:-rotate-1'
+                >
+                </img>
+                <div className='absolute text-white bottom-8 left-5'>
+                    <div className='text-base'>
+                        Beta version live!
+                    </div>
+                    <div className='text-2xl font-semibold'>
+                        Accelar Protocol
+                    </div>
+                    <div className="mt-4 cursor-pointer text-sm w-fit rounded-md bg-[#4766EA] px-5 py-1 text-white hover:bg-[#3A51B0]">
+                    Test now
+                    </div>
                 </div>
             </div>
-          
-        </div>
-        </div>
+            <div className='relative w-full'>
+                <img
+                alt="image"
+                src='/images/explore/retro.jpeg'
+                className='w-full h-[200px] rounded-lg opacity-30 transition-transform duration-300 ease-in-out hover:-rotate-1'
+                >
+                </img>
+                <div className='absolute text-white bottom-8 left-5'>
+                    <div className='text-base'>
+                        Accelar integration with Akash
+                    </div>
+                    <div className='text-2xl font-semibold'>
+                        DePin on Crossfi
+                    </div>
+                    <div className="mt-4 cursor-pointer text-sm w-fit rounded-md border-[1px] border-[#D8AB15] bg-transparent px-5 py-1 text-[#D8AB15] hover:bg-[#d8aa1566]">
+                      Create deployment
+                    </div>
+                </div>
             </div>
-        ))
-        }
+            <div className='relative w-full'>
+                <img
+                alt="image"
+                src='/images/explore/scifi.jpeg'
+                className='w-full h-[200px] rounded-lg opacity-30 transition-transform duration-300 ease-in-out hover:-rotate-1'
+                >
+                </img>
+                <div className='absolute text-white bottom-8 left-5'>
+                    <div className='text-base'>
+                        Real time trading
+                    </div>
+                    <div className='text-2xl font-semibold'>
+                        Exposure to Real State market on Crossfi
+                    </div>
+                    <div className="mt-4 cursor-pointer text-sm w-fit rounded-md bg-[#4766EA] px-5 py-1 text-white hover:bg-[#3A51B0]">
+                        Join pool
+                    </div>
+                </div>
+            </div>
+            <div className='text-[#4766EA] text-sm  grid h-fit gap-y-2'>
+                <div className='text-white text-base mb-1'>
+                    More
+                </div>
+                <div className='underline cursor-pointer'>
+                    How does Accelar oracle work?
+                </div>
+                <div className='underline cursor-pointer'>
+                    Crossfi docs
+                </div>
+                <div className='underline cursor-pointer'>
+                    Building on top of Accelar infrastructure
+                </div>
+            </div>
         </div>
-
       </section>
     </>
   )
 }
 
-export default Trending
+export default Docs

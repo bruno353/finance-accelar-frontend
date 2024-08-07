@@ -41,10 +41,10 @@ const Header = () => {
   return (
     <>
       <header
-        className={`header left-0 top-0 z-40 flex w-full items-center bg-transparent ${
+        className={`header left-0 top-0 z-40 flex w-full items-center bg-gradient-to-b from-[#222529] to-[#16171C] bg-transparent ${
           !sticky
-            ? '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-[#222529] dark:!bg-opacity-100'
-            : '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-[#222529] dark:!bg-opacity-60'
+            ? '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-100'
+            : '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-60'
         }`}
       >
         <div className="container">

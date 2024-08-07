@@ -182,6 +182,9 @@ const Trending = () => {
   return (
     <>
       <section className="relative z-10 h-full overflow-hidden  pb-10 pt-2 lg:pt-40">
+        <div className="absolute -right-44 -top-64 opacity-55 z-[-1] rotate-12">
+          <img src="/images/video/shape.svg" alt="shape" className="w-full" />
+        </div>
         <div className="mx-auto flex w-[1000px] items-center gap-x-5 text-4xl text-white mb-10">
           <div className="">
             <svg
