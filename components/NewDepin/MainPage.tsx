@@ -143,10 +143,10 @@ const MainPage = ({ id }) => {
             </div>
             <div className="mt-10">
                 <div className="flex w-full text-gray text-xs px-[15px] py-4 border-y-[0.5px] border-[#c9c9cb10]">
-                  <div className="w-full max-w-[20%]">Dseq</div>
-                  <div className="w-full max-w-[25%]">Specs</div>
-                  <div className="w-full max-w-[15%]">Token Id</div>
-                  <div className="w-full max-w-[20%]">Akash hash</div>
+                  <div className="w-full max-w-[22%]">Dseq</div>
+                  <div className="w-full max-w-[23%]">Specs</div>
+                  <div className="w-full max-w-[15%]">Balance</div>
+                  <div className="w-full max-w-[20%]">Rate</div>
                   <div className="w-full max-w-[10%]">Block height</div>
                 </div>
             </div>
@@ -173,7 +173,7 @@ const MainPage = ({ id }) => {
                                 src="/images/explore/cpu.svg"
                                 className="w-3"
                                 />
-                                <div>0.5 cpu</div>
+                                <div>{app?.groups[0]?.group_spec?.resources[0]?.resource?.cpu?.units?.val} cpu</div>
                             </div>
                             <div className="flex items-center gap-x-1">
                                 <img
@@ -191,20 +191,14 @@ const MainPage = ({ id }) => {
                                 />
                                 <div>564 mb</div>
                             </div>
-                            <div className="absolute right-1 top-1 h-2 w-2 animate-pulse rounded-full bg-[#6FD572]"></div>
+                            <div className="absolute right-1 top-1 h-1 w-1 animate-pulse rounded-full bg-[#6FD572]"></div>
                         </div>
                       </div>
                       <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                        {app?.groups[0]?.group_spec?.resources[0]?.resource?.cpu?.units?.val}
+                        AKT {(Number(app?.escrow_account?.balance?.amount) / 10 ** 6)?.toFixed(2)}
                       </div>
-                      <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap hover:text-[#566cec]">
-                        <a
-                          href={`https://atomscan.com/akash/transactions/${app?.deployment?.dseq}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {transformString(app?.deployment?.dseq)}
-                        </a>
+                      <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                        USD {Number(leases?.find((ls) => ls?.lease?.lease_id?.dseq === app?.deployment?.deployment_id?.dseq)?.escrow_payment?.rate?.amount)?.toFixed(2)} / month
                       </div>
                       <div className="w-full max-w-[10%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
                         {app?.deployment?.created_at}

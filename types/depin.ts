@@ -27,7 +27,7 @@ export interface DepinDeploymentProps {
 export interface NewDepinDeploymentProps {
   deployment: any
   groups?: any
-  escrow_acount?: any
+  escrow_account?: any
 }
 
 export interface LeasesProps {

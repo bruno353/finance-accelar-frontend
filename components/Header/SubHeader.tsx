@@ -41,7 +41,7 @@ const SubHeader = () => {
   return (
     <>
       <header
-        className={`header left-0 top-0 mt-16 z-40 flex w-full items-center bg-gradient-to-b from-[#1a1d20] to-[#16171C] ${
+        className={`header left-0 border-t-[1px] border-[#c9c9cb28] top-0 mt-[70px] z-40 flex w-full items-center bg-gradient-to-b from-[#1a1d20] to-[#16171C] ${
           !sticky
             ? '!fixed !z-[9999] !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-100'
             : '!fixed !z-[9999] !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-60'
@@ -84,7 +84,7 @@ const SubHeader = () => {
                       : 'invisible top-[120%] opacity-0'
                   }`}
                 >
-                  <ul className="block lg:flex lg:space-x-12">
+                  <ul className="block lg:flex lg:space-x-8">
                     {subMenuData.map((menuItem, index) => (
                       <li key={menuItem.id} className="group relative">
                         {menuItem.path ? (
