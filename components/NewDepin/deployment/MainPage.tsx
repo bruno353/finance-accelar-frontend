@@ -48,7 +48,7 @@ const MainPage = ({ id }) => {
   const [isLoadingCompilation, setIsLoadingCompilation] = useState(false)
   const [subMenuOption, setSubMenuOption] = useState<string>('Lease')
 
-  const [isInfoBalanceOpen, setIsInfoBalanceOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [value, setValue] = useState('// start your code here')
   const [languageSelectorOpen, setLanguageSelectorOpen] = useState(false)
   const monaco = useMonaco()
@@ -175,6 +175,25 @@ const MainPage = ({ id }) => {
     { name: 'Downtime', value: downtimePercentage },
   ]
 
+  const nameRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (nameRef.current && !nameRef.current.contains(event.target)) {
+        setIsMenuOpen(false)
+      }
+    }
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isMenuOpen])
+
   if (isLoading) {
     return (
       <div className="container grid w-full gap-y-[30px]  text-[16px] md:pb-20 lg:pb-28 lg:pt-40">
@@ -188,17 +207,56 @@ const MainPage = ({ id }) => {
     <>
       <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 lg:pt-40">
         <div className="container px-12">
-          <div className="relative flex w-fit items-center gap-x-2">
-            <img
-              alt="image"
-              src="/images/explore/arrow.svg"
-              className={`w-10 rotate-180 cursor-pointer rounded-md p-3 hover:bg-grayPale`}
-            />
-            <div className="text-4xl font-medium text-white">
-              {depin?.deployment?.deployment_id.dseq}
+          <div className="flex gap-x-9">
+            <div className="relative flex w-fit items-center gap-x-2">
+              <img
+                alt="image"
+                src="/images/explore/arrow.svg"
+                className={`w-10 rotate-180 cursor-pointer rounded-md p-3 hover:bg-grayPale`}
+              />
+              <div className="text-4xl font-medium text-white">
+                {depin?.deployment?.deployment_id.dseq}
+              </div>
+
+              <div className="absolute -right-5 top-1 h-2 w-2 animate-pulse rounded-full bg-[#6FD572]"></div>
             </div>
-            <div className="absolute -right-5 top-1 h-2 w-2 animate-pulse rounded-full bg-[#6FD572]"></div>
+            <div className="relative">
+              <div
+                onClick={() => {
+                  setIsMenuOpen(!isMenuOpen)
+                }}
+                className="my-auto flex h-fit cursor-pointer items-center rounded-md p-2 pt-0 text-center font-bold text-white hover:bg-[#7775840c]"
+              >
+                . . .
+              </div>
+              {isMenuOpen && (
+                <div
+                  ref={nameRef}
+                  className="absolute -right-32 -top-0 grid min-w-[130px] gap-y-[1px] rounded-md border-[1px] border-[#c9c9cb10] bg-[#212225] px-2 py-1 text-sm text-white"
+                >
+                  <div className="flex cursor-pointer items-center gap-x-2 rounded-md px-1 py-2 hover:bg-grayPale">
+                    <img
+                      alt="image"
+                      src="/images/explore/add.svg"
+                      className="w-4"
+                    />
+
+                    <div>Add fund</div>
+                  </div>
+                  <div className="flex cursor-pointer items-center gap-x-2 rounded-md px-1 py-2 hover:bg-grayPale">
+                    <img
+                      alt="image"
+                      src="/images/explore/close.svg"
+                      className="w-4"
+                    />
+
+                    <div>Close</div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
+
           <div className="flex gap-x-24">
             <div className="grid gap-y-3 pt-6 text-white">
               <div className="flex">
