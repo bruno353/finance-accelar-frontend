@@ -19,6 +19,7 @@ module.exports = {
       blue: '#4766EA',
       hoverBlue: '#3A51B0',
       gray: '#adadae',
+      grayPale: '#1d1f23b6',
       green: '#6FD572',
       red: '#FE886D',
       black: '#090E34',

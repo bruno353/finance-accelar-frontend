@@ -31,8 +31,16 @@ import Editor, { useMonaco } from '@monaco-editor/react'
 import Dropdown, { ValueObject } from '../Modals/Dropdown'
 import { depinOptionsFeatures, depinOptionsNetwork } from '@/types/consts/depin'
 import { callAxiosBackend } from '@/utils/general-api'
-import { DepinDeploymentProps, LeasesProps, NewDepinDeploymentProps } from '@/types/depin'
-import { blockHeightToDate, formatDate, transformString } from '@/utils/functions'
+import {
+  DepinDeploymentProps,
+  LeasesProps,
+  NewDepinDeploymentProps,
+} from '@/types/depin'
+import {
+  blockHeightToDate,
+  formatDate,
+  transformString,
+} from '@/utils/functions'
 
 const MainPage = ({ id }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -76,42 +84,42 @@ const MainPage = ({ id }) => {
     setIsLoading(true)
 
     try {
-        //getting deployments
+      // getting deployments
 
-        const config = {
-            method: `get`,
-            url: `https://api.akashnet.net/akash/deployment/v1beta3/deployments/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.state=active&pagination.count_total=true`,
-        }
-        
-        let finalData
-        
-        await axios(config).then(function (response) {
-            if (response.data) {
-                finalData = response.data
-                console.log('api response')
-                console.log(finalData)
-            }
-        })
+      const config = {
+        method: `get`,
+        url: `https://api.akashnet.net/akash/deployment/v1beta3/deployments/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.state=active&pagination.count_total=true`,
+      }
 
-        const config2 = {
-            method: `get`,
-            url: `https://api.akashnet.net/akash/market/v1beta4/leases/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.state=active&pagination.count_total=true`,
+      let finalData
+
+      await axios(config).then(function (response) {
+        if (response.data) {
+          finalData = response.data
+          console.log('api response')
+          console.log(finalData)
         }
-        
-        let finalDataLeases
-        
-        await axios(config2).then(function (response) {
-            if (response.data) {
-                finalDataLeases = response.data
-                console.log('api response')
-                console.log(finalData)
-            }
-        })
-    
+      })
+
+      const config2 = {
+        method: `get`,
+        url: `https://api.akashnet.net/akash/market/v1beta4/leases/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.state=active&pagination.count_total=true`,
+      }
+
+      let finalDataLeases
+
+      await axios(config2).then(function (response) {
+        if (response.data) {
+          finalDataLeases = response.data
+          console.log('api response')
+          console.log(finalData)
+        }
+      })
+
       setLeases(finalDataLeases?.leases)
       setDepins(finalData?.deployments) //
 
-      //getting leases
+      // getting leases
     } catch (err) {
       console.log(err)
       toast.error(`Error: ${err.response.data.message}`)
@@ -138,74 +146,111 @@ const MainPage = ({ id }) => {
     <>
       <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 lg:pt-40">
         <div className="container px-12">
-            <div className='text-3xl text-white'>
-             Deployments
+          <div className="text-3xl text-white">Deployments</div>
+          <div className="mt-10">
+            <div className="flex w-full border-y-[0.5px] border-[#c9c9cb10] px-[15px] py-4 text-xs text-gray">
+              <div className="w-full max-w-[22%]">Dseq</div>
+              <div className="w-full max-w-[23%]">Specs</div>
+              <div className="w-full max-w-[15%]">Balance</div>
+              <div className="w-full max-w-[20%]">Rate</div>
+              <div className="w-full max-w-[10%]">Block height</div>
             </div>
-            <div className="mt-10">
-                <div className="flex w-full text-gray text-xs px-[15px] py-4 border-y-[0.5px] border-[#c9c9cb10]">
-                  <div className="w-full max-w-[22%]">Dseq</div>
-                  <div className="w-full max-w-[23%]">Specs</div>
-                  <div className="w-full max-w-[15%]">Balance</div>
-                  <div className="w-full max-w-[20%]">Rate</div>
-                  <div className="w-full max-w-[10%]">Block height</div>
+          </div>
+          {depins?.map((app, index) => (
+            <div
+              onClick={(event) => {
+                console.log(app)
+                console.log(leases)
+              }}
+              key={index}
+              className={`flex items-center  ${
+                index !== depins?.length - 1 &&
+                'border-b-[1px] border-[#c5c4c41a]'
+              } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray hover:bg-[#7775840c]`}
+            >
+              <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                {app?.deployment?.deployment_id.dseq}
+              </div>
+              <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                <div className="relative grid w-fit gap-y-1 rounded-md border-[1px] border-[#c9c9cb49] px-5 py-2 text-xs">
+                  <div className="flex items-center gap-x-1">
+                    <img
+                      alt="image"
+                      src="/images/explore/cpu.svg"
+                      className="w-3"
+                    />
+                    <div>
+                      {(
+                        Number(
+                          app?.groups[0]?.group_spec?.resources[0]?.resource
+                            ?.cpu?.units?.val,
+                        ) /
+                        10 ** 3
+                      ).toFixed(1)}{' '}
+                      cpu
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-x-1">
+                    <img
+                      alt="image"
+                      src="/images/explore/storage.svg"
+                      className="w-3"
+                    />
+                    <div>
+                      {(
+                        Number(
+                          app?.groups[0]?.group_spec?.resources[0]?.resource
+                            ?.storage[0]?.quantity?.val,
+                        ) /
+                        10 ** 6
+                      ).toFixed(0)}{' '}
+                      mb
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-x-1">
+                    <img
+                      alt="image"
+                      src="/images/explore/memory.svg"
+                      className="w-3"
+                    />
+                    <div>
+                      {(
+                        Number(
+                          app?.groups[0]?.group_spec?.resources[0]?.resource
+                            ?.memory?.quantity?.val,
+                        ) /
+                        10 ** 6
+                      ).toFixed(0)}{' '}
+                      mb
+                    </div>
+                  </div>
+                  <div className="absolute right-1 top-1 h-1 w-1 animate-pulse rounded-full bg-[#6FD572]"></div>
                 </div>
-            </div>
-            {depins?.map((app, index) => (
-                    <div
-                      onClick={(event) => {
-                        console.log(app)
-                        console.log(leases)
-                      }}
-                      key={index}
-                      className={`flex items-center  ${
-                        index !== depins?.length - 1 &&
-                        'border-b-[1px] border-[#c5c4c41a]'
-                      } cursor-pointer text-gray gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal hover:bg-[#7775840c]`}
-                    >
-                      <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                        {app?.deployment?.deployment_id.dseq}
-                      </div>
-                      <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                        <div className='rounded-md relative text-xs border-[1px] border-[#c9c9cb49] w-fit px-5 py-2 grid gap-y-1'>
-                            <div className="flex items-center gap-x-1">
-                                <img
-                                alt="image"
-                                src="/images/explore/cpu.svg"
-                                className="w-3"
-                                />
-                                <div>{app?.groups[0]?.group_spec?.resources[0]?.resource?.cpu?.units?.val} cpu</div>
-                            </div>
-                            <div className="flex items-center gap-x-1">
-                                <img
-                                alt="image"
-                                src="/images/explore/storage.svg"
-                                className="w-3"
-                                />
-                                <div>564 mb</div>
-                            </div>
-                            <div className="flex items-center gap-x-1">
-                                <img
-                                alt="image"
-                                src="/images/explore/memory.svg"
-                                className="w-3"
-                                />
-                                <div>564 mb</div>
-                            </div>
-                            <div className="absolute right-1 top-1 h-1 w-1 animate-pulse rounded-full bg-[#6FD572]"></div>
-                        </div>
-                      </div>
-                      <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                        AKT {(Number(app?.escrow_account?.balance?.amount) / 10 ** 6)?.toFixed(2)}
-                      </div>
-                      <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                        USD {Number(leases?.find((ls) => ls?.lease?.lease_id?.dseq === app?.deployment?.deployment_id?.dseq)?.escrow_payment?.rate?.amount)?.toFixed(2)} / month
-                      </div>
-                      <div className="w-full max-w-[10%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                        {app?.deployment?.created_at}
-                      </div>
-                      <div className="ml-auto w-full max-w-[10%]">
-                        {' '}
-                        {/* {isEditInfoOpen === app.id && (
+              </div>
+              <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                AKT{' '}
+                {(
+                  Number(app?.escrow_account?.balance?.amount) /
+                  10 ** 6
+                )?.toFixed(2)}
+              </div>
+              <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                USD{' '}
+                {Number(
+                  leases?.find(
+                    (ls) =>
+                      ls?.lease?.lease_id?.dseq ===
+                      app?.deployment?.deployment_id?.dseq,
+                  )?.escrow_payment?.rate?.amount,
+                )?.toFixed(2)}{' '}
+                / month
+              </div>
+              <div className="w-full max-w-[10%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                {app?.deployment?.created_at}
+              </div>
+              <div className="ml-auto w-full max-w-[10%]">
+                {' '}
+                {/* {isEditInfoOpen === app.id && (
                           <div className="absolute flex w-fit -translate-x-[50%]   -translate-y-[100%]   items-center rounded-[6px]  bg-[#060621]  px-[10px] py-[5px] text-center">
                             Edit workflow
                           </div>
@@ -224,9 +269,9 @@ const MainPage = ({ id }) => {
                             }}
                           ></img>
                         )} */}
-                      </div>
-                    </div>
-                  ))}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </>

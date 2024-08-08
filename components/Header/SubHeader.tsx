@@ -41,7 +41,7 @@ const SubHeader = () => {
   return (
     <>
       <header
-        className={`header left-0 border-t-[1px] border-[#c9c9cb28] top-0 mt-[70px] z-40 flex w-full items-center bg-gradient-to-b from-[#1a1d20] to-[#16171C] ${
+        className={`header left-0 top-0 z-40 mt-[70px] flex w-full items-center border-t-[1px] border-[#c9c9cb28] bg-gradient-to-b from-[#1a1d20] to-[#16171C] ${
           !sticky
             ? '!fixed !z-[9999] !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-100'
             : '!fixed !z-[9999] !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-60'
@@ -49,9 +49,7 @@ const SubHeader = () => {
       >
         <div className="container">
           <div className="relative -mx-4 flex items-center justify-between">
-            <div className="w-40 max-w-full px-4 xl:mr-12">
-              
-            </div>
+            <div className="w-40 max-w-full px-4 xl:mr-12"></div>
             <div className="flex w-full items-center justify-between px-4">
               <div>
                 <button
@@ -92,12 +90,14 @@ const SubHeader = () => {
                             href={menuItem.path}
                             onClick={menuItem.onClick} // Adicione isso
                             className={`${
-                              menuItem.path?.length > 1 && pathName.includes(menuItem.path)
-                                ? '!text-white border-b-[1px] border-[#fff]'
+                              menuItem.path?.length > 1 &&
+                              pathName.includes(menuItem.path)
+                                ? 'border-b-[1px] border-[#fff] !text-white'
                                 : ''
                             } ${
-                              pathName?.length <= 1 && pathName.includes(menuItem.path)
-                                ? '!text-white border-b-[1px] border-[#fff]'
+                              pathName?.length <= 1 &&
+                              pathName.includes(menuItem.path)
+                                ? 'border-b-[1px] border-[#fff] !text-white'
                                 : ''
                             } flex py-2 text-sm text-dark group-hover:border-b-[1px] group-hover:border-[#adadae] dark:text-[#adadae] lg:mr-0 lg:inline-flex lg:px-0 lg:py-3`}
                           >
@@ -143,7 +143,6 @@ const SubHeader = () => {
               </div>
             </div>
           </div>
-
         </div>
       </header>
     </>

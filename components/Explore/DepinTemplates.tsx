@@ -130,7 +130,7 @@ const DepinTemplates = () => {
   return (
     <>
       <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 lg:pt-44">
-        <div className="absolute -right-44 top-20 opacity-20 z-[-1] rotate-180">
+        <div className="absolute -right-44 top-20 z-[-1] rotate-180 opacity-20">
           <img src="/images/video/shape.svg" alt="shape" className="w-full" />
         </div>
         <div className="mx-auto flex w-[1000px] items-center gap-x-5 text-4xl text-white">

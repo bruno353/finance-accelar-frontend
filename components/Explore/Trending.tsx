@@ -122,53 +122,69 @@ const Trending = () => {
 
   const trendingAssets = [
     {
-        title: 'CLP-XFI Pool',
-        desc: 'APR: 17.85%',
-        type: 'Credit',
-        imgSource: '/images/explore/bank-white.svg',
-        imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
-        linkPoolAddress: 'https://snowtrace.io/address/0xc31097688d0d0f87b55d0715fddacd674e4435dc',
-        poolAddress: '0xad4...35dc',
-        priceDif: 5.4,
-        valueAmount: '124.30',
-        chartData: [50, 52, 54, 58, 60, 59, 59, 53, 51, 50, 55, 59, 64, 65, 68, 72, 67, 62, 58, 54, 55, 52, 50, 46, 45, 48, 53, 58, 62, 67, 69, 69, 65, 72, 80, 85],
+      title: 'CLP-XFI Pool',
+      desc: 'APR: 17.85%',
+      type: 'Credit',
+      imgSource: '/images/explore/bank-white.svg',
+      imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
+      linkPoolAddress:
+        'https://snowtrace.io/address/0xc31097688d0d0f87b55d0715fddacd674e4435dc',
+      poolAddress: '0xad4...35dc',
+      priceDif: 5.4,
+      valueAmount: '124.30',
+      chartData: [
+        50, 52, 54, 58, 60, 59, 59, 53, 51, 50, 55, 59, 64, 65, 68, 72, 67, 62,
+        58, 54, 55, 52, 50, 46, 45, 48, 53, 58, 62, 67, 69, 69, 65, 72, 80, 85,
+      ],
     },
     {
-        title: 'GOLD-XFI Pool',
-        desc: 'Backed by XDAI',
-        type: 'Synthetics',
-        imgSource: '/images/explore/money-white.svg',
-        imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
-        linkPoolAddress: 'https://snowtrace.io/address/0xc31097688d0d0f87b55d0715fddacd674e4435dc',
-        poolAddress: '0xad4...35dc',
-        priceDif: -2.2,
-        valueAmount: '2,441.3',
-        chartData: [20, 22, 25, 32, 40, 49, 49, 53, 51, 50, 42, 41, 39, 37, 41, 46, 52, 55, 58, 54, 55, 52, 50, 46, 45, 48, 53, 58, 62, 67, 69, 69, 65, 60, 50, 42],
-      },
-      {
-        title: '18SML711-XFI',
-        desc: 'Singapore property',
-        type: 'Real State',
-        imgSource: '/images/explore/real-state-white.svg',
-        imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
-        linkPoolAddress: 'https://app.citadao.io/properties/0xa1e567790dd08c0d91c6522744715c4a4971233c',
-        poolAddress: '0xa1e...233c',
-        priceDif: -5.2,
-        valueAmount: '635,000',
-        chartData: [20, 25, 29, 32, 40, 49, 55, 59, 63, 56, 65, 55, 48, 39, 41, 46, 52, 55, 58, 54, 50, 48, 40, 46, 45, 48, 53, 58, 62, 67, 69, 69, 65, 70, 72, 65],
-      },
-      {
-        title: 'PARCL-XFI Pool',
-        desc: 'USA market exposure',
-        type: 'Real State',
-        imgSource: '/images/explore/real-state-white.svg',
-        imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
-        linkPoolAddress: 'https://app.citadao.io/properties/0xa1e567790dd08c0d91c6522744715c4a4971233c',
-        poolAddress: '0xa1e...233c',
-        priceDif: 3.1,
-        valueAmount: '235,000',
-        chartData: [50, 45, 40, 42, 40, 49, 55, 59, 63, 63, 65, 59, 55, 50, 48, 46, 52, 63, 58, 54, 50, 48, 42, 46, 44, 48, 53, 58, 62, 67, 68, 69, 65, 70, 72, 78],
-      },
+      title: 'GOLD-XFI Pool',
+      desc: 'Backed by XDAI',
+      type: 'Synthetics',
+      imgSource: '/images/explore/money-white.svg',
+      imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
+      linkPoolAddress:
+        'https://snowtrace.io/address/0xc31097688d0d0f87b55d0715fddacd674e4435dc',
+      poolAddress: '0xad4...35dc',
+      priceDif: -2.2,
+      valueAmount: '2,441.3',
+      chartData: [
+        20, 22, 25, 32, 40, 49, 49, 53, 51, 50, 42, 41, 39, 37, 41, 46, 52, 55,
+        58, 54, 55, 52, 50, 46, 45, 48, 53, 58, 62, 67, 69, 69, 65, 60, 50, 42,
+      ],
+    },
+    {
+      title: '18SML711-XFI',
+      desc: 'Singapore property',
+      type: 'Real State',
+      imgSource: '/images/explore/real-state-white.svg',
+      imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
+      linkPoolAddress:
+        'https://app.citadao.io/properties/0xa1e567790dd08c0d91c6522744715c4a4971233c',
+      poolAddress: '0xa1e...233c',
+      priceDif: -5.2,
+      valueAmount: '635,000',
+      chartData: [
+        20, 25, 29, 32, 40, 49, 55, 59, 63, 56, 65, 55, 48, 39, 41, 46, 52, 55,
+        58, 54, 50, 48, 40, 46, 45, 48, 53, 58, 62, 67, 69, 69, 65, 70, 72, 65,
+      ],
+    },
+    {
+      title: 'PARCL-XFI Pool',
+      desc: 'USA market exposure',
+      type: 'Real State',
+      imgSource: '/images/explore/real-state-white.svg',
+      imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
+      linkPoolAddress:
+        'https://app.citadao.io/properties/0xa1e567790dd08c0d91c6522744715c4a4971233c',
+      poolAddress: '0xa1e...233c',
+      priceDif: 3.1,
+      valueAmount: '235,000',
+      chartData: [
+        50, 45, 40, 42, 40, 49, 55, 59, 63, 63, 65, 59, 55, 50, 48, 46, 52, 63,
+        58, 54, 50, 48, 42, 46, 44, 48, 53, 58, 62, 67, 68, 69, 65, 70, 72, 78,
+      ],
+    },
   ]
 
   useEffect(() => {
@@ -182,10 +198,10 @@ const Trending = () => {
   return (
     <>
       <section className="relative z-10 h-full overflow-hidden  pb-10 pt-2 lg:pt-40">
-        <div className="absolute -right-44 -top-64 opacity-55 z-[-1] rotate-12">
+        <div className="absolute -right-44 -top-64 z-[-1] rotate-12 opacity-55">
           <img src="/images/video/shape.svg" alt="shape" className="w-full" />
         </div>
-        <div className="mx-auto flex w-[1000px] items-center gap-x-5 text-4xl text-white mb-10">
+        <div className="mx-auto mb-10 flex w-[1000px] items-center gap-x-5 text-4xl text-white">
           <div className="">
             <svg
               width="40"
@@ -202,89 +218,95 @@ const Trending = () => {
           </div>
           <div>Trending assets</div>
         </div>
-        <div className="gap-y-10 grid grid-cols-2">
-        {
-        trendingAssets.map((option, index) => ( 
+        <div className="grid grid-cols-2 gap-y-10">
+          {trendingAssets.map((option, index) => (
             <div key={index}>
-                <div className="cursor-pointer rounded-md px-3 py-4 hover:bg-[#1d1f23b6] w-fit mx-auto">
-            <div className='w-[500px]'>
-            <Sparklines
-              data={option?.chartData}
-              width={400}
-              max={100}
-              min={0}
-              height={100}
-            >
-              <SparklinesLine
-                style={{
-                  strokeWidth: 2,
-                  stroke: option?.priceDif > 0 ? '#6FD572' : '#FE886D',
-                  fill:  option?.priceDif > 0 ? '#89d38a9d' : '#FE886D',
-                }}
-              />
-            </Sparklines>
-            </div>
-
-            <div className='flex items-center  mt-4'>
-        <div className="flex items-center gap-x-4">
-            <img
-              alt="image"
-              src={option?.imgSource}
-              className={option?.imgStyle}
-            ></img>
-            <div>
-              <div className='text-white text-lg'>{option.title}</div>
-              <div className='text-[#adadae] text-sm'>{option.type}</div>
-            </div>
-          </div>
-          <div className='ml-10 grid gap-y-2'>
-          <div className=' text-[#adadae] text-sm'>
-            {option?.desc}
-          </div>
-          <div className=' text-[#adadae] text-sm flex gap-x-2 items-center'>
-            <img
-              alt="image"
-              src="/images/workspace/crossfi.png"
-              className="flex-0 w-[20px]"
-            ></img>
-            <div>
-                Pool address: <a href={option?.linkPoolAddress} target='_blank' className='underline text-[#4766EA]'>{option?.poolAddress}</a>
-            </div>
-          </div>
-          </div>
-          <div className='grid gap-y-1 ml-10'>
-          <div className="flex items-center gap-x-2 font-medium ml-auto">
-            <div
-                className={`${
-                option?.priceDif > 0
-                    ? 'rotate-45  font-bold text-[#6FD572]'
-                    : '-rotate-45 font-bold text-[#FE886D]'
-                }`}
-            >
-                {option?.priceDif > 0 ? '↑' : '↓'}
-            </div>
-            <div
-                className={`text-sm ${
-                option?.priceDif > 0
-                    ? 'text-[#6FD572]'
-                    : 'text-[#FE886D]'
-                }`}
-            >
-                {option?.priceDif}%
-            </div>
-            </div>
-            <div className='text-sm text-white'>
-                ${option?.valueAmount}
+              <div className="mx-auto w-fit cursor-pointer rounded-md px-3 py-4 hover:bg-[#1d1f23b6]">
+                <div className="w-[500px]">
+                  <Sparklines
+                    data={option?.chartData}
+                    width={400}
+                    max={100}
+                    min={0}
+                    height={100}
+                  >
+                    <SparklinesLine
+                      style={{
+                        strokeWidth: 2,
+                        stroke: option?.priceDif > 0 ? '#6FD572' : '#FE886D',
+                        fill: option?.priceDif > 0 ? '#89d38a9d' : '#FE886D',
+                      }}
+                    />
+                  </Sparklines>
                 </div>
-            </div>
-          
-        </div>
-        </div>
-            </div>
-        ))
-        }
-        </div>
 
+                <div className="mt-4 flex  items-center">
+                  <div className="flex items-center gap-x-4">
+                    <img
+                      alt="image"
+                      src={option?.imgSource}
+                      className={option?.imgStyle}
+                    ></img>
+                    <div>
+                      <div className="text-lg text-white">{option.title}</div>
+                      <div className="text-sm text-[#adadae]">
+                        {option.type}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="ml-10 grid gap-y-2">
+                    <div className=" text-sm text-[#adadae]">
+                      {option?.desc}
+                    </div>
+                    <div className=" flex items-center gap-x-2 text-sm text-[#adadae]">
+                      <img
+                        alt="image"
+                        src="/images/workspace/crossfi.png"
+                        className="flex-0 w-[20px]"
+                      ></img>
+                      <div>
+                        Pool address:{' '}
+                        <a
+                          href={option?.linkPoolAddress}
+                          target="_blank"
+                          className="text-[#4766EA] underline"
+                          rel="noreferrer"
+                        >
+                          {option?.poolAddress}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="ml-10 grid gap-y-1">
+                    <div className="ml-auto flex items-center gap-x-2 font-medium">
+                      <div
+                        className={`${
+                          option?.priceDif > 0
+                            ? 'rotate-45  font-bold text-[#6FD572]'
+                            : '-rotate-45 font-bold text-[#FE886D]'
+                        }`}
+                      >
+                        {option?.priceDif > 0 ? '↑' : '↓'}
+                      </div>
+                      <div
+                        className={`text-sm ${
+                          option?.priceDif > 0
+                            ? 'text-[#6FD572]'
+                            : 'text-[#FE886D]'
+                        }`}
+                      >
+                        {option?.priceDif}%
+                      </div>
+                    </div>
+                    <div className="text-sm text-white">
+                      ${option?.valueAmount}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
     </>
   )

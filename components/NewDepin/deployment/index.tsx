@@ -23,8 +23,8 @@ import MainPage from './MainPage'
 const DepinDeployment = (id: any) => {
   return (
     <>
-        <div className="w-full">
-          <MainPage id={id.id} />
+      <div className="w-full">
+        <MainPage id={id.id} />
       </div>
     </>
   )

@@ -33,8 +33,8 @@ export interface NewDepinDeploymentProps {
 export interface LeasesProps {
   lease: any
   escrow_payment?: any
-}  
-//example of lease:  
+}
+// example of lease:
 /*
 "lease": {
   "lease_id": {
@@ -75,7 +75,7 @@ export interface LeasesProps {
 }
  */
 
-//example of deployment:
+// example of deployment:
 /*
 {
   "deployment": {
