@@ -9,14 +9,14 @@ export const depinOptionsFeatures = [
 
 export const depinOptionsNetwork = [
   {
-    name: 'Core DAO',
-    value: 'CORE_DAO_TESTNET',
+    name: 'Crossfi',
+    value: 'CROSSFI_TESTNET',
     imageSrc: '/images/workspace/core-logo.svg',
     imageStyle: 'w-[22px]',
     imageSrc2: '/images/workspace/core-logo.svg',
     imageStyle2: 'w-[30px]',
-    value2: 'TCORE',
-    value3: 'CORE_DAO',
+    value2: 'XFI',
+    value3: 'CROSSFI',
     value4: 'Testnet',
     value5: 'evmWalletPubK',
   },
@@ -41,7 +41,7 @@ export const depinPaymentMethodsEVM = [
   {
     name: 'Pay with wallet tokens',
     value: 'wallet',
-    imageSrc: '/images/workspace/frax.svg',
+    imageSrc: '/images/workspace/wallet.svg',
     imageStyle: 'w-[25px]',
   },
 ]

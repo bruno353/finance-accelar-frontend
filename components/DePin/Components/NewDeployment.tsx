@@ -41,7 +41,7 @@ import ConfirmGenericTransaction from '@/components/BlockchainWallets/Modals/Con
 import fraxtalContractABI from '../abi-frax/fraxtalContractABI.json'
 import { useContractWrite } from '../../IDE/hooks/useContract'
 import { Abi } from 'viem'
-import { fraxABI } from '@/types/consts/fraxtalABI'
+import { depinABI } from '@/types/consts/depinABI'
 import { parseEther } from 'ethers'
 import { networkToNetworkRPC } from '@/components/BlockchainWallets/BlockchainWallet.tsx/BlockchainWalletPage'
 

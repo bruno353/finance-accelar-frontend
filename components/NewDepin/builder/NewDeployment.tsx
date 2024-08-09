@@ -41,7 +41,7 @@ import { useAccount } from 'wagmi'
 import ConfirmGenericTransaction from '@/components/BlockchainWallets/Modals/ConfirmGenericTransaction'
 import { useContractWrite } from '../../IDE/hooks/useContract'
 import { Abi } from 'viem'
-import { fraxABI } from '@/types/consts/fraxtalABI'
+import { depinABI } from '@/types/consts/depinABI'
 import { parseEther } from 'ethers'
 import { networkToNetworkRPC } from '@/components/BlockchainWallets/BlockchainWallet.tsx/BlockchainWalletPage'
 
@@ -233,7 +233,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
         fraxABI as Abi,
         chain,
         addressTointeract,
-        '0x05A8CBBFA99f5285e09db865f119df30170dba8D',
+        process.env.DEPIN_CONTRACT_ADDRESS,
         String(bidAmountWei),
       )
       console.log('rtespo')
@@ -363,17 +363,9 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
       <div className=" text-[14px] font-normal">
         <div className="grid gap-y-[25px]">
           <div className="flex items-center gap-x-4">
-            <img
-              onClick={() => {
-                console.log('')
-              }}
-              alt="ethereum avatar"
-              src="/images/blockchain/arrow-left.svg"
-              className="my-auto w-[15px] cursor-pointer 2xl:w-[20px]"
-            ></img>
             <div className="text-xl 2xl:text-2xl">New deployment</div>
           </div>
-          <div className="h-[calc(100vh-20rem)] max-h-[calc(100vh-20rem)] overflow-y-auto pb-4 scrollbar-thin scrollbar-track-[#1D2144] scrollbar-thumb-[#c5c4c4] scrollbar-track-rounded-md scrollbar-thumb-rounded-md 2xl:h-[calc(100vh-23rem)] 2xl:max-h-[calc(100vh-23rem)]">
+          <div className="overflow-y-auto pb-4 scrollbar-thin scrollbar-track-[#1D2144] scrollbar-thumb-[#c5c4c4] scrollbar-track-rounded-md scrollbar-thumb-rounded-md 2xl:h-[calc(100vh-23rem)] 2xl:max-h-[calc(100vh-23rem)]">
             <div className="flex gap-x-20">
               <div>
                 <div className="mb-6">
@@ -470,7 +462,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
                  `}
                     onClick={() => {
                       if (!isLoading && formChecks()) {
-                        setIsConfirmTransactionOpen(true)
+                        handleCreateDeployment()
                       }
                     }}
                   >
@@ -532,35 +524,9 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
                         <div className="mb-2 flex h-[25px] w-[150px] animate-pulse rounded-md bg-[#dbdbdb1e]"></div>
                       ) : (
                         <>
-                          <div className="flex w-fit items-center gap-x-1">
-                            {blockchainWallets?.length > 0 ? (
-                              <Dropdown
-                                optionSelected={blockchainWalletsSelected}
-                                options={blockchainWalletsDropdown}
-                                onValueChange={(value) => {
-                                  setBlockchainWalletsSelected(value)
-                                }}
-                                classNameForDropdown="!px-1 !pr-2 !py-1 !flex-grow !min-w-[130px] !font-medium"
-                                classNameForPopUp="!px-1 !pr-2 !py-1"
-                                classNameForPopUpBox="!translate-y-[35px]"
-                              />
-                            ) : (
-                              <div className="my-auto mt-1 text-[#c5c4c4]">
-                                create a wallet{' '}
-                              </div>
-                            )}
-
-                            <a
-                              href={`/workspace/${workspace.id}/blockchain-wallets`}
-                            >
-                              <div
-                                title="Create wallet"
-                                className="flex-grow-0 cursor-pointer text-[16px]"
-                              >
-                                +
-                              </div>
-                            </a>
-                          </div>
+                          <label className="flex w-fit items-center gap-x-1 text-[#FE886D]">
+                            Not available
+                          </label>
                           {blockchainWalletsSelected && (
                             <div className="mt-2 text-[12px] text-[#c5c4c4]">
                               {' '}
@@ -585,7 +551,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
                       <div>
                         {address && chain?.id !== 252 && (
                           <div className="text-[#c22336]">
-                            * Change network to Fraxtal
+                            * Change network to Crossfi
                           </div>
                         )}
                       </div>

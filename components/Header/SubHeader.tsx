@@ -91,7 +91,7 @@ const SubHeader = () => {
                             onClick={menuItem.onClick} // Adicione isso
                             className={`${
                               menuItem.path?.length > 1 &&
-                              pathName.includes(menuItem.path)
+                              pathName === menuItem.path
                                 ? 'border-b-[1px] border-[#fff] !text-white'
                                 : ''
                             } ${
