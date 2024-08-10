@@ -222,18 +222,31 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
     }
     setIsLoading(true)
 
-    const { userSessionToken } = parseCookies()
+    const dataApi = {
+      sdl: sdlValue,
+    }
 
     const addressTointeract = address
     try {
+      const url = await callAxiosBackend(
+        'post',
+        '/blockchain/depin/functions/uploadDeploymentSdl',
+        'userSessionToken',
+        dataApi,
+      )
+      console.log('my url')
+      console.log(url)
       const bidAmountWei = parseEther(bidAmount)
       const res = await write(
         'createDeployment',
-        ['sdl', addressTointeract],
-        fraxABI as Abi,
+        [
+          `https://api.accelar.io/blockchain/depin/functions/getSdlByDeploymentId?id=${url.id}`,
+          addressTointeract,
+        ],
+        depinABI as Abi,
         chain,
         addressTointeract,
-        process.env.DEPIN_CONTRACT_ADDRESS,
+        '0x05A8CBBFA99f5285e09db865f119df30170dba8D',
         String(bidAmountWei),
       )
       console.log('rtespo')
@@ -247,12 +260,12 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
         depinFeature: 'AKASH',
         sdl: sdlValue,
       }
-      await callAxiosBackend(
-        'post',
-        '/blockchain/depin/functions/createDeploymentOrderMetamask',
-        userSessionToken,
-        data,
-      )
+      // await callAxiosBackend(
+      //   'post',
+      //   '/blockchain/depin/functions/createDeploymentOrderMetamask',
+      //   'userSessionToken',
+      //   data,
+      // )
       onUpdate()
       setIsLoading(false)
     } catch (err) {

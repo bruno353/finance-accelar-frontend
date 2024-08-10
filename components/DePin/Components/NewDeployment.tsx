@@ -209,7 +209,7 @@ const NewDeployment = ({
       setIsLoading(false)
     } catch (err) {
       console.log(err)
-      toast.error(`Error: ${err.response.data.message}`)
+      toast.error(`Error: ${err}`)
       setIsLoading(false)
     }
   }
@@ -225,15 +225,25 @@ const NewDeployment = ({
     }
     setIsLoading(true)
 
-    const { userSessionToken } = parseCookies()
+    const dataApi = {
+      sdl: sdlValue,
+    }
 
     const addressTointeract = address
     try {
+      const url = await callAxiosBackend(
+        'post',
+        '/blockchain/depin/functions/uploadDeploymentSdl',
+        'userSessionToken',
+        dataApi,
+      )
+      console.log('my url')
+      console.log(url)
       const bidAmountWei = parseEther(bidAmount)
       const res = await write(
         'createDeployment',
         ['sdl', addressTointeract],
-        fraxABI as Abi,
+        depinABI as Abi,
         chain,
         addressTointeract,
         '0x05A8CBBFA99f5285e09db865f119df30170dba8D',
@@ -250,12 +260,12 @@ const NewDeployment = ({
         depinFeature: 'AKASH',
         sdl: sdlValue,
       }
-      await callAxiosBackend(
-        'post',
-        '/blockchain/depin/functions/createDeploymentOrderMetamask',
-        userSessionToken,
-        data,
-      )
+      // await callAxiosBackend(
+      //   'post',
+      //   '/blockchain/depin/functions/createDeploymentOrderMetamask',
+      //   userSessionToken,
+      //   data,
+      // )
       onUpdate()
       setIsLoading(false)
     } catch (err) {
@@ -267,11 +277,7 @@ const NewDeployment = ({
   }
 
   const handleCreateDeployment = async () => {
-    if (walletProvider === TypeWalletProvider.ACCELAR) {
-      handleAccelarDeployment()
-    } else if (walletProvider === TypeWalletProvider.EVM) {
-      handleEVMDeployment()
-    }
+    handleEVMDeployment()
   }
 
   async function getWallets() {
@@ -304,7 +310,7 @@ const NewDeployment = ({
       }
     } catch (err) {
       console.log(err)
-      toast.error(`Error: ${err.response.data.message}`)
+      toast.error(`Error: ${err}`)
     }
     setIsLoadingWallets(false)
     setIsLoading(false)
@@ -473,6 +479,7 @@ const NewDeployment = ({
                  `}
                     onClick={() => {
                       if (!isLoading && formChecks()) {
+                        handleCreateDeployment()
                         setIsConfirmTransactionOpen(true)
                       }
                     }}

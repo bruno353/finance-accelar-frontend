@@ -41,7 +41,7 @@ export const depinPaymentMethodsEVM = [
   {
     name: 'Pay with wallet tokens',
     value: 'wallet',
-    imageSrc: '/images/workspace/wallet.svg',
+    imageSrc: '/images/sidebar/wallet.svg',
     imageStyle: 'w-[25px]',
   },
 ]
