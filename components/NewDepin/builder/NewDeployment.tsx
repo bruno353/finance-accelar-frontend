@@ -17,6 +17,7 @@ import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import 'react-quill/dist/quill.snow.css' // import styles
 import 'react-datepicker/dist/react-datepicker.css'
+import LottiePlayer from 'react-lottie-player'
 import {
   formatDate,
   formatTokenPrice,
@@ -59,6 +60,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
   const [sdlValue, setSDLValue] = useState('')
   const [tokenPrice, setTokenPrice] = useState('0.0')
   const [isLoadingWallets, setIsLoadingWallets] = useState(false)
+  const [isDeployed, setIsDeployed] = useState(false)
   const [blockchainWalletsSelected, setBlockchainWalletsSelected] =
     useState<ValueObject>()
   const [selectedNetwork, setSelectedNetwork] = useState<ValueObject>(
@@ -228,25 +230,27 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
 
     const addressTointeract = address
     try {
-      const url = await callAxiosBackend(
-        'post',
-        '/blockchain/depin/functions/uploadDeploymentSdl',
-        'userSessionToken',
-        dataApi,
-      )
-      console.log('my url')
-      console.log(url)
+      // const url = 'e'
+      // const url = await callAxiosBackend(
+      //   'post',
+      //   '/blockchain/depin/functions/uploadDeploymentSdl',
+      //   'userSessionToken',
+      //   dataApi,
+      // )
+      // console.log('my url')
+      // console.log(url)
       const bidAmountWei = parseEther(bidAmount)
       const res = await write(
         'createDeployment',
         [
-          `https://api.accelar.io/blockchain/depin/functions/getSdlByDeploymentId?id=${url.id}`,
+          // `https://api.accelar.io/blockchain/depin/functions/getSdlByDeploymentId?id=${url.id}`,
+          'e',
           addressTointeract,
         ],
         depinABI as Abi,
         chain,
         addressTointeract,
-        '0x05A8CBBFA99f5285e09db865f119df30170dba8D',
+        '0xa6397f6DE4948C3F55ffd11Df5DDAF0F9Dfc7d80',
         String(bidAmountWei),
       )
       console.log('rtespo')
@@ -370,6 +374,29 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
     }
     return () => clearInterval(intervalId)
   }, [isDeployingNewDepinFeature])
+
+  if (!isDeployed) {
+    return (
+      <div className="text-center text-[21px] text-white">
+        <div>Deployment under proccess</div>
+        <div className="text-[12px] text-gray">
+          The deployment process takes up to 10 minutes, you may close this
+          window now.
+        </div>
+        <div className="mx-auto w-[300px]">
+          <LottiePlayer
+            loop
+            animationData={require('./animation.json')}
+            play
+            style={{ width: '100%', height: 'auto' }}
+          />
+        </div>
+        <div className="mx-auto w-fit cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-[14px] text-white hover:bg-[#3A51B0]">
+          Go to Dashboard
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="text-[14px] text-[#C5C4C4]">

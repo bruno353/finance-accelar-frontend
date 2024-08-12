@@ -52,6 +52,7 @@
     "react-google-recaptcha": "^3.1.0",
     "react-hook-form": "^7.46.1",
     "react-html-parser": "^2.0.2",
+    "react-lottie-player": "^2.1.0",
     "react-modal-video": "^2.0.0",
     "react-quill": "^2.0.0",
     "react-sparklines": "^1.7.0",

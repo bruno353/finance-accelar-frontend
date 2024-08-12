@@ -50,6 +50,32 @@ const fraxtalMainnet = {
   testnet: false,
 }
 
+const opSepolia = {
+  id: 11155420,
+  name: 'OP Sepolia',
+  network: 'sepolia',
+  nativeCurrency: {
+    name: 'ETH',
+    symbol: 'ETH',
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://sepolia.optimism.io'],
+    },
+    public: {
+      http: ['https://sepolia.optimism.io'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'SepoliaScan',
+      url: 'https://optimism-sepolia.blockscout.com',
+    },
+  },
+  testnet: false,
+}
+
 if (!projectId) throw new Error('Project ID is not defined')
 
 const metadata = {
@@ -60,13 +86,14 @@ const metadata = {
 }
 
 export const wagmiConfig = defaultWagmiConfig({
-  chains: [fraxtalMainnet, crossfiTestnet, holesky], // required
+  chains: [fraxtalMainnet, crossfiTestnet, opSepolia, holesky], // required
   projectId, // required
   metadata, // required
   ssr: true,
   transports: {
     [fraxtalMainnet.id]: http('https://rpc.frax.com'),
     [crossfiTestnet.id]: http('https://rpc.testnet.ms'),
+    [opSepolia.id]: http('https://sepolia.optimism.io'),
     [holesky.id]: http('https://endpoints.omniatech.io/v1/eth/holesky/public'),
   },
   storage: createStorage({
