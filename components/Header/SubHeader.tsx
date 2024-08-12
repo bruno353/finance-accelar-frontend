@@ -38,6 +38,14 @@ const SubHeader = () => {
     }
   }
 
+  const filteredMenuData = subMenuData?.filter((subM) =>
+    pathName.includes(subM.fatherPath),
+  )
+
+  if (pathName === '/') {
+    return
+  }
+
   return (
     <>
       <header
@@ -83,7 +91,7 @@ const SubHeader = () => {
                   }`}
                 >
                   <ul className="block lg:flex lg:space-x-8">
-                    {subMenuData.map((menuItem, index) => (
+                    {filteredMenuData.map((menuItem, index) => (
                       <li key={menuItem.id} className="group relative">
                         {menuItem.path ? (
                           <Link

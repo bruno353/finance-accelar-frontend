@@ -42,7 +42,7 @@ const Header = () => {
   return (
     <>
       <header
-        className={`header left-0 top-0 z-40 flex w-full items-center bg-gradient-to-b from-[#222529] to-[#1a1d20] bg-transparent ${
+        className={`header left-0 top-0 z-40 flex w-full items-center bg-transparent bg-gradient-to-b from-[#222529] to-[#1a1d20] ${
           !sticky
             ? '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-100'
             : '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-60'
@@ -109,12 +109,14 @@ const Header = () => {
                             href={menuItem.path}
                             onClick={menuItem.onClick} // Adicione isso
                             className={`${
-                              menuItem.path?.length > 1 && pathName.includes(menuItem.path)
-                                ? '!text-white border-b-[1px] border-[#fff]'
+                              menuItem.path?.length > 1 &&
+                              pathName.includes(menuItem.path)
+                                ? 'border-b-[1px] border-[#fff] !text-white'
                                 : ''
                             } ${
-                              pathName?.length <= 1 && pathName.includes(menuItem.path)
-                                ? '!text-white border-b-[1px] border-[#fff]'
+                              pathName?.length <= 1 &&
+                              pathName.includes(menuItem.path)
+                                ? 'border-b-[1px] border-[#fff] !text-white'
                                 : ''
                             } flex py-2 text-base text-dark group-hover:border-b-[1px] group-hover:border-[#adadae] dark:text-[#adadae] lg:mr-0 lg:inline-flex lg:px-0 lg:py-6`}
                           >
@@ -168,10 +170,9 @@ const Header = () => {
               </div>
             </div>
           </div>
-
         </div>
       </header>
-     <SubHeader />
+      <SubHeader />
     </>
   )
 }

@@ -375,15 +375,15 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
     return () => clearInterval(intervalId)
   }, [isDeployingNewDepinFeature])
 
-  if (!isDeployed) {
+  if (isDeployed) {
     return (
-      <div className="text-center text-[21px] text-white">
+      <div className="text-center text-[24px] font-medium text-white">
         <div>Deployment under proccess</div>
-        <div className="text-[12px] text-gray">
+        <div className="mt-4 text-[14px] text-gray">
           The deployment process takes up to 10 minutes, you may close this
           window now.
         </div>
-        <div className="mx-auto w-[300px]">
+        <div className="mx-auto w-[200px]">
           <LottiePlayer
             loop
             animationData={require('./animation.json')}
@@ -391,9 +391,11 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
             style={{ width: '100%', height: 'auto' }}
           />
         </div>
-        <div className="mx-auto w-fit cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-[14px] text-white hover:bg-[#3A51B0]">
-          Go to Dashboard
-        </div>
+        <a href="/feats/depin">
+          <div className="mx-auto w-fit cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-[14px] text-white hover:bg-[#3A51B0]">
+            Go to Dashboard
+          </div>
+        </a>
       </div>
     )
   }

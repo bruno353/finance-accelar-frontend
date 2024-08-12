@@ -1,11 +1,11 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image'
+import Link from 'next/link'
 
 const Footer = () => {
   return (
     <>
       <footer
-        className="wow fadeInUp bg-primary bg-opacity-5 pt-16 md:pt-20 lg:pt-24 relative z-20"
+        className="wow fadeInUp relative z-20 bg-primary bg-opacity-5 pt-16 md:pt-20 lg:pt-24"
         data-wow-delay=".1s"
       >
         <div className="container">
@@ -21,11 +21,11 @@ const Footer = () => {
                     height={30}
                   />
                   <Image
-                  src="/images/logo.svg"
-                  alt="logo"
-                  width={129}
-                  height={29}
-                  className="hidden w-full dark:block"
+                    src="/images/logo.svg"
+                    alt="logo"
+                    width={129}
+                    height={29}
+                    className="hidden w-full dark:block"
                   />
                 </Link>
                 <p className="mb-9 text-base font-medium leading-relaxed text-body-color">
@@ -102,10 +102,11 @@ const Footer = () => {
                     <a
                       href="https://github.com/Accelar-labs"
                       target="_blank"
-                      className="mb-4 inline-block text-base font-medium text-body-color hover:text-primary" rel="noreferrer"
+                      className="mb-4 inline-block text-base font-medium text-body-color hover:text-primary"
+                      rel="noreferrer"
                     >
-                      {" "}
-                      Docs{" "}
+                      {' '}
+                      Docs{' '}
                     </a>
                   </li>
                   {/* <li>
@@ -150,8 +151,8 @@ const Footer = () => {
                       href="/"
                       className="mb-4 inline-block text-base font-medium text-body-color hover:text-primary"
                     >
-                      {" "}
-                      Privacy Policy{" "}
+                      {' '}
+                      Privacy Policy{' '}
                     </a>
                   </li>
                   <li>
@@ -159,8 +160,8 @@ const Footer = () => {
                       href="/"
                       className="mb-4 inline-block text-base font-medium text-body-color hover:text-primary"
                     >
-                      {" "}
-                      Terms of Use{" "}
+                      {' '}
+                      Terms of Use{' '}
                     </a>
                   </li>
                 </ul>
@@ -175,11 +176,11 @@ const Footer = () => {
                 <ul>
                   <li>
                     <a
-                    href="mailto:contact@accelar.io"
-                    className="mb-4 inline-block text-base font-medium text-body-color hover:text-primary"
+                      href="mailto:contact@accelar.io"
+                      className="mb-4 inline-block text-base font-medium text-body-color hover:text-primary"
                     >
-                      {" "}
-                      Email{" "}
+                      {' '}
+                      Email{' '}
                     </a>
                   </li>
                   {/* <li>
@@ -223,7 +224,7 @@ const Footer = () => {
             <circle opacity="0.8" cx="49.5" cy="49.5" r="49.5" fill="#959CB1" />
             <mask
               id="mask0_94:899"
-              style={{ maskType: "alpha" }}
+              style={{ maskType: 'alpha' }}
               maskUnits="userSpaceOnUse"
               x="0"
               y="0"
@@ -286,7 +287,7 @@ const Footer = () => {
             </defs>
           </svg>
         </div>
-        <div className="absolute left-0 bottom-24 z-[-1]">
+        <div className="absolute bottom-24 left-0 z-[-1]">
           <svg
             width="79"
             height="94"
@@ -404,7 +405,7 @@ const Footer = () => {
         </div>
       </footer>
     </>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

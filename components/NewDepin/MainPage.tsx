@@ -41,6 +41,7 @@ import {
   formatDate,
   transformString,
 } from '@/utils/functions'
+import LottiePlayer from 'react-lottie-player'
 
 const MainPage = ({ id }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -146,7 +147,17 @@ const MainPage = ({ id }) => {
     <>
       <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 lg:pt-40">
         <div className="container px-12">
-          <div className="text-3xl text-white">Deployments</div>
+          <div className="flex items-center gap-x-3">
+            <div className="w-[60px]">
+              <LottiePlayer
+                loop
+                animationData={require('./orb.json')}
+                play
+                style={{ width: '100%', height: 'auto' }}
+              />
+            </div>
+            <div className="text-3xl text-white">Deployments</div>
+          </div>
           <div className="mt-10">
             <div className="flex w-full border-y-[0.5px] border-[#c9c9cb10] px-[15px] py-4 text-xs text-gray">
               <div className="w-full max-w-[22%]">Dseq</div>
@@ -159,8 +170,7 @@ const MainPage = ({ id }) => {
           {depins?.map((app, index) => (
             <div
               onClick={(event) => {
-                console.log(app)
-                console.log(leases)
+                push(`/feats/depin/${app?.deployment?.deployment_id.dseq}`)
               }}
               key={index}
               className={`flex items-center  ${
