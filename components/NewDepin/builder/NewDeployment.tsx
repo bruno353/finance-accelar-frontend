@@ -230,21 +230,19 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
 
     const addressTointeract = address
     try {
-      // const url = 'e'
-      // const url = await callAxiosBackend(
-      //   'post',
-      //   '/blockchain/depin/functions/uploadDeploymentSdl',
-      //   'userSessionToken',
-      //   dataApi,
-      // )
-      // console.log('my url')
-      // console.log(url)
+      const resData = await callAxiosBackend(
+        'post',
+        '/blockchain/depin/functions/uploadDeploymentSdl',
+        'userSessionToken',
+        dataApi,
+      )
+      const url = `https://api.accelar.io/blockchain/depin/functions/getSdlByDeploymentId?id=${resData?.id}`
       const bidAmountWei = parseEther(bidAmount)
       const res = await write(
         'createDeployment',
         [
           // `https://api.accelar.io/blockchain/depin/functions/getSdlByDeploymentId?id=${url.id}`,
-          'e',
+          url,
           addressTointeract,
         ],
         depinABI as Abi,
@@ -253,23 +251,6 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
         '0xa6397f6DE4948C3F55ffd11Df5DDAF0F9Dfc7d80',
         String(bidAmountWei),
       )
-      console.log('rtespo')
-      console.log(res)
-      const data = {
-        name: deploymentName,
-        workspaceId: workspace.id,
-        address: addressTointeract,
-        bidAmount,
-        network: 'FRAXTAL_MAINNET',
-        depinFeature: 'AKASH',
-        sdl: sdlValue,
-      }
-      // await callAxiosBackend(
-      //   'post',
-      //   '/blockchain/depin/functions/createDeploymentOrderMetamask',
-      //   'userSessionToken',
-      //   data,
-      // )
       onUpdate()
       setIsLoading(false)
     } catch (err) {
