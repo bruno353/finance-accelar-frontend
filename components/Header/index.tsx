@@ -6,9 +6,15 @@ import { usePathname } from 'next/navigation'
 import ThemeToggler from './ThemeToggler'
 import menuData from './menuData'
 import SubHeader from './SubHeader'
+import ConnectButton from '@/contexts/ConnectButton'
+import { useAccount } from 'wagmi'
+import { useAcoUtils } from '../Hooks/useAcoUtils'
 
 const Header = () => {
   const pathName = usePathname()
+  const { address, chain } = useAccount()
+  const { checkAndSetAcoUserExists } = useAcoUtils()
+  const [acoUserExist, setAcoUserExist] = useState<boolean>(true)
 
   // Navbar toggle
   const [navbarOpen, setNavbarOpen] = useState(false)
@@ -38,6 +44,17 @@ const Header = () => {
       setOpenIndex(index)
     }
   }
+
+  async function getAcoUser(address: string) {
+    const userExists = await checkAndSetAcoUserExists(address)
+    setAcoUserExist(userExists)
+  }
+
+  useEffect(() => {
+    if (address) {
+      getAcoUser(address)
+    }
+  }, [address])
 
   return (
     <>
@@ -161,8 +178,12 @@ const Header = () => {
                 </nav>
               </div>
               <div className="flex items-center justify-end pr-16 lg:pr-0">
-                <div className="cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-white hover:bg-[#3A51B0]">
+                {/* <div className="cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-white hover:bg-[#3A51B0]">
                   Connect wallet
+                </div> */}
+                {address && !acoUserExist && <div>Create Aco User</div>}
+                <div className="mx-auto flex">
+                  <ConnectButton />
                 </div>
                 {/* <div>
                   <ThemeToggler />

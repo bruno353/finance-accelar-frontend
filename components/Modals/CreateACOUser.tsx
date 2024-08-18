@@ -10,13 +10,15 @@ import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import 'react-quill/dist/quill.snow.css' // import styles
 import 'react-datepicker/dist/react-datepicker.css'
-import { parseCookies } from 'nookies'
+import { parseCookies, destroyCookie, setCookie } from 'nookies'
 import {
   createAutomationWorkflow,
   editAutomationWorkflow,
 } from '@/utils/api-automation'
 import Dropdown, { ValueObject } from '@/components/Modals/Dropdown'
 import { wait } from '@/utils/functions'
+import { useAccount } from 'wagmi'
+import { callAxiosBackend } from '@/utils/general-api'
 
 export const optionsNetworkDeployment = [
   {
@@ -28,13 +30,15 @@ export const optionsNetworkDeployment = [
   },
 ]
 
-const NewDeploymentModal = ({ isOpen, onUpdateM, onClose, workspaceId }) => {
+const CreateACOUserModal = ({ isOpen, onUpdateM, onClose }) => {
   const [appName, setAppName] = useState('')
   const [sdlValue, setSDLValue] = useState('')
+  const [userExist, setUserExist] = useState(false)
   const [isLoading, setIsLoading] = useState(null)
   const [selected, setSelected] = useState<ValueObject>(
     optionsNetworkDeployment[0],
   )
+  const { address, chain } = useAccount()
 
   const handleInputChange = (e) => {
     if (!isLoading) {
@@ -46,17 +50,16 @@ const NewDeploymentModal = ({ isOpen, onUpdateM, onClose, workspaceId }) => {
     setIsLoading(true)
     await wait(30500)
 
-    const { userSessionToken } = parseCookies()
+    const { acoUsers } = parseCookies()
 
     const final = {
-      workspaceId,
       name: appName,
     }
 
     try {
       // await editAutomationWorkflow(sdlValue, userSessionToken)
       onUpdateM()
-      setCookie(null, 'user', JSON.stringify(user), {
+      setCookie(null, 'acoUsers', JSON.stringify('user'), {
         path: '/',
         maxAge: 180 * 24 * 60 * 60, // Exemplo de validade do cookie: 30 dias
         secure: true, // Recomendado para produção, garante que o cookie seja enviado apenas por HTTPS
@@ -74,6 +77,10 @@ const NewDeploymentModal = ({ isOpen, onUpdateM, onClose, workspaceId }) => {
       onClose()
     }
   }
+
+  useEffect(() => {
+    checkAcoUserExists(address)
+  }, [address])
 
   return (
     <div
@@ -166,4 +173,4 @@ const NewDeploymentModal = ({ isOpen, onUpdateM, onClose, workspaceId }) => {
   )
 }
 
-export default NewDeploymentModal
+export default CreateACOUserModal

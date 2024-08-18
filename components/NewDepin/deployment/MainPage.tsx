@@ -42,6 +42,7 @@ import {
   formatDate,
   transformString,
 } from '@/utils/functions'
+import { useAccount } from 'wagmi'
 
 const MainPage = ({ id }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -60,6 +61,8 @@ const MainPage = ({ id }) => {
   const [selectedNetwork, setSelectedNetwork] = useState<ValueObject>(
     depinOptionsNetwork[0],
   )
+
+  const { address, chain } = useAccount()
 
   const [navBarSelected, setNavBarSelected] = useState('Deployments')
   const [blockchainWallets, setBlockchainWallets] = useState<
@@ -156,6 +159,11 @@ const MainPage = ({ id }) => {
 
     setIsLoading(false)
   }
+
+  useEffect(() => {
+    setIsLoading(true)
+    getData()
+  }, [])
 
   useEffect(() => {
     setIsLoading(true)
