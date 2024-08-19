@@ -2,12 +2,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
 import ThemeToggler from './ThemeToggler'
 import subMenuData from './subMenuData'
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 
 const SubHeader = () => {
   const pathName = usePathname()
+  const { push } = useRouter()
 
   // Navbar toggle
   const [navbarOpen, setNavbarOpen] = useState(false)
@@ -94,9 +95,10 @@ const SubHeader = () => {
                     {filteredMenuData.map((menuItem, index) => (
                       <li key={menuItem.id} className="group relative">
                         {menuItem.path ? (
-                          <Link
-                            href={menuItem.path}
-                            onClick={menuItem.onClick} // Adicione isso
+                          <div
+                            onClick={() => {
+                              push(menuItem.path)
+                            }} // Adicione isso
                             className={`${
                               menuItem.path?.length > 1 &&
                               pathName === menuItem.path
@@ -107,10 +109,10 @@ const SubHeader = () => {
                               pathName.includes(menuItem.path)
                                 ? 'border-b-[1px] border-[#fff] !text-white'
                                 : ''
-                            } flex py-2 text-sm text-dark group-hover:border-b-[1px] group-hover:border-[#adadae] dark:text-[#adadae] lg:mr-0 lg:inline-flex lg:px-0 lg:py-3`}
+                            } flex cursor-pointer py-2 text-sm text-dark group-hover:border-b-[1px] group-hover:border-[#adadae] dark:text-[#adadae] lg:mr-0 lg:inline-flex lg:px-0 lg:py-3`}
                           >
                             {menuItem.title}
-                          </Link>
+                          </div>
                         ) : (
                           <>
                             <a
