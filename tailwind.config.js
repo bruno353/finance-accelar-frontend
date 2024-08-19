@@ -22,6 +22,7 @@ module.exports = {
       grayPale: '#1d1f23b6',
       green: '#6FD572',
       red: '#FE886D',
+      darkRed: '#d84c4c',
       black: '#090E34',
       dark: '#1D2144',
       primary: '#4A6CF7',

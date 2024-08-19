@@ -1,7 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import ThemeToggler from './ThemeToggler'
 import menuData from './menuData'
@@ -9,12 +10,15 @@ import SubHeader from './SubHeader'
 import ConnectButton from '@/contexts/ConnectButton'
 import { useAccount } from 'wagmi'
 import { useAcoUtils } from '../Hooks/useAcoUtils'
+import { AccountContext } from '@/contexts/AccountContext'
 
 const Header = () => {
   const pathName = usePathname()
   const { address, chain } = useAccount()
   const { checkAndSetAcoUserExists } = useAcoUtils()
   const [acoUserExist, setAcoUserExist] = useState<boolean>(true)
+
+  const { acoUser, setAcoUser } = useContext(AccountContext)
 
   // Navbar toggle
   const [navbarOpen, setNavbarOpen] = useState(false)
@@ -47,7 +51,9 @@ const Header = () => {
 
   async function getAcoUser(address: string) {
     const userExists = await checkAndSetAcoUserExists(address)
-    setAcoUserExist(userExists)
+    if (userExists) {
+      setAcoUser({ address })
+    }
   }
 
   useEffect(() => {
@@ -181,7 +187,16 @@ const Header = () => {
                 {/* <div className="cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-white hover:bg-[#3A51B0]">
                   Connect wallet
                 </div> */}
-                {address && !acoUserExist && <div>Create Aco User</div>}
+                {address && !acoUserExist && (
+                  <div className="flex cursor-pointer items-center gap-x-1 rounded-md border-[1px] border-[#d84c4c] px-2 py-1 hover:bg-[#2a2a2cb7]">
+                    <img
+                      alt="img"
+                      src="/images/attention.svg"
+                      className="w-[13px]"
+                    ></img>
+                    <div className=" text-sm text-red">Create user</div>
+                  </div>
+                )}
                 <div className="mx-auto flex">
                   <ConnectButton />
                 </div>

@@ -19,13 +19,19 @@ export function useAcoUtils() {
     const { acoUsers } = parseCookies()
     const parsedAcoUsers = acoUsers ? JSON.parse(acoUsers) : []
 
+    console.log('parsedAcoUsers')
+    console.log(parsedAcoUsers)
+
+    if (parsedAcoUsers.includes(address)) {
+      return true
+    }
+
     try {
       const res = await callAxiosBackend(
         'get',
         `/blockchain/depin/functions/acoUserExistIC?address=${address}`,
         'userSessionToken',
       )
-      console.log('res qyue recebi')
       console.log(res)
 
       if (res?.res === true) {

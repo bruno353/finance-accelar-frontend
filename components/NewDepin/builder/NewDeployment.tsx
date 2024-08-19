@@ -22,6 +22,7 @@ import {
   formatDate,
   formatTokenPrice,
   transformString,
+  wait,
 } from '@/utils/functions'
 import { LLMAppProps } from '@/types/llm'
 import {
@@ -45,6 +46,11 @@ import { Abi } from 'viem'
 import { depinABI } from '@/types/consts/depinABI'
 import { parseEther } from 'ethers'
 import { networkToNetworkRPC } from '@/components/BlockchainWallets/BlockchainWallet.tsx/BlockchainWalletPage'
+import CreateACOUserOnboarding from '@/components/Modals/CreateACOUserOnboarding'
+import {
+  chainToCopy,
+  contractAddress,
+} from '@/blockchain/utils/chainToMetaData'
 
 export interface ModalI {
   onUpdate(): void
@@ -66,6 +72,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
   const [selectedNetwork, setSelectedNetwork] = useState<ValueObject>(
     depinOptionsNetwork[0],
   )
+  const { acoUser, acoChain } = useContext(AccountContext)
 
   const [isConfirmTransactionOpen, setIsConfirmTransactionOpen] =
     useState<any>(false)
@@ -88,7 +95,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
   >([])
 
   const [walletProvider, setWalletProvider] = useState<TypeWalletProvider>(
-    TypeWalletProvider.ACCELAR,
+    TypeWalletProvider.EVM,
   )
 
   const { workspace, user, isDeployingNewDepinFeature } =
@@ -236,8 +243,16 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
         'userSessionToken',
         dataApi,
       )
+      console.log('passei resd data')
+      console.log(resData)
       const url = `https://api.accelar.io/blockchain/depin/functions/getSdlByDeploymentId?id=${resData?.id}`
       const bidAmountWei = parseEther(bidAmount)
+      console.log(String(bidAmountWei))
+      console.log(url)
+      console.log(addressTointeract)
+      console.log(contractAddress)
+      console.log(chain)
+
       const res = await write(
         'createDeployment',
         [
@@ -248,15 +263,30 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
         depinABI as Abi,
         chain,
         addressTointeract,
-        '0xa6397f6DE4948C3F55ffd11Df5DDAF0F9Dfc7d80',
+        contractAddress,
         String(bidAmountWei),
       )
+      console.log('A resss')
+      console.log(res)
+      const dataDeployment = {
+        name: deploymentName,
+        evmHash: address,
+        evmAddress: res?.transactionHash,
+      }
+      const resData2 = await callAxiosBackend(
+        'post',
+        '/blockchain/depin/functions/storeDeployment',
+        'userSessionToken',
+        dataDeployment,
+      )
+      await wait(3000)
+      push('/feats/depin')
       onUpdate()
       setIsLoading(false)
     } catch (err) {
       console.log(err)
       console.log('Error: ' + err?.response?.data?.message)
-      toast.error('error: ', err)
+      toast.error('Error, check if your address has enough balance')
       setIsLoading(false)
     }
   }
@@ -356,6 +386,16 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
     return () => clearInterval(intervalId)
   }, [isDeployingNewDepinFeature])
 
+  if (!acoUser) {
+    return (
+      <CreateACOUserOnboarding
+        onUpdateM={() => {
+          console.log('update')
+        }}
+      />
+    )
+  }
+
   if (isDeployed) {
     return (
       <div className="text-center text-[24px] font-medium text-white">
@@ -382,97 +422,109 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
   }
 
   return (
-    <div className="text-[14px] text-[#C5C4C4]">
-      <div className=" text-[14px] font-normal">
-        <div className="grid gap-y-[25px]">
-          <div className="flex items-center gap-x-4">
-            <div className="text-xl 2xl:text-2xl">New deployment</div>
+    <div className="relative grid gap-y-[25px] text-[14px] font-normal text-[#C5C4C4]">
+      <div className="absolute -right-16 top-56 z-[-1] rotate-180 opacity-20">
+        <img src="/images/video/shape.svg" alt="shape" className="w-full" />
+      </div>
+
+      <div className="flex justify-center gap-x-20 pb-4 pt-16">
+        <div className="w-[50%]">
+          <div className="relative mb-6">
+            <div className="absolute -top-16 flex items-center gap-x-4">
+              <div className="text-2xl  text-white">New deployment</div>
+            </div>
+            <label
+              htmlFor="workspaceName"
+              className="mb-2 block text-[14px] text-[#C5C4C4]"
+            >
+              Name*
+            </label>
+            <input
+              type="text"
+              maxLength={50}
+              id="workspaceName"
+              name="workspaceName"
+              value={deploymentName}
+              onChange={handleInputChangeName}
+              className="w-[400px] rounded-md border border-transparent px-6 py-1 text-base text-body-color placeholder-body-color  outline-none focus:border-primary  dark:bg-[#242B51]"
+            />
+          </div>{' '}
+          <div className="mb-6">
+            <label
+              htmlFor="workspaceName"
+              className="mb-2 block text-[14px] text-[#C5C4C4]"
+            >
+              Feature
+            </label>
+            <div className="text-base">
+              <Dropdown
+                optionSelected={selectedFeature}
+                options={depinOptionsFeatures}
+                onValueChange={(value) => {
+                  setSelectedFeature(value)
+                }}
+                classNameForDropdown="!min-w-[150px] !px-3 !py-1 !w-fit"
+                classNameForPopUp="!px-3"
+              />
+            </div>
           </div>
-          <div className="overflow-y-auto pb-4 scrollbar-thin scrollbar-track-[#1D2144] scrollbar-thumb-[#c5c4c4] scrollbar-track-rounded-md scrollbar-thumb-rounded-md 2xl:h-[calc(100vh-23rem)] 2xl:max-h-[calc(100vh-23rem)]">
-            <div className="flex gap-x-20">
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="workspaceName"
+                className="mb-2 block text-[14px] text-[#C5C4C4]"
+              >
+                SDL*
+              </label>
+              <a
+                href="https://console.akash.network/templates"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <div className="cursor-pointer text-[14px] text-blue hover:text-hoverBlue">
+                  Templates
+                </div>
+              </a>
+            </div>
+            <textarea
+              onChange={(e) => {
+                setSDLValue(e.target.value)
+              }}
+              className="h-[130px] w-full rounded-md border border-transparent px-6 py-2 text-sm text-white placeholder-body-color outline-none focus:border-primary  dark:bg-[#242B51] 2xl:h-[230px]"
+            >
+              {' '}
+            </textarea>{' '}
+          </div>
+          <div className="mb-2 flex gap-x-2">
+            <div className="">Estimated price:</div>
+            {tokenPrice === 'loading' ? (
+              <div className="h-5 w-32 animate-pulse rounded-[5px] bg-[#1d2144b0]"></div>
+            ) : (
               <div>
-                <div className="mb-6">
-                  <label
-                    htmlFor="workspaceName"
-                    className="mb-2 block text-[14px] text-[#C5C4C4]"
-                  >
-                    Name*
-                  </label>
-                  <input
-                    type="text"
-                    maxLength={50}
-                    id="workspaceName"
-                    name="workspaceName"
-                    value={deploymentName}
-                    onChange={handleInputChangeName}
-                    className="w-[400px] rounded-md border border-transparent px-6 py-1 text-base text-body-color placeholder-body-color  outline-none focus:border-primary  dark:bg-[#242B51]"
-                  />
-                </div>{' '}
-                <div className="mb-6">
-                  <label
-                    htmlFor="workspaceName"
-                    className="mb-2 block text-[14px] text-[#C5C4C4]"
-                  >
-                    Feature
-                  </label>
-                  <div className="text-base">
-                    <Dropdown
-                      optionSelected={selectedFeature}
-                      options={depinOptionsFeatures}
-                      onValueChange={(value) => {
-                        setSelectedFeature(value)
-                      }}
-                      classNameForDropdown="!min-w-[150px] !px-3 !py-1 !w-fit"
-                      classNameForPopUp="!px-3"
-                    />
-                  </div>
-                </div>
-                <div className="mb-6">
-                  <label
-                    htmlFor="workspaceName"
-                    className="mb-2 block text-[14px] text-[#C5C4C4]"
-                  >
-                    SDL*
-                  </label>
-                  <textarea
-                    onChange={(e) => {
-                      setSDLValue(e.target.value)
-                    }}
-                    className="h-[130px] w-[600px] rounded-md border border-transparent px-6 py-2 text-sm text-white placeholder-body-color outline-none  focus:border-primary dark:bg-[#242B51]"
-                  >
-                    {' '}
-                  </textarea>{' '}
-                </div>
-                <div className="mb-2 flex gap-x-2">
-                  <div className="">Estimated price:</div>
-                  {tokenPrice === 'loading' ? (
-                    <div className="h-5 w-32 animate-pulse rounded-[5px] bg-[#1d2144b0]"></div>
-                  ) : (
-                    <div>
-                      ~ {selectedNetwork?.value2} {tokenPrice}
-                    </div>
-                  )}
-                </div>
-                <div className="mb-6">
-                  <label
-                    htmlFor="workspaceName"
-                    className="mb-2 block text-[14px] text-[#C5C4C4]"
-                  >
-                    Amount to bid* ({selectedNetwork?.value2})
-                  </label>
-                  <input
-                    type="text"
-                    maxLength={50}
-                    id="workspaceName"
-                    name="workspaceName"
-                    value={bidAmount}
-                    onChange={handleInputBidAmount}
-                    className="w-[400px] rounded-md border border-transparent px-6 py-1 text-base text-body-color placeholder-body-color  outline-none focus:border-primary  dark:bg-[#242B51]"
-                  />
-                </div>{' '}
-                <div className="relative mt-10 w-[320px]">
-                  <div
-                    className={`
+                ~ {selectedNetwork?.value2} {tokenPrice}
+              </div>
+            )}
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="workspaceName"
+              className="mb-2 block text-[14px] text-[#C5C4C4]"
+            >
+              Amount to bid* ({selectedNetwork?.value2})
+            </label>
+            <input
+              type="text"
+              maxLength={50}
+              id="workspaceName"
+              name="workspaceName"
+              value={bidAmount}
+              onChange={handleInputBidAmount}
+              className="w-[400px] rounded-md border border-transparent px-6 py-1 text-base text-body-color placeholder-body-color  outline-none focus:border-primary  dark:bg-[#242B51]"
+            />
+          </div>{' '}
+          <div className="relative mt-10 w-[320px]">
+            <div
+              className={`
                 ${
                   formChecks()
                     ? `${
@@ -483,149 +535,127 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
                     : `!cursor-auto !bg-[#4f5b9bbb]`
                 } w-fit rounded-[5px] bg-[#273687] p-[4px] px-[15px] text-[14px] text-[#fff]
                  `}
-                    onClick={() => {
-                      if (!isLoading && formChecks()) {
-                        handleCreateDeployment()
-                      }
-                    }}
-                  >
-                    Create Deployment
-                  </div>
-                  {isConfirmTransactionOpen && (
-                    <div
-                      ref={confirmTransactionRef}
-                      className="absolute right-0 top-0 w-fit -translate-y-[100%] translate-x-[50%]"
-                    >
-                      <ConfirmGenericTransaction
-                        description="You are going to create a deployment order request"
-                        onConfirmTransaction={() => {
-                          handleCreateDeployment()
-                          setIsConfirmTransactionOpen(false)
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
+              onClick={() => {
+                if (!isLoading && formChecks()) {
+                  handleCreateDeployment()
+                }
+              }}
+            >
+              Create Deployment
+            </div>
+            {isConfirmTransactionOpen && (
+              <div
+                ref={confirmTransactionRef}
+                className="absolute right-0 top-0 w-fit -translate-y-[100%] translate-x-[50%]"
+              >
+                <ConfirmGenericTransaction
+                  description="You are going to create a deployment order request"
+                  onConfirmTransaction={() => {
+                    handleCreateDeployment()
+                    setIsConfirmTransactionOpen(false)
+                  }}
+                />
               </div>
+            )}
+          </div>
+        </div>
+        <div>
+          <div className="mb-6">
+            <label
+              htmlFor="workspaceName"
+              className="mb-2 block text-[14px] text-[#C5C4C4]"
+            >
+              Wallet provider*
+            </label>
+            <div className="mb-3 mt-1 flex h-fit w-fit gap-x-[1px] rounded-xl bg-[#242B51] px-1 py-1">
+              <div
+                onClick={() => {
+                  setSelectedPaymentMethod(depinPaymentMethodsEVM[0])
+                  setWalletProvider(TypeWalletProvider.EVM)
+                }}
+                className={`cursor-pointer rounded-xl px-2 py-1 ${
+                  walletProvider === TypeWalletProvider.EVM && 'bg-[#dbdbdb1e]'
+                }`}
+              >
+                Metamask
+              </div>
+              <div
+                onClick={() => {
+                  setWalletProvider(TypeWalletProvider.ACCELAR)
+                  getWallets()
+                }}
+                className={`cursor-pointer rounded-xl px-2 py-1 ${
+                  walletProvider === TypeWalletProvider.ACCELAR &&
+                  'bg-[#dbdbdb1e]'
+                }`}
+              >
+                Accelar
+              </div>
+            </div>
+            {walletProvider === TypeWalletProvider.ACCELAR && (
               <div>
-                <div className="mb-6">
-                  <label
-                    htmlFor="workspaceName"
-                    className="mb-2 block text-[14px] text-[#C5C4C4]"
-                  >
-                    Wallet provider*
-                  </label>
-                  <div className="mb-3 mt-1 flex h-fit w-fit gap-x-[1px] rounded-xl bg-[#242B51] px-1 py-1">
-                    <div
-                      onClick={() => {
-                        setWalletProvider(TypeWalletProvider.ACCELAR)
-                        getWallets()
-                      }}
-                      className={`cursor-pointer rounded-xl px-2 py-1 ${
-                        walletProvider === TypeWalletProvider.ACCELAR &&
-                        'bg-[#dbdbdb1e]'
-                      }`}
-                    >
-                      Accelar
-                    </div>
-                    <div
-                      onClick={() => {
-                        setSelectedPaymentMethod(depinPaymentMethodsEVM[0])
-                        setWalletProvider(TypeWalletProvider.EVM)
-                      }}
-                      className={`cursor-pointer rounded-xl px-2 py-1 ${
-                        walletProvider === TypeWalletProvider.EVM &&
-                        'bg-[#dbdbdb1e]'
-                      }`}
-                    >
-                      Metamask
-                    </div>
-                  </div>
-                  {walletProvider === TypeWalletProvider.ACCELAR && (
-                    <div>
-                      {isLoadingWallets ? (
-                        <div className="mb-2 flex h-[25px] w-[150px] animate-pulse rounded-md bg-[#dbdbdb1e]"></div>
-                      ) : (
-                        <>
-                          <label className="flex w-fit items-center gap-x-1 text-[#FE886D]">
-                            Not available
-                          </label>
-                          {blockchainWalletsSelected && (
-                            <div className="mt-2 text-[12px] text-[#c5c4c4]">
-                              {' '}
-                              Balance:{' '}
-                              {
-                                blockchainWallets?.find(
-                                  (obj) =>
-                                    obj.id === blockchainWalletsSelected.value,
-                                )?.balance
-                              }
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  )}
-                  {walletProvider === TypeWalletProvider.EVM && (
-                    <div className="flex gap-x-2">
-                      <div className="">
-                        <ConnectButton />
+                {isLoadingWallets ? (
+                  <div className="mb-2 flex h-[25px] w-[150px] animate-pulse rounded-md bg-[#dbdbdb1e]"></div>
+                ) : (
+                  <>
+                    <label className="flex w-fit items-center gap-x-1 text-[#FE886D]">
+                      Not available
+                    </label>
+                    {blockchainWalletsSelected && (
+                      <div className="mt-2 text-[12px] text-[#c5c4c4]">
+                        {' '}
+                        Balance:{' '}
+                        {
+                          blockchainWallets?.find(
+                            (obj) => obj.id === blockchainWalletsSelected.value,
+                          )?.balance
+                        }
                       </div>
-                      <div>
-                        {address && chain?.id !== 252 && (
-                          <div className="text-[#c22336]">
-                            * Change network to Crossfi
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+            {walletProvider === TypeWalletProvider.EVM && (
+              <div className="flex gap-x-2">
+                <div className="">
+                  <ConnectButton />
                 </div>
-                <div className="mb-6">
-                  <label
-                    htmlFor="workspaceName"
-                    className="mb-2 block text-[14px] text-[#C5C4C4]"
-                  >
-                    Payment method
-                  </label>
-                  <div className="text-base">
-                    <Dropdown
-                      optionSelected={selectedPaymentMethod}
-                      options={
-                        walletProvider === TypeWalletProvider.ACCELAR
-                          ? depinPaymentMethodsAccelar
-                          : depinPaymentMethodsEVM
-                      }
-                      onValueChange={(value) => {
-                        setSelectedPaymentMethod(value)
-                      }}
-                      classNameForDropdown="!min-w-[280px] !px-2 !py-1 !w-fit"
-                      classNameForPopUp="!px-3"
-                    />
-                  </div>
+                <div>
+                  {address && chain?.id !== chainToCopy[acoChain]?.chainId && (
+                    <div className="text-[#c22336]">
+                      * Change network to {chainToCopy[acoChain]?.name}
+                    </div>
+                  )}
                 </div>
               </div>
+            )}
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="workspaceName"
+              className="mb-2 block text-[14px] text-[#C5C4C4]"
+            >
+              Payment method
+            </label>
+            <div className="text-base">
+              <Dropdown
+                optionSelected={selectedPaymentMethod}
+                options={
+                  walletProvider === TypeWalletProvider.ACCELAR
+                    ? depinPaymentMethodsAccelar
+                    : depinPaymentMethodsEVM
+                }
+                onValueChange={(value) => {
+                  setSelectedPaymentMethod(value)
+                }}
+                classNameForDropdown="!min-w-[280px] !px-2 !py-1 !w-fit"
+                classNameForPopUp="!px-3"
+              />
             </div>
           </div>
         </div>
       </div>
-      {/* {isEditAppOpen && (
-        <EditWorkflowModal
-          isOpen={isEditAppOpen}
-          onClose={() => {
-            setIsEditAppOpen(false)
-          }}
-          onUpdateM={() => {
-            onUpdate()
-            setIsEditAppOpen(false)
-          }}
-          app={apps.find((app) => app.id === isEditAppOpen)}
-          onDelete={() => {
-            onUpdate()
-            setIsEditAppOpen(false)
-          }}
-        />
-      )} */}
     </div>
   )
 }

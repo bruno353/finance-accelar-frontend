@@ -34,6 +34,18 @@ export interface LeasesProps {
   lease: any
   escrow_payment?: any
 }
+
+export interface FakeDepinProps {
+  dseq: any
+  balance?: any
+  cpu?: any
+  gpu?: any
+  ram?: any
+  mb?: any
+  rate?: any
+  blockHeight?: any
+  loading?: boolean
+}
 // example of lease:
 /*
 "lease": {

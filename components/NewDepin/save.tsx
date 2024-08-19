@@ -158,7 +158,7 @@ const MainPage = ({ id }) => {
   useEffect(() => {
     setIsLoading(true)
     getData()
-  }, [address])
+  }, [])
 
   if (isLoading) {
     return (
@@ -167,9 +167,6 @@ const MainPage = ({ id }) => {
         <div className="h-40 w-full animate-pulse rounded-[5px] bg-[#1d1f23b6]"></div>
       </div>
     )
-  }
-
-  if (newDepins?.length === 0) {
   }
 
   return (
@@ -196,100 +193,119 @@ const MainPage = ({ id }) => {
               <div className="w-full max-w-[10%]">Block height</div>
             </div>
           </div>
-          {newDepins?.map((app, index) => (
-            <div key={index}>
-              {app?.loading ? (
-                <div
-                  onClick={(event) => {
-                    push(`/feats/depin/${app?.dseq}`)
-                  }}
-                  key={index}
-                  className={`flex items-center  ${
-                    index !== depins?.length - 1 &&
-                    'border-b-[1px] border-[#c5c4c41a]'
-                  } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray hover:bg-[#7775840c]`}
-                >
-                  <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    {app?.dseq}
-                  </div>
-                  <div className="ml-24">Deploying...</div>
-                </div>
-              ) : (
-                <div
-                  onClick={(event) => {
-                    push(`/feats/depin/${app?.dseq}`)
-                  }}
-                  key={index}
-                  className={`flex items-center  ${
-                    index !== depins?.length - 1 &&
-                    'border-b-[1px] border-[#c5c4c41a]'
-                  } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray hover:bg-[#7775840c]`}
-                >
-                  <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    {app?.dseq}
-                  </div>
-                  <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    <div className="relative grid w-fit gap-y-1 rounded-md border-[1px] border-[#c9c9cb49] px-5 py-2 text-xs">
-                      <div className="flex items-center gap-x-1">
-                        <img
-                          alt="image"
-                          src="/images/explore/cpu.svg"
-                          className="w-3"
-                        />
-                        <div>{app?.cpu} cpu</div>
-                      </div>
-                      <div className="flex items-center gap-x-1">
-                        <img
-                          alt="image"
-                          src="/images/explore/storage.svg"
-                          className="w-3"
-                        />
-                        <div>{app?.mb} mb</div>
-                      </div>
-                      <div className="flex items-center gap-x-1">
-                        <img
-                          alt="image"
-                          src="/images/explore/memory.svg"
-                          className="w-3"
-                        />
-                        <div>{app?.ram} mb</div>
-                      </div>
-                      <div className="absolute right-1 top-1 h-1 w-1 animate-pulse rounded-full bg-[#6FD572]"></div>
+          {depins?.map((app, index) => (
+            <div
+              onClick={(event) => {
+                push(`/feats/depin/${app?.deployment?.deployment_id.dseq}`)
+              }}
+              key={index}
+              className={`flex items-center  ${
+                index !== depins?.length - 1 &&
+                'border-b-[1px] border-[#c5c4c41a]'
+              } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray hover:bg-[#7775840c]`}
+            >
+              <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                {app?.deployment?.deployment_id.dseq}
+              </div>
+              <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                <div className="relative grid w-fit gap-y-1 rounded-md border-[1px] border-[#c9c9cb49] px-5 py-2 text-xs">
+                  <div className="flex items-center gap-x-1">
+                    <img
+                      alt="image"
+                      src="/images/explore/cpu.svg"
+                      className="w-3"
+                    />
+                    <div>
+                      {(
+                        Number(
+                          app?.groups[0]?.group_spec?.resources[0]?.resource
+                            ?.cpu?.units?.val,
+                        ) /
+                        10 ** 3
+                      ).toFixed(1)}{' '}
+                      cpu
                     </div>
                   </div>
-                  <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    AKT {app?.balance}
+                  <div className="flex items-center gap-x-1">
+                    <img
+                      alt="image"
+                      src="/images/explore/storage.svg"
+                      className="w-3"
+                    />
+                    <div>
+                      {(
+                        Number(
+                          app?.groups[0]?.group_spec?.resources[0]?.resource
+                            ?.storage[0]?.quantity?.val,
+                        ) /
+                        10 ** 6
+                      ).toFixed(0)}{' '}
+                      mb
+                    </div>
                   </div>
-                  <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    USD {app?.rate} / month
+                  <div className="flex items-center gap-x-1">
+                    <img
+                      alt="image"
+                      src="/images/explore/memory.svg"
+                      className="w-3"
+                    />
+                    <div>
+                      {(
+                        Number(
+                          app?.groups[0]?.group_spec?.resources[0]?.resource
+                            ?.memory?.quantity?.val,
+                        ) /
+                        10 ** 6
+                      ).toFixed(0)}{' '}
+                      mb
+                    </div>
                   </div>
-                  <div className="w-full max-w-[10%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    {app?.blockHeight}
-                  </div>
-                  <div className="ml-auto w-full max-w-[10%]">
-                    {' '}
-                    {/* {isEditInfoOpen === app.id && (
-                                          <div className="absolute flex w-fit -translate-x-[50%]   -translate-y-[100%]   items-center rounded-[6px]  bg-[#060621]  px-[10px] py-[5px] text-center">
-                                            Edit workflow
-                                          </div>
-                                        )}
-                                        {isUserAdmin && (
-                                          <img
-                                            ref={editRef}
-                                            alt="ethereum avatar"
-                                            src="/images/chat/pencil.svg"
-                                            className="w-[15px] cursor-pointer 2xl:w-[25px]"
-                                            onMouseEnter={() => setIsEditInfoOpen(app.id)}
-                                            onMouseLeave={() => setIsEditInfoOpen(null)}
-                                            onClick={(event) => {
-                                              event.stopPropagation()
-                                              setIsEditAppOpen(app.id)
-                                            }}
-                                          ></img>
-                                        )} */}
-                  </div>
+                  <div className="absolute right-1 top-1 h-1 w-1 animate-pulse rounded-full bg-[#6FD572]"></div>
                 </div>
-              )}
+              </div>
+              <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                AKT{' '}
+                {(
+                  Number(app?.escrow_account?.balance?.amount) /
+                  10 ** 6
+                )?.toFixed(2)}
+              </div>
+              <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                USD{' '}
+                {Number(
+                  leases?.find(
+                    (ls) =>
+                      ls?.lease?.lease_id?.dseq ===
+                      app?.deployment?.deployment_id?.dseq,
+                  )?.escrow_payment?.rate?.amount,
+                )?.toFixed(2)}{' '}
+                / month
+              </div>
+              <div className="w-full max-w-[10%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                {app?.deployment?.created_at}
+              </div>
+              <div className="ml-auto w-full max-w-[10%]">
+                {' '}
+                {/* {isEditInfoOpen === app.id && (
+                          <div className="absolute flex w-fit -translate-x-[50%]   -translate-y-[100%]   items-center rounded-[6px]  bg-[#060621]  px-[10px] py-[5px] text-center">
+                            Edit workflow
+                          </div>
+                        )}
+                        {isUserAdmin && (
+                          <img
+                            ref={editRef}
+                            alt="ethereum avatar"
+                            src="/images/chat/pencil.svg"
+                            className="w-[15px] cursor-pointer 2xl:w-[25px]"
+                            onMouseEnter={() => setIsEditInfoOpen(app.id)}
+                            onMouseLeave={() => setIsEditInfoOpen(null)}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              setIsEditAppOpen(app.id)
+                            }}
+                          ></img>
+                        )} */}
+              </div>
             </div>
           ))}
         </div>

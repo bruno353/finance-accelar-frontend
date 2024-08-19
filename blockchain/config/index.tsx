@@ -50,6 +50,29 @@ const fraxtalMainnet = {
   testnet: false,
 }
 
+const coreDaoBTC = {
+  id: 1115,
+  name: 'Core DAO',
+  network: 'Core Blockchain Testnet',
+  nativeCurrency: {
+    name: 'tCORE',
+    symbol: 'tCORE',
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.test.btcs.network'],
+    },
+    public: {
+      http: ['https://rpc.test.btcs.network'],
+    },
+  },
+  blockExplorers: {
+    default: { name: 'CoreScan', url: 'https://scan.coredao.org' },
+  },
+  testnet: true,
+}
+
 const opSepolia = {
   id: 11155420,
   name: 'OP Sepolia',
@@ -86,11 +109,12 @@ const metadata = {
 }
 
 export const wagmiConfig = defaultWagmiConfig({
-  chains: [fraxtalMainnet, crossfiTestnet, opSepolia, holesky], // required
+  chains: [coreDaoBTC, opSepolia], // required
   projectId, // required
   metadata, // required
   ssr: true,
   transports: {
+    [coreDaoBTC.id]: http('https://rpc.test.btcs.network'),
     [fraxtalMainnet.id]: http('https://rpc.frax.com'),
     [crossfiTestnet.id]: http('https://rpc.testnet.ms'),
     [opSepolia.id]: http('https://sepolia.optimism.io'),

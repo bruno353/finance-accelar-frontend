@@ -13,6 +13,10 @@ export interface UserProps {
   WorkspaceInvite: WorkspaceInviteProps[]
 }
 
+export interface AcoUserProps {
+  address: string
+}
+
 export type SignupForm = {
   email: string
   password: string

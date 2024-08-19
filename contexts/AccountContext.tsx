@@ -1,7 +1,7 @@
 import { AutomationWorkflowProps } from '@/types/automation'
 import { NetworkIDE } from '@/types/blockchain-app'
 import { ChannelProps, ConversationProps } from '@/types/chat'
-import { UserProps } from '@/types/user'
+import { AcoUserProps, UserProps } from '@/types/user'
 import { WorkspaceProps } from '@/types/workspace'
 import React, { createContext, useState } from 'react'
 
@@ -10,8 +10,14 @@ interface CreateContextProps {
 }
 
 interface CreateUserContextProps {
+  acoChain: string | undefined
+  setAcoChain: (acoChain: string | undefined) => void
+
   user: UserProps | undefined
   setUser: (user: UserProps | undefined) => void
+
+  acoUser: AcoUserProps | undefined
+  setAcoUser: (acoUser: AcoUserProps | undefined) => void
 
   channels: ChannelProps[] | undefined
   setChannels: (channels: ChannelProps[] | undefined) => void
@@ -66,6 +72,8 @@ export default function AccountContextProvider({
   children,
 }: CreateContextProps) {
   const [user, setUser] = useState<UserProps>()
+  const [acoUser, setAcoUser] = useState<AcoUserProps>()
+  const [acoChain, setAcoChain] = useState<string>('Core DAO')
   const [channels, setChannels] = useState<ChannelProps[]>()
   const [minimize, setMinimize] = useState<boolean>(false)
   const [isDeployingNewDepinFeature, setIsDeployingNewDepingFeature] =
@@ -89,8 +97,12 @@ export default function AccountContextProvider({
   return (
     <AccountContext.Provider
       value={{
+        setAcoChain,
+        acoChain,
         user,
         setUser,
+        acoUser,
+        setAcoUser,
         isDeployingNewDepinFeature,
         setIsDeployingNewDepingFeature,
         ideChain,
