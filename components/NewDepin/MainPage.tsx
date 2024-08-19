@@ -275,7 +275,7 @@ const MainPage = ({ id }) => {
                           src="/images/explore/cpu.svg"
                           className="w-3"
                         />
-                        <div>{app?.cpu} cpu</div>
+                        <div>0.5 cpu</div>
                       </div>
                       <div className="flex items-center gap-x-1">
                         <img
@@ -283,7 +283,7 @@ const MainPage = ({ id }) => {
                           src="/images/explore/storage.svg"
                           className="w-3"
                         />
-                        <div>{app?.mb} mb</div>
+                        <div>537 mb</div>
                       </div>
                       <div className="flex items-center gap-x-1">
                         <img
@@ -291,7 +291,7 @@ const MainPage = ({ id }) => {
                           src="/images/explore/memory.svg"
                           className="w-3"
                         />
-                        <div>{app?.ram} mb</div>
+                        <div>537 mb</div>
                       </div>
                       <div className="absolute right-1 top-1 h-1 w-1 animate-pulse rounded-full bg-[#6FD572]"></div>
                     </div>
