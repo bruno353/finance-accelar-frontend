@@ -300,7 +300,7 @@ const MainPage = ({ id }) => {
                     AKT {app?.balance}
                   </div>
                   <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    USD {app?.rate} / month
+                    USD 620 / month
                   </div>
                   <div className="w-full max-w-[10%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
                     {app?.blockHeight}
