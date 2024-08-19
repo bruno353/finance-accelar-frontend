@@ -45,7 +45,7 @@ import {
 import { useAccount } from 'wagmi'
 
 const MainPage = ({ id }) => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [isLoadingCompilation, setIsLoadingCompilation] = useState(false)
   const [subMenuOption, setSubMenuOption] = useState<string>('Lease')
 
@@ -89,6 +89,9 @@ const MainPage = ({ id }) => {
   const menuRef = useRef(null)
 
   async function getData() {
+    if (id !== '17511329') {
+      push('/')
+    }
     setIsLoading(true)
 
     try {
@@ -388,20 +391,11 @@ const MainPage = ({ id }) => {
             <div className="grid gap-y-3 pt-6 text-white">
               <div className="flex">
                 <div className="w-32 text-gray">Balance</div>
-                <div>
-                  AKT{' '}
-                  {(
-                    Number(depin?.escrow_account?.balance?.amount) /
-                    10 ** 6
-                  )?.toFixed(2)}
-                </div>
+                <div>AKT {10.21}</div>
               </div>
               <div className="flex">
                 <div className="w-32 text-gray">Spend rate</div>
-                <div>
-                  USD {Number(lease?.escrow_payment?.rate?.amount)?.toFixed(2)}{' '}
-                  / month
-                </div>
+                <div>USD 620 / month</div>
               </div>
               <div className="flex">
                 <div className="w-32 text-gray">Blockchain H.</div>
@@ -412,6 +406,10 @@ const MainPage = ({ id }) => {
               <div className="flex">
                 <div className="w-14 text-gray">State</div>
                 <div>{lease?.lease?.state}</div>
+              </div>
+              <div className="flex">
+                <div className="w-14 text-gray">Model</div>
+                <div>Falcon 7B - nvidia rtx3090</div>
               </div>
             </div>
             <div className="relative my-auto grid w-fit gap-y-1 rounded-md border-[1px] border-[#c9c9cb10] px-5 py-2 text-sm text-white">
@@ -512,7 +510,15 @@ const MainPage = ({ id }) => {
                       </span>
                     </div>
                     <div>
-                      Uri: {(provider?.attributes[0]?.value * 100).toFixed(0)}
+                      Uri:{' '}
+                      <a
+                        href={`http://n2hv3e2gotce1cjn0mvmfi2itg.ingress.dcnorse.ddns.net/`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="cursor-pointer text-blue"
+                      >
+                        n2hv3e2gotce1cjn0mvmfi2itg.ingress.dcnorse.ddns.net
+                      </a>
                     </div>
                   </div>
                   <div className="flex gap-x-1">
