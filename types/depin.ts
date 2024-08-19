@@ -36,7 +36,8 @@ export interface LeasesProps {
 }
 
 export interface FakeDepinProps {
-  dseq: any
+  dseq?: any
+  name?: any
   balance?: any
   cpu?: any
   gpu?: any
@@ -45,6 +46,9 @@ export interface FakeDepinProps {
   rate?: any
   blockHeight?: any
   loading?: boolean
+  evmHash?: any
+  evmAddress?: any
+  akashHash?: any
 }
 // example of lease:
 /*

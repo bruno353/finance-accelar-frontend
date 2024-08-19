@@ -46,7 +46,7 @@ import LottiePlayer from 'react-lottie-player'
 import { useAccount } from 'wagmi'
 
 const MainPage = ({ id }) => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [isLoadingCompilation, setIsLoadingCompilation] = useState(false)
   const [isInfoBalanceOpen, setIsInfoBalanceOpen] = useState(false)
   const [value, setValue] = useState('// start your code here')
@@ -135,28 +135,32 @@ const MainPage = ({ id }) => {
 
   async function getData() {
     setIsLoading(true)
+    if (address) {
+      try {
+        // getting deployments
+        const resData2 = await callAxiosBackend(
+          'get',
+          `/blockchain/depin/functions/getDeployments?address=${address}`,
+          'userSessionToken',
+        )
 
-    try {
-      // getting deployments
-      const resData2 = await callAxiosBackend(
-        'post',
-        `/blockchain/depin/functions/getDeployments?address=${address}`,
-        'userSessionToken',
-      )
+        setNewDepins(resData2) //
 
-      setNewDepins(resData2) //
-
-      // getting leases
-    } catch (err) {
-      console.log(err)
-      toast.error(`Error: ${err.response.data.message}`)
+        // getting leases
+      } catch (err) {
+        console.log(err)
+        toast.error(`Error: ${err.response.data.message}`)
+      }
     }
 
     setIsLoading(false)
   }
 
   useEffect(() => {
-    setIsLoading(true)
+    getData()
+  }, [])
+
+  useEffect(() => {
     getData()
   }, [address])
 
@@ -170,6 +174,34 @@ const MainPage = ({ id }) => {
   }
 
   if (newDepins?.length === 0) {
+    return (
+      <>
+        <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 text-center lg:pt-40">
+          <div className="mx-auto w-[300px]">
+            <LottiePlayer
+              loop
+              animationData={require('./mo.json')}
+              play
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+          <div className="text-2xl text-white 2xl:text-2xl">
+            No deployments found
+          </div>
+          <div
+            onClick={() => {
+              push('/feats/depin/builder')
+            }}
+            className={`${
+              isLoading &&
+              '!hover:bg-current animate-pulse !cursor-auto !bg-[#4765eaad]'
+            } mx-auto mt-10 max-w-[200px] cursor-pointer rounded-md bg-[#4766EA] px-3 py-1 text-white hover:bg-[#3A51B0]`}
+          >
+            Create first deployment
+          </div>
+        </section>
+      </>
+    )
   }
 
   return (
@@ -200,19 +232,26 @@ const MainPage = ({ id }) => {
             <div key={index}>
               {app?.loading ? (
                 <div
-                  onClick={(event) => {
-                    push(`/feats/depin/${app?.dseq}`)
-                  }}
                   key={index}
                   className={`flex items-center  ${
                     index !== depins?.length - 1 &&
                     'border-b-[1px] border-[#c5c4c41a]'
-                  } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray hover:bg-[#7775840c]`}
+                  } cursor-auto gap-x-[2px] px-[15px] py-[35px] text-[15px] font-normal text-gray`}
                 >
                   <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    {app?.dseq}
+                    {app?.name}
                   </div>
-                  <div className="ml-24">Deploying...</div>
+                  <div className="ml-5">
+                    Deploying:{' '}
+                    <a
+                      href={`https://scan.test.btcs.network/tx/${app?.evmAddress}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="cursor-pointer text-blue"
+                    >
+                      {app?.evmAddress}
+                    </a>
+                  </div>
                 </div>
               ) : (
                 <div

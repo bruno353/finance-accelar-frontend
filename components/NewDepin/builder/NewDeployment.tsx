@@ -270,8 +270,8 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
       console.log(res)
       const dataDeployment = {
         name: deploymentName,
-        evmHash: address,
-        evmAddress: res?.transactionHash,
+        evmHash: res?.transactionHash,
+        evmAddress: address,
       }
       const resData2 = await callAxiosBackend(
         'post',
