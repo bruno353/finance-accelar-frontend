@@ -500,9 +500,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
             {tokenPrice === 'loading' ? (
               <div className="h-5 w-32 animate-pulse rounded-[5px] bg-[#1d2144b0]"></div>
             ) : (
-              <div>
-                ~ {selectedNetwork?.value2} {tokenPrice}
-              </div>
+              <div>~ tCORE 4.6</div>
             )}
           </div>
           <div className="mb-6">
@@ -510,7 +508,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
               htmlFor="workspaceName"
               className="mb-2 block text-[14px] text-[#C5C4C4]"
             >
-              Amount to bid* ({selectedNetwork?.value2})
+              Amount to bid* (tCORE)
             </label>
             <input
               type="text"
