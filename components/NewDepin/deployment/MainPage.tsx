@@ -512,12 +512,12 @@ const MainPage = ({ id }) => {
                     <div>
                       Uri:{' '}
                       <a
-                        href={`http://n2hv3e2gotce1cjn0mvmfi2itg.ingress.dcnorse.ddns.net/`}
+                        href={`https://9l0ue7f7s1cfva2a3f4lq80740.ingress.europlots.com/`}
                         target="_blank"
                         rel="noreferrer"
                         className="cursor-pointer text-blue"
                       >
-                        n2hv3e2gotce1cjn0mvmfi2itg.ingress.dcnorse.ddns.net
+                        9l0ue7f7s1cfva2a3f4lq80740.ingress.europlots.com
                       </a>
                     </div>
                   </div>
