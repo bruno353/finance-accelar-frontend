@@ -142,7 +142,7 @@ const Explore = () => {
         <div className="container">
           <div className="text-white">
             <div className="pt-10 text-4xl font-semibold">
-              Multi-chain aggregational protocol for Crossfi
+              Multi-chain aggregational protocol for Core DAO
             </div>
             <div className="max-w-[500px] pt-2">
               In a seemsly way, buy baskets options, deploy DePin capabilities,
