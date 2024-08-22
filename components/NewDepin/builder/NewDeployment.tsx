@@ -245,7 +245,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
       )
       console.log('passei resd data')
       console.log(resData)
-      const url = `https://api.accelar.io/blockchain/depin/functions/getSdlByDeploymentId?id=${resData?.id}`
+      const url = `https://ipfs.io/ipfs/${resData?.IpfsHash}`
       const bidAmountWei = parseEther(bidAmount)
       console.log(String(bidAmountWei))
       console.log(url)
