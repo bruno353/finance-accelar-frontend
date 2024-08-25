@@ -45,15 +45,15 @@ export function formatDate(createdAt) {
   }
 }
 
-//akash data
-const blockTime = 6; // Tempo médio de bloco em segundos
-const blockHeight = 17511332;
-const genesisTime = new Date('2020-09-25T14:00:00Z'); // Bloco gênesis da Akash
+// akash data
+const blockTime = 6 // Tempo médio de bloco em segundos
+const blockHeight = 17511332
+const genesisTime = new Date('2020-09-25T14:00:00Z') // Bloco gênesis da Akash
 export function blockHeightToDate(blockHeight) {
-  const genesisTimestamp = genesisTime.getTime(); // Convert genesis time to milliseconds
-  const blockTimeMs = blockTime * 1000; // Convert block time to milliseconds
-  const timestamp = genesisTimestamp + (blockHeight * blockTimeMs);
-  return String(new Date(timestamp));
+  const genesisTimestamp = genesisTime.getTime() // Convert genesis time to milliseconds
+  const blockTimeMs = blockTime * 1000 // Convert block time to milliseconds
+  const timestamp = genesisTimestamp + blockHeight * blockTimeMs
+  return String(new Date(timestamp))
 }
 
 export function formatHours(createdAt) {

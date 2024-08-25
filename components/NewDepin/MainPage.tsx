@@ -41,6 +41,7 @@ import {
   blockHeightToDate,
   formatDate,
   transformString,
+  wait,
 } from '@/utils/functions'
 import LottiePlayer from 'react-lottie-player'
 import { useAccount } from 'wagmi'
@@ -50,7 +51,8 @@ const MainPage = ({ id }) => {
   const [isLoadingCompilation, setIsLoadingCompilation] = useState(false)
   const [isInfoBalanceOpen, setIsInfoBalanceOpen] = useState(false)
   const [value, setValue] = useState('// start your code here')
-  const [languageSelectorOpen, setLanguageSelectorOpen] = useState(false)
+  const [descRefresh, setDescRefresh] = useState<any>()
+  const [depinLoading, setDepinLoading] = useState<string[]>([])
   const monaco = useMonaco()
   const [depins, setDepins] = useState<NewDepinDeploymentProps[]>([])
   const [newDepins, setNewDepins] = useState<FakeDepinProps[]>([])
@@ -85,74 +87,117 @@ const MainPage = ({ id }) => {
   }
   const menuRef = useRef(null)
 
-  // async function getData() {
-  //   setIsLoading(true)
+  async function getDepinInfo(owner: string, dseq: string) {
+    try {
+      // getting deployments
+      // example: https://api.akashnet.net/akash/deployment/v1beta3/deployments/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.state=active&pagination.count_total=true
+      const config = {
+        method: `get`,
+        url: `https://api.akashnet.net/akash/deployment/v1beta3/deployments/list?filters.owner=${owner}&dseq=${dseq}&pagination.limit=1000&filters.state=active&pagination.count_total=true`,
+      }
 
-  //   try {
-  //     // getting deployments
+      let finalData
 
-  //     const config = {
-  //       method: `get`,
-  //       url: `https://api.akashnet.net/akash/deployment/v1beta3/deployments/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.state=active&pagination.count_total=true`,
-  //     }
+      await axios(config).then(function (response) {
+        if (response.data) {
+          finalData = response.data
+          console.log('api response')
+          console.log(finalData)
+        }
+      })
 
-  //     let finalData
+      // example: https://api.akashnet.net/akash/market/v1beta4/leases/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.state=active&pagination.count_total=true
+      const config2 = {
+        method: `get`,
+        url: `https://api.akashnet.net/akash/market/v1beta4/leases/list?filters.owner=${owner}&dseq=${dseq}&pagination.limit=1000&filters.state=active&pagination.count_total=true`,
+      }
 
-  //     await axios(config).then(function (response) {
-  //       if (response.data) {
-  //         finalData = response.data
-  //         console.log('api response')
-  //         console.log(finalData)
-  //       }
-  //     })
+      let finalDataLeases
 
-  //     const config2 = {
-  //       method: `get`,
-  //       url: `https://api.akashnet.net/akash/market/v1beta4/leases/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.state=active&pagination.count_total=true`,
-  //     }
+      await axios(config2).then(function (response) {
+        if (response.data) {
+          finalDataLeases = response.data
+          console.log('api response')
+          console.log(finalData)
+        }
+      })
 
-  //     let finalDataLeases
+      setLeases(finalDataLeases?.leases)
+      return {
+        deployment: finalData?.deployments[0]?.deployment,
+        groups: finalData?.deployments[0]?.groups,
+        escrow_account: finalData?.deployments[0]?.escrow_account,
+        lease: finalDataLeases?.leases[0]?.lease,
+      }
+    } catch (err) {
+      console.log(err)
+      toast.error(`Error: ${err.response.data.message}`)
+    }
+  }
 
-  //     await axios(config2).then(function (response) {
-  //       if (response.data) {
-  //         finalDataLeases = response.data
-  //         console.log('api response')
-  //         console.log(finalData)
-  //       }
-  //     })
+  async function checkDeployment(id: string, tokenId: string) {
+    if (depinLoading.includes(id)) {
+      return
+    }
+    const newDepinLoading = [...depinLoading]
+    newDepinLoading.push(id)
+    setDepinLoading(newDepinLoading)
 
-  //     setLeases(finalDataLeases?.leases)
-  //     setDepins(finalData?.deployments) //
+    try {
+      // getting deployments
+      const resData = await callAxiosBackend(
+        'get',
+        `/blockchain/depin/functions/checkDeployment?tokenId=${tokenId}`,
+        'userSessionToken',
+      )
+      const newDepins = [...depins]
+      const index = newDepins.findIndex((dp) => dp.id === id)
+      newDepins[index] = resData
+      setDepins(newDepins)
+    } catch (err) {
+      console.log(err)
+      toast.error(`Error: ${err.response.data.message}`)
+    }
 
-  //     // getting leases
-  //   } catch (err) {
-  //     console.log(err)
-  //     toast.error(`Error: ${err.response.data.message}`)
-  //   }
-
-  //   setIsLoading(false)
-  // }
+    const updatedDepinLoading = newDepinLoading.filter(
+      (loadingId) => loadingId !== id,
+    )
+    setDepinLoading(updatedDepinLoading)
+  }
 
   async function getData() {
     setIsLoading(true)
     if (address) {
       try {
         // getting deployments
-        const resData2 = await callAxiosBackend(
+        const resData = await callAxiosBackend(
           'get',
           `/blockchain/depin/functions/getDeployments?address=${address}`,
           'userSessionToken',
         )
 
-        setNewDepins(resData2) //
+        if (resData?.length > 0) {
+          for (let i = 0; i < resData?.lenght; i++) {
+            if (resData[i]?.dseq) {
+              await wait(500)
+              const info = await getDepinInfo(
+                'akash1yyfpj5lr2lh0qat6hktqrnddfe0fvprk5zrwyw',
+                resData[i]?.dseq,
+              )
+              resData[i].deployment = info.deployment
+              resData[i].groups = info.deployment
+              resData[i].escrow_account = info.deployment
+              resData[i].lease = info.deployment
+            }
+          }
+        }
 
-        // getting leases
+        setDepins(resData)
       } catch (err) {
         console.log(err)
         toast.error(`Error: ${err.response.data.message}`)
       }
     }
-
     setIsLoading(false)
   }
 
@@ -173,7 +218,7 @@ const MainPage = ({ id }) => {
     )
   }
 
-  if (newDepins?.length === 0) {
+  if (depins?.length === 0 && !isLoading) {
     return (
       <>
         <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 text-center lg:pt-40">
@@ -225,11 +270,11 @@ const MainPage = ({ id }) => {
               <div className="w-full max-w-[23%]">Specs</div>
               <div className="w-full max-w-[15%]">Balance</div>
               <div className="w-full max-w-[20%]">Rate</div>
-              <div className="w-full max-w-[10%]">Block height</div>
+              <div className="w-full max-w-[10%]">Created at</div>
             </div>
           </div>
-          {newDepins?.map((app, index) => (
-            <div key={index}>
+          {depins?.map((app, index) => (
+            <div key={index} className="">
               {app?.loading ? (
                 <div
                   key={index}
@@ -238,19 +283,58 @@ const MainPage = ({ id }) => {
                     'border-b-[1px] border-[#c5c4c41a]'
                   } cursor-auto gap-x-[2px] px-[15px] py-[35px] text-[15px] font-normal text-gray`}
                 >
-                  <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    {app?.name}
-                  </div>
-                  <div className="ml-5">
-                    Deploying:{' '}
-                    <a
-                      href={`https://scan.test.btcs.network/tx/${app?.evmAddress}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="cursor-pointer text-blue"
-                    >
-                      {app?.evmAddress}
-                    </a>
+                  {!depinLoading.includes(app?.id) ? (
+                    <>
+                      <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                        {app?.name}
+                      </div>
+                      <div className="ml-5 flex items-center gap-x-4">
+                        <img
+                          alt="image"
+                          src="/images/loading/loading.svg"
+                          className="w-5 animate-spin"
+                        />
+                        <div className="flex gap-x-4">
+                          Deploying:{' '}
+                          <a
+                            href={`https://scan.test.btcs.network/tx/${app?.evmAddress}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="cursor-pointer text-blue"
+                          >
+                            {app?.evmAddress}
+                          </a>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="h-7 w-[80%] animate-pulse rounded-[5px] bg-[#1d1f23b6]"></div>
+                  )}
+
+                  <div
+                    onClick={() => {
+                      checkDeployment(app.id, app.tokenId)
+                    }}
+                    onMouseEnter={() => {
+                      setDescRefresh(index)
+                    }}
+                    onMouseLeave={() => {
+                      setDescRefresh(null)
+                    }}
+                    className="relative ml-auto mr-24"
+                  >
+                    <img
+                      alt="image"
+                      src="/images/loading/refresh.svg"
+                      className={`w-5 cursor-pointer ${
+                        depinLoading.includes(app?.id) && 'animate-spin'
+                      }`}
+                    />
+                    {descRefresh === index && (
+                      <div className="absolute top-7 flex -translate-x-[40%] whitespace-nowrap rounded-md bg-[#000] px-2 py-1 text-xs text-white">
+                        Refresh loader
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -275,7 +359,17 @@ const MainPage = ({ id }) => {
                           src="/images/explore/cpu.svg"
                           className="w-3"
                         />
-                        <div>0.5 cpu</div>
+                        <div>
+                          {' '}
+                          {(
+                            Number(
+                              app?.groups[0]?.group_spec?.resources[0]?.cpu
+                                ?.units?.val,
+                            ) /
+                            10 ** 3
+                          ).toFixed(1)}{' '}
+                          cpu
+                        </div>
                       </div>
                       <div className="flex items-center gap-x-1">
                         <img
@@ -283,7 +377,17 @@ const MainPage = ({ id }) => {
                           src="/images/explore/storage.svg"
                           className="w-3"
                         />
-                        <div>537 mb</div>
+                        <div>
+                          {' '}
+                          {(
+                            Number(
+                              app?.groups[0]?.group_spec?.resources[0]
+                                ?.storage[0]?.quantity?.val,
+                            ) /
+                            10 ** 6
+                          ).toFixed(0)}{' '}
+                          mb
+                        </div>
                       </div>
                       <div className="flex items-center gap-x-1">
                         <img
@@ -291,19 +395,37 @@ const MainPage = ({ id }) => {
                           src="/images/explore/memory.svg"
                           className="w-3"
                         />
-                        <div>537 mb</div>
+                        <div>
+                          {' '}
+                          {(
+                            Number(
+                              app?.groups[0]?.group_spec?.resources[0]?.resource
+                                ?.memory?.quantity?.val,
+                            ) /
+                            10 ** 6
+                          ).toFixed(0)}{' '}
+                          mb
+                        </div>
                       </div>
                       <div className="absolute right-1 top-1 h-1 w-1 animate-pulse rounded-full bg-[#6FD572]"></div>
                     </div>
                   </div>
                   <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    AKT {app?.balance}
+                    AKT{' '}
+                    {(
+                      Number(app?.escrow_account?.balance?.amount) /
+                      10 ** 6
+                    )?.toFixed(2)}
                   </div>
                   <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    USD 620 / month
+                    USD{' '}
+                    {Number(app?.lease?.escrow_payment?.rate?.amount)?.toFixed(
+                      2,
+                    )}{' '}
+                    / month
                   </div>
                   <div className="w-full max-w-[10%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    {app?.blockHeight}
+                    {app?.deployment?.created_at}
                   </div>
                   <div className="ml-auto w-full max-w-[10%]">
                     {' '}

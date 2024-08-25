@@ -25,9 +25,17 @@ export interface DepinDeploymentProps {
 }
 
 export interface NewDepinDeploymentProps {
-  deployment: any
+  id?: string
+  name?: string
+  dseq?: string
+  tokenId?: string
+  loading?: boolean
+  evmHash?: string
+  evmAddress?: string
+  deployment?: any
   groups?: any
   escrow_account?: any
+  lease: any
 }
 
 export interface LeasesProps {

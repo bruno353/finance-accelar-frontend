@@ -41,6 +41,7 @@ import {
   blockHeightToDate,
   formatDate,
   transformString,
+  wait,
 } from '@/utils/functions'
 import { useAccount } from 'wagmi'
 
@@ -88,50 +89,112 @@ const MainPage = ({ id }) => {
   }
   const menuRef = useRef(null)
 
-  async function getData() {
-    if (id !== '17511329') {
-      push('/')
-    }
-    setIsLoading(true)
+  // async function getData() {
+  //   setIsLoading(true)
 
+  //   try {
+  //     const config = {
+  //       method: `get`,
+  //       url: `https://api.akashnet.net/akash/deployment/v1beta3/deployments/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.dseq=17511329&pagination.count_total=true`,
+  //     }
+
+  //     let finalData
+
+  //     try {
+  //       await axios(config).then(function (response) {
+  //         if (response.data) {
+  //           finalData = response.data
+  //           console.log('api response')
+  //           console.log(finalData)
+  //         }
+  //       })
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+
+  //     const config2 = {
+  //       method: `get`,
+  //       url: `https://api.akashnet.net/akash/market/v1beta4/leases/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&filters.dseq=17511329&pagination.limit=1000&pagination.count_total=true`,
+  //     }
+
+  //     let finalDataLeases
+
+  //     try {
+  //       await axios(config2).then(function (response) {
+  //         if (response.data) {
+  //           finalDataLeases = response.data
+  //           console.log('api response')
+  //           console.log(finalData)
+  //         }
+  //       })
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+
+  //     let finalProviders
+
+  //     try {
+  //       finalProviders = await callAxiosBackend(
+  //         'get',
+  //         `/blockchain/depin/functions/getAkashProviders`,
+  //         'userSessionToken',
+  //       )
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+
+  //     // finding the provider
+  //     const provider = finalProviders?.find(
+  //       (pv) =>
+  //         pv.owner === finalDataLeases?.leases[0]?.lease?.lease_id?.provider,
+  //     )
+
+  //     setLease(finalDataLeases?.leases[0])
+  //     setDepin(finalData?.deployments[0]) //
+  //     setProvider(provider)
+  //     // getting leases
+  //   } catch (err) {
+  //     console.log(err)
+  //     toast.error(`Error: ${err}`)
+  //   }
+
+  //   setIsLoading(false)
+  // }
+
+  async function getDepinInfo(owner: string, dseq: string) {
     try {
+      // getting deployments
+      // example: https://api.akashnet.net/akash/deployment/v1beta3/deployments/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.state=active&pagination.count_total=true
       const config = {
         method: `get`,
-        url: `https://api.akashnet.net/akash/deployment/v1beta3/deployments/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.dseq=17511329&pagination.count_total=true`,
+        url: `https://api.akashnet.net/akash/deployment/v1beta3/deployments/list?filters.owner=${owner}&dseq=${dseq}&pagination.limit=1000&filters.state=active&pagination.count_total=true`,
       }
 
       let finalData
 
-      try {
-        await axios(config).then(function (response) {
-          if (response.data) {
-            finalData = response.data
-            console.log('api response')
-            console.log(finalData)
-          }
-        })
-      } catch (err) {
-        console.log(err)
-      }
+      await axios(config).then(function (response) {
+        if (response.data) {
+          finalData = response.data
+          console.log('api response')
+          console.log(finalData)
+        }
+      })
 
+      // example: https://api.akashnet.net/akash/market/v1beta4/leases/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&pagination.limit=1000&filters.state=active&pagination.count_total=true
       const config2 = {
         method: `get`,
-        url: `https://api.akashnet.net/akash/market/v1beta4/leases/list?filters.owner=akash1c3er49222vygzm6g4djr52muf3mspqam6cpqpy&filters.dseq=17511329&pagination.limit=1000&pagination.count_total=true`,
+        url: `https://api.akashnet.net/akash/market/v1beta4/leases/list?filters.owner=${owner}&dseq=${dseq}&pagination.limit=1000&filters.state=active&pagination.count_total=true`,
       }
 
       let finalDataLeases
 
-      try {
-        await axios(config2).then(function (response) {
-          if (response.data) {
-            finalDataLeases = response.data
-            console.log('api response')
-            console.log(finalData)
-          }
-        })
-      } catch (err) {
-        console.log(err)
-      }
+      await axios(config2).then(function (response) {
+        if (response.data) {
+          finalDataLeases = response.data
+          console.log('api response')
+          console.log(finalData)
+        }
+      })
 
       let finalProviders
 
@@ -144,32 +207,56 @@ const MainPage = ({ id }) => {
       } catch (err) {
         console.log(err)
       }
-
-      // finding the provider
       const provider = finalProviders?.find(
         (pv) =>
           pv.owner === finalDataLeases?.leases[0]?.lease?.lease_id?.provider,
       )
-
-      setLease(finalDataLeases?.leases[0])
-      setDepin(finalData?.deployments[0]) //
-      setProvider(provider)
-      // getting leases
+      return {
+        deployment: finalData?.deployments[0]?.deployment,
+        groups: finalData?.deployments[0]?.groups,
+        escrow_account: finalData?.deployments[0]?.escrow_account,
+        lease: finalDataLeases?.leases[0]?.lease,
+        provider,
+      }
     } catch (err) {
       console.log(err)
-      toast.error(`Error: ${err}`)
+      toast.error(`Error: ${err.response.data.message}`)
     }
+  }
 
+  async function getData() {
+    setIsLoading(true)
+    if (address) {
+      try {
+        // getting deployments
+        const resData = await callAxiosBackend(
+          'get',
+          `/blockchain/depin/functions/getNewDeployment?address=${address}&dseq=${id}`,
+          'userSessionToken',
+        )
+
+        if (resData) {
+          await wait(500)
+          const info = await getDepinInfo(
+            'akash1yyfpj5lr2lh0qat6hktqrnddfe0fvprk5zrwyw',
+            id,
+          )
+          resData.deployment = info.deployment
+          resData.groups = info.deployment
+          resData.escrow_account = info.deployment
+          resData.lease = info.deployment
+          setDepin(resData)
+          setProvider(info.provider)
+        }
+      } catch (err) {
+        console.log(err)
+        toast.error(`Error: ${err.response.data.message}`)
+      }
+    }
     setIsLoading(false)
   }
 
   useEffect(() => {
-    setIsLoading(true)
-    getData()
-  }, [])
-
-  useEffect(() => {
-    setIsLoading(true)
     getData()
   }, [])
 
