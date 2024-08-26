@@ -73,7 +73,9 @@ export default function AccountContextProvider({
 }: CreateContextProps) {
   const [user, setUser] = useState<UserProps>()
   const [acoUser, setAcoUser] = useState<AcoUserProps>()
-  const [acoChain, setAcoChain] = useState<string>('Core DAO')
+  const [acoChain, setAcoChain] = useState<string>(
+    process.env.NEXT_PUBLIC_SELECTED_NETWORK,
+  )
   const [channels, setChannels] = useState<ChannelProps[]>()
   const [minimize, setMinimize] = useState<boolean>(false)
   const [isDeployingNewDepinFeature, setIsDeployingNewDepingFeature] =

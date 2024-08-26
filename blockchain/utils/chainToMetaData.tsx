@@ -1,5 +1,5 @@
 export const chainToCopy = {
-  'Core DAO': {
+  CoreDAO: {
     label: 'Core DAO',
     docsLink: '',
     name: 'BTCfi',
