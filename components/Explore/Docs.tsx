@@ -33,6 +33,7 @@ import 'swiper/css' // Estilos básicos
 import 'swiper/css/navigation' // Estilos de navegação
 import './SwiperStyles.css'
 import { Sparklines, SparklinesLine } from 'react-sparklines'
+import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
 
 const Docs = () => {
   const [animate, setAnimate] = useState<boolean>(true)
@@ -40,6 +41,7 @@ const Docs = () => {
   const [mySwiper, setMySwiper] = useState<any>({})
   const [isStart, setIsStart] = useState<boolean>(true)
   const [isEnd, setIsEnd] = useState<boolean>(false)
+  const { acoUser, setAcoUser, acoChain } = useContext(AccountContext)
 
   const { push } = useRouter()
 
@@ -230,9 +232,11 @@ const Docs = () => {
               <div className="text-xl font-semibold md:text-2xl">
                 Accelar Protocol
               </div>
-              <div className="mt-4 w-fit cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-sm text-white hover:bg-[#3A51B0]">
-                Test now
-              </div>
+              <a href="/feats/depin/builder">
+                <div className="mt-4 w-fit cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-sm text-white hover:bg-[#3A51B0]">
+                  Test now
+                </div>
+              </a>
             </div>
           </div>
           <div className="relative w-full">
@@ -246,9 +250,11 @@ const Docs = () => {
               <div className="text-xl font-semibold md:text-2xl">
                 DePin on Crossfi
               </div>
-              <div className="mt-4 w-fit cursor-pointer rounded-md border-[1px] border-[#D8AB15] bg-transparent px-5 py-1 text-sm text-[#D8AB15] hover:bg-[#d8aa1566]">
-                Create deployment
-              </div>
+              <a href="/feats/depin">
+                <div className="mt-4 w-fit cursor-pointer rounded-md border-[1px] border-[#D8AB15] bg-transparent px-5 py-1 text-sm text-[#D8AB15] hover:bg-[#d8aa1566]">
+                  Create deployment
+                </div>
+              </a>
             </div>
           </div>
           <div className="relative w-full">
@@ -269,10 +275,21 @@ const Docs = () => {
           </div>
           <div className="grid h-fit  gap-y-2 text-sm text-[#4766EA]">
             <div className="mb-1 text-base text-white">More</div>
-            <div className="cursor-pointer underline">
-              How does Accelar oracle work?
-            </div>
-            <div className="cursor-pointer underline">Crossfi docs</div>
+            <a href="https://docs.accelar.io/" target="_blank" rel="noreferrer">
+              <div className="cursor-pointer underline">
+                How does Accelar oracle work?
+              </div>
+            </a>
+            <a
+              href={chainToCopy[acoChain]?.docsLink}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div className="cursor-pointer underline">
+                {chainToCopy[acoChain]?.name} docs
+              </div>
+            </a>
+
             <div className="cursor-pointer underline">
               Building on top of Accelar infrastructure
             </div>

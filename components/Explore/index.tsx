@@ -32,11 +32,13 @@ import DepinTemplates from './DepinTemplates'
 import Trending from './Trending'
 import Docs from './Docs'
 import Footer from '../Footer'
+import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
 
 const Explore = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [passwordVisibility, setPasswordVisibility] = useState<boolean>(true)
   const [animate, setAnimate] = useState<boolean>(true)
+  const { acoUser, setAcoUser, acoChain } = useContext(AccountContext)
 
   const { push } = useRouter()
 
@@ -135,18 +137,19 @@ const Explore = () => {
 
   return (
     <>
-      <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 lg:pt-20">
+      <section className="relative z-10 h-full overflow-hidden  pb-5 pt-8 lg:pt-20">
         <div className="absolute -right-44 top-0 z-[-1] rotate-45">
           <img src="/images/video/shape.svg" alt="shape" className="w-full" />
         </div>
         <div className="container">
           <div className="text-white">
             <div className="pt-16 text-4xl font-semibold">
-              Multi-chain aggregational protocol for Core DAO
+              Multi-chain aggregational protocol for{' '}
+              {chainToCopy[acoChain]?.label}
             </div>
             <div className="max-w-[500px] pt-2">
               In a seemsly way, buy baskets options, deploy DePin capabilities,
-              trade Real state prices and more!
+              trade Real State and more!
             </div>
           </div>
           <div className="mt-[100px] inline-flex w-full flex-nowrap gap-x-[20px] [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-200px),transparent_100%)]">
@@ -290,7 +293,7 @@ const Explore = () => {
               ))}
             </ul>
           </div>
-          <div className="mt-20 flex">
+          <div className="mt-24 flex">
             <ul className="mx-auto grid gap-x-20 gap-y-8 md:flex">
               {feats.map((option, index) => (
                 <li

@@ -336,9 +336,11 @@ const DepinTemplates = () => {
                       </div>
                     </div>
                     <div className="">
-                      <div className="absolute bottom-6 left-0 right-0 mx-auto w-fit rounded-md border-[1px] border-[#4766EA] bg-transparent px-4 py-[1px] text-[14px] text-[#4766EA] hover:bg-[#3a52b05f]">
-                        Deploy model
-                      </div>
+                      <a href="/feats/depin">
+                        <div className="absolute bottom-6 left-0 right-0 mx-auto w-fit rounded-md border-[1px] border-[#4766EA] bg-transparent px-4 py-[1px] text-[14px] text-[#4766EA] hover:bg-[#3a52b05f]">
+                          Deploy model
+                        </div>
+                      </a>
                     </div>
                   </div>
                 </SwiperSlide>
