@@ -215,7 +215,7 @@ const MainPage = ({ id }) => {
         deployment: finalData?.deployments[0]?.deployment,
         groups: finalData?.deployments[0]?.groups,
         escrow_account: finalData?.deployments[0]?.escrow_account,
-        lease: finalDataLeases?.leases[0]?.lease,
+        lease: finalDataLeases?.leases[0],
         provider,
       }
     } catch (err) {
@@ -225,8 +225,12 @@ const MainPage = ({ id }) => {
   }
 
   async function getData() {
+    console.log('ENTREI AQUI SIM')
+
     setIsLoading(true)
     if (address) {
+      console.log('TEM ADDRESSSSS')
+
       try {
         // getting deployments
         const resData = await callAxiosBackend(
@@ -242,11 +246,13 @@ const MainPage = ({ id }) => {
             id,
           )
           resData.deployment = info.deployment
-          resData.groups = info.deployment
-          resData.escrow_account = info.deployment
-          resData.lease = info.deployment
+          resData.groups = info.groups
+          resData.escrow_account = info.escrow_account
+          resData.lease = info.lease
           setDepin(resData)
           setProvider(info.provider)
+          console.log('THE PROVIDERR')
+          console.log(info)
         }
       } catch (err) {
         console.log(err)
@@ -260,7 +266,11 @@ const MainPage = ({ id }) => {
     getData()
   }, [])
 
-  const subMenu = ['Lease', 'Info']
+  useEffect(() => {
+    getData()
+  }, [address])
+
+  const subMenu = ['Lease', 'Console']
 
   const uptimePercentage = provider
     ? (provider.uptime7d * 100 - 1).toFixed(0)
@@ -339,7 +349,7 @@ const MainPage = ({ id }) => {
                     <img
                       alt="image"
                       src="/images/explore/add.svg"
-                      className="w-4"
+                      className="w-5"
                     />
 
                     <div>Add fund</div>
@@ -348,7 +358,7 @@ const MainPage = ({ id }) => {
                     <img
                       alt="image"
                       src="/images/explore/close.svg"
-                      className="w-4"
+                      className="w-5"
                     />
 
                     <div>Close</div>
@@ -478,11 +488,23 @@ const MainPage = ({ id }) => {
             <div className="grid gap-y-3 pt-6 text-white">
               <div className="flex">
                 <div className="w-32 text-gray">Balance</div>
-                <div>AKT {10.21}</div>
+                <div>
+                  AKT AKT{' '}
+                  {(
+                    Number(depin?.escrow_account?.balance?.amount) /
+                    10 ** 6
+                  )?.toFixed(2)}
+                </div>
               </div>
               <div className="flex">
                 <div className="w-32 text-gray">Spend rate</div>
-                <div>USD 620 / month</div>
+                <div>
+                  USD{' '}
+                  {Number(depin?.lease?.escrow_payment?.rate?.amount)?.toFixed(
+                    2,
+                  )}{' '}
+                  / month
+                </div>
               </div>
               <div className="flex">
                 <div className="w-32 text-gray">Blockchain H.</div>
@@ -492,11 +514,16 @@ const MainPage = ({ id }) => {
             <div className="grid gap-y-3 pt-6 text-white">
               <div className="flex">
                 <div className="w-14 text-gray">State</div>
-                <div>{lease?.lease?.state}</div>
+                <div>{depin?.lease?.lease?.state}</div>
               </div>
               <div className="flex">
                 <div className="w-14 text-gray">Model</div>
-                <div>Falcon 7B - nvidia rtx3090</div>
+                <div>
+                  {
+                    depin?.groups?.at(0)?.group_spec?.resources?.at(0)?.resource
+                      ?.gpu?.attributes[0]
+                  }{' '}
+                </div>
               </div>
             </div>
             <div className="relative my-auto grid w-fit gap-y-1 rounded-md border-[1px] border-[#c9c9cb10] px-5 py-2 text-sm text-white">
@@ -509,8 +536,8 @@ const MainPage = ({ id }) => {
                 <div>
                   {(
                     Number(
-                      depin?.groups[0]?.group_spec?.resources[0]?.resource?.cpu
-                        ?.units?.val,
+                      depin?.groups?.at(0)?.group_spec?.resources?.at(0)
+                        ?.resource?.cpu?.units?.val,
                     ) /
                     10 ** 3
                   ).toFixed(1)}{' '}
@@ -526,8 +553,10 @@ const MainPage = ({ id }) => {
                 <div>
                   {(
                     Number(
-                      depin?.groups[0]?.group_spec?.resources[0]?.resource
-                        ?.storage[0]?.quantity?.val,
+                      depin?.groups
+                        ?.at(0)
+                        ?.group_spec?.resources?.at(0)
+                        ?.resource?.storage?.at(0)?.quantity?.val,
                     ) /
                     10 ** 6
                   ).toFixed(0)}{' '}
@@ -543,8 +572,8 @@ const MainPage = ({ id }) => {
                 <div>
                   {(
                     Number(
-                      depin?.groups[0]?.group_spec?.resources[0]?.resource
-                        ?.memory?.quantity?.val,
+                      depin?.groups?.at(0)?.group_spec?.resources?.at(0)
+                        ?.resource?.memory?.quantity?.val,
                     ) /
                     10 ** 6
                   ).toFixed(0)}{' '}
@@ -591,20 +620,22 @@ const MainPage = ({ id }) => {
                       Datacenter:{' '}
                       <span className="text-base text-white">
                         {
-                          provider?.attributes?.find((vl) => vl.key === 'host')
-                            ?.value
+                          provider?.attributes?.find(
+                            (vl) =>
+                              vl.key === 'host' || vl.key === 'organization',
+                          )?.value
                         }
                       </span>
                     </div>
                     <div>
                       Uri:{' '}
                       <a
-                        href={`https://9l0ue7f7s1cfva2a3f4lq80740.ingress.europlots.com/`}
+                        href={`http://${depin?.uri}`}
                         target="_blank"
                         rel="noreferrer"
                         className="cursor-pointer text-blue"
                       >
-                        9l0ue7f7s1cfva2a3f4lq80740.ingress.europlots.com
+                        {depin?.uri}
                       </a>
                     </div>
                   </div>
@@ -629,6 +660,18 @@ const MainPage = ({ id }) => {
                       </Pie>
                       <Tooltip formatter={(value) => `${value}%`} />
                     </PieChart>
+                  </div>
+                </div>
+              )}
+              {subMenuOption === 'Console' && (
+                <div className="mt-8 text-sm text-gray">
+                  <div className="flex gap-x-7 bg-[#7775840c] px-2 py-1">
+                    <div>1)</div>
+                    <div className="text-white">Server started</div>
+                  </div>
+                  <div className="mt-2 flex gap-x-7 bg-[#7775840c] px-2 py-1">
+                    <div>2)</div>
+                    <div className="text-white">Listening to port 3000</div>
                   </div>
                 </div>
               )}

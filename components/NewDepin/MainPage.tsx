@@ -87,6 +87,15 @@ const MainPage = ({ id }) => {
   }
   const menuRef = useRef(null)
 
+  function formatDate(createdAt) {
+    const date = new Date(createdAt)
+    const hours = date.getHours().toString().padStart(2, '0')
+    const minutes = date.getMinutes().toString().padStart(2, '0')
+    const formattedDate = date.toISOString().split('T')[0]
+
+    return `${hours}:${minutes}, ${formattedDate}`
+  }
+
   async function getDepinInfo(owner: string, dseq: string) {
     try {
       // getting deployments
@@ -127,7 +136,7 @@ const MainPage = ({ id }) => {
         deployment: finalData?.deployments[0]?.deployment,
         groups: finalData?.deployments[0]?.groups,
         escrow_account: finalData?.deployments[0]?.escrow_account,
-        lease: finalDataLeases?.leases[0]?.lease,
+        lease: finalDataLeases?.leases[0],
       }
     } catch (err) {
       console.log(err)
@@ -152,7 +161,18 @@ const MainPage = ({ id }) => {
       )
       const newDepins = [...depins]
       const index = newDepins.findIndex((dp) => dp.id === id)
+      if (resData?.dseq) {
+        const info = await getDepinInfo(
+          'akash1yyfpj5lr2lh0qat6hktqrnddfe0fvprk5zrwyw',
+          resData.dseq,
+        )
+        resData.deployment = info.deployment
+        resData.groups = info.groups
+        resData.escrow_account = info.escrow_account
+        resData.lease = info.lease
+      }
       newDepins[index] = resData
+
       setDepins(newDepins)
     } catch (err) {
       console.log(err)
@@ -177,17 +197,21 @@ const MainPage = ({ id }) => {
         )
 
         if (resData?.length > 0) {
-          for (let i = 0; i < resData?.lenght; i++) {
+          console.log('entrei aqui sim')
+          for (let i = 0; i < resData?.length; i++) {
             if (resData[i]?.dseq) {
+              console.log('tem dseq')
               await wait(500)
               const info = await getDepinInfo(
                 'akash1yyfpj5lr2lh0qat6hktqrnddfe0fvprk5zrwyw',
                 resData[i]?.dseq,
               )
+              console.log('Info response')
+              console.log(info)
               resData[i].deployment = info.deployment
-              resData[i].groups = info.deployment
-              resData[i].escrow_account = info.deployment
-              resData[i].lease = info.deployment
+              resData[i].groups = info.groups
+              resData[i].escrow_account = info.escrow_account
+              resData[i].lease = info.lease
             }
           }
         }
@@ -266,7 +290,7 @@ const MainPage = ({ id }) => {
           </div>
           <div className="mt-10">
             <div className="flex w-full border-y-[0.5px] border-[#c9c9cb10] px-[15px] py-4 text-xs text-gray">
-              <div className="w-full max-w-[22%]">Dseq</div>
+              <div className="w-full max-w-[22%]">Name</div>
               <div className="w-full max-w-[23%]">Specs</div>
               <div className="w-full max-w-[15%]">Balance</div>
               <div className="w-full max-w-[20%]">Rate</div>
@@ -297,12 +321,12 @@ const MainPage = ({ id }) => {
                         <div className="flex gap-x-4">
                           Deploying:{' '}
                           <a
-                            href={`https://scan.test.btcs.network/tx/${app?.evmAddress}`}
+                            href={`https://scan.test.btcs.network/tx/${app?.evmHash}`}
                             target="_blank"
                             rel="noreferrer"
                             className="cursor-pointer text-blue"
                           >
-                            {app?.evmAddress}
+                            {app?.evmHash}
                           </a>
                         </div>
                       </div>
@@ -349,7 +373,7 @@ const MainPage = ({ id }) => {
                   } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray hover:bg-[#7775840c]`}
                 >
                   <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    {app?.dseq}
+                    {app?.name}
                   </div>
                   <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
                     <div className="relative grid w-fit gap-y-1 rounded-md border-[1px] border-[#c9c9cb49] px-5 py-2 text-xs">
@@ -363,8 +387,8 @@ const MainPage = ({ id }) => {
                           {' '}
                           {(
                             Number(
-                              app?.groups[0]?.group_spec?.resources[0]?.cpu
-                                ?.units?.val,
+                              app?.groups?.at(0)?.group_spec?.resources?.at(0)
+                                ?.resource?.cpu?.units?.val,
                             ) /
                             10 ** 3
                           ).toFixed(1)}{' '}
@@ -381,8 +405,10 @@ const MainPage = ({ id }) => {
                           {' '}
                           {(
                             Number(
-                              app?.groups[0]?.group_spec?.resources[0]
-                                ?.storage[0]?.quantity?.val,
+                              app?.groups
+                                ?.at(0)
+                                ?.group_spec?.resources?.at(0)
+                                ?.resource?.storage?.at(0)?.quantity?.val,
                             ) /
                             10 ** 6
                           ).toFixed(0)}{' '}
@@ -399,8 +425,8 @@ const MainPage = ({ id }) => {
                           {' '}
                           {(
                             Number(
-                              app?.groups[0]?.group_spec?.resources[0]?.resource
-                                ?.memory?.quantity?.val,
+                              app?.groups?.at(0)?.group_spec?.resources?.at(0)
+                                ?.resource?.memory?.quantity?.val,
                             ) /
                             10 ** 6
                           ).toFixed(0)}{' '}
@@ -425,7 +451,7 @@ const MainPage = ({ id }) => {
                     / month
                   </div>
                   <div className="w-full max-w-[10%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                    {app?.deployment?.created_at}
+                    {formatDate(app?.createdAt)}
                   </div>
                   <div className="ml-auto w-full max-w-[10%]">
                     {' '}

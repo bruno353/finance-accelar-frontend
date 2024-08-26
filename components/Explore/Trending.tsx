@@ -126,7 +126,7 @@ const Trending = () => {
       desc: 'APR: 17.85%',
       type: 'Credit',
       imgSource: '/images/explore/bank-white.svg',
-      imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
+      imgStyle: 'flex-0 w-[20px] md:w-[30px] rounded-full bg-[#4766EA] p-1',
       linkPoolAddress:
         'https://snowtrace.io/address/0xc31097688d0d0f87b55d0715fddacd674e4435dc',
       poolAddress: '0xad4...35dc',
@@ -142,7 +142,7 @@ const Trending = () => {
       desc: 'Backed by XDAI',
       type: 'Synthetics',
       imgSource: '/images/explore/money-white.svg',
-      imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
+      imgStyle: 'flex-0 w-[20px] md:w-[30px] rounded-full bg-[#4766EA] p-1',
       linkPoolAddress:
         'https://snowtrace.io/address/0xc31097688d0d0f87b55d0715fddacd674e4435dc',
       poolAddress: '0xad4...35dc',
@@ -158,7 +158,7 @@ const Trending = () => {
       desc: 'Singapore property',
       type: 'Real State',
       imgSource: '/images/explore/real-state-white.svg',
-      imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
+      imgStyle: 'flex-0 w-[20px] md:w-[30px] rounded-full bg-[#4766EA] p-1',
       linkPoolAddress:
         'https://app.citadao.io/properties/0xa1e567790dd08c0d91c6522744715c4a4971233c',
       poolAddress: '0xa1e...233c',
@@ -174,7 +174,7 @@ const Trending = () => {
       desc: 'USA market exposure',
       type: 'Real State',
       imgSource: '/images/explore/real-state-white.svg',
-      imgStyle: 'flex-0 w-[30px] rounded-full bg-[#4766EA] p-1',
+      imgStyle: 'flex-0 w-[20px] md:w-[30px] rounded-full bg-[#4766EA] p-1',
       linkPoolAddress:
         'https://app.citadao.io/properties/0xa1e567790dd08c0d91c6522744715c4a4971233c',
       poolAddress: '0xa1e...233c',
@@ -197,11 +197,11 @@ const Trending = () => {
 
   return (
     <>
-      <section className="relative z-10 h-full overflow-hidden  pb-10 pt-2 lg:pt-40">
+      <section className="relative z-10 h-full overflow-hidden  pb-10 pt-24 lg:pt-40">
         <div className="absolute -right-44 -top-64 z-[-1] rotate-12 opacity-55">
           <img src="/images/video/shape.svg" alt="shape" className="w-full" />
         </div>
-        <div className="mx-auto mb-10 flex w-[1000px] items-center gap-x-5 text-4xl text-white">
+        <div className="mx-auto mb-10 flex w-[1000px] items-center gap-x-5 text-2xl text-white md:text-4xl">
           <div className="">
             <svg
               width="40"
@@ -218,11 +218,11 @@ const Trending = () => {
           </div>
           <div>Trending assets</div>
         </div>
-        <div className="grid grid-cols-2 gap-y-10">
+        <div className="grid gap-y-7 md:grid-cols-2 md:gap-y-10">
           {trendingAssets.map((option, index) => (
             <div key={index}>
-              <div className="mx-auto w-fit cursor-pointer rounded-md px-3 py-4 hover:bg-[#1d1f23b6]">
-                <div className="w-[500px]">
+              <div className="mx-auto w-fit cursor-pointer rounded-md px-3 py-1 hover:bg-[#1d1f23b6] md:py-4">
+                <div className="w-[250px] md:w-[500px]">
                   <Sparklines
                     data={option?.chartData}
                     width={400}
@@ -240,7 +240,7 @@ const Trending = () => {
                   </Sparklines>
                 </div>
 
-                <div className="mt-4 flex  items-center">
+                <div className="mt-4 items-center  md:flex">
                   <div className="flex items-center gap-x-4">
                     <img
                       alt="image"
@@ -248,13 +248,15 @@ const Trending = () => {
                       className={option?.imgStyle}
                     ></img>
                     <div>
-                      <div className="text-lg text-white">{option.title}</div>
-                      <div className="text-sm text-[#adadae]">
+                      <div className="text-base text-white md:text-lg">
+                        {option.title}
+                      </div>
+                      <div className="text-xs text-[#adadae] md:text-sm">
                         {option.type}
                       </div>
                     </div>
                   </div>
-                  <div className="ml-10 grid gap-y-2">
+                  <div className="mt-4 grid gap-y-2 md:ml-10 md:mt-0">
                     <div className=" text-sm text-[#adadae]">
                       {option?.desc}
                     </div>
@@ -277,8 +279,8 @@ const Trending = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="ml-10 grid gap-y-1">
-                    <div className="ml-auto flex items-center gap-x-2 font-medium">
+                  <div className="mt-4 flex items-center gap-x-3 gap-y-1 md:ml-10 md:mt-0 md:grid md:gap-x-0">
+                    <div className="flex items-center gap-x-2 font-medium md:ml-auto">
                       <div
                         className={`${
                           option?.priceDif > 0

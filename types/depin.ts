@@ -28,6 +28,7 @@ export interface NewDepinDeploymentProps {
   id?: string
   name?: string
   dseq?: string
+  uri?: string
   tokenId?: string
   loading?: boolean
   evmHash?: string
@@ -36,6 +37,7 @@ export interface NewDepinDeploymentProps {
   groups?: any
   escrow_account?: any
   lease: any
+  createdAt: string
 }
 
 export interface LeasesProps {

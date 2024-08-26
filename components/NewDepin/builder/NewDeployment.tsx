@@ -1,3 +1,4 @@
+/* eslint-disable promise/param-names */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable react/no-unknown-property */
@@ -39,7 +40,7 @@ import { parseCookies } from 'nookies'
 import { TypeWalletProvider } from '@/components/IDE/MainPage'
 import { BlockchainWalletProps } from '@/types/blockchain-app'
 import ConnectButton from '@/contexts/ConnectButton'
-import { useAccount } from 'wagmi'
+import { useAccount, useReadContract } from 'wagmi'
 import ConfirmGenericTransaction from '@/components/BlockchainWallets/Modals/ConfirmGenericTransaction'
 import { useContractWrite } from '../../IDE/hooks/useContract'
 import { Abi } from 'viem'
@@ -47,10 +48,8 @@ import { depinABI } from '@/types/consts/depinABI'
 import { parseEther } from 'ethers'
 import { networkToNetworkRPC } from '@/components/BlockchainWallets/BlockchainWallet.tsx/BlockchainWalletPage'
 import CreateACOUserOnboarding from '@/components/Modals/CreateACOUserOnboarding'
-import {
-  chainToCopy,
-  contractAddress,
-} from '@/blockchain/utils/chainToMetaData'
+import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
+import { wagmiConfig } from '@/blockchain/config'
 
 export interface ModalI {
   onUpdate(): void
@@ -220,6 +219,15 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
     }
   }
 
+  type NFTIds = bigint[]
+  const { data: nftIds, refetch: refetchNftIds } = useReadContract({
+    address: chainToCopy[acoChain]?.contractAddress,
+    config: wagmiConfig,
+    abi: depinABI,
+    functionName: 'getAllNFTIds',
+    args: [address], // O endereço do usuário atual
+  })
+
   const handleEVMDeployment = async () => {
     if (!formChecks()) {
       toast.error('Complete the form')
@@ -237,12 +245,19 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
 
     const addressTointeract = address
     try {
-      const resData = await callAxiosBackend(
-        'post',
-        '/blockchain/depin/functions/uploadDeploymentSdl',
-        'userSessionToken',
-        dataApi,
-      )
+      let resData
+      try {
+        resData = await callAxiosBackend(
+          'post',
+          '/blockchain/depin/functions/uploadDeploymentSdl',
+          'userSessionToken',
+          dataApi,
+        )
+      } catch (err) {
+        toast.error('Error: SDL invalid')
+        throw err
+      }
+
       console.log('passei resd data')
       console.log(resData)
       const url = `https://ipfs.io/ipfs/${resData?.IpfsHash}`
@@ -250,9 +265,8 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
       console.log(String(bidAmountWei))
       console.log(url)
       console.log(addressTointeract)
-      console.log(contractAddress)
+      console.log(chainToCopy[acoChain]?.contractAddress)
       console.log(chain)
-
       const res = await write(
         'createDeployment',
         [
@@ -263,21 +277,54 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
         depinABI as Abi,
         chain,
         addressTointeract,
-        contractAddress,
+        chainToCopy[acoChain]?.contractAddress,
         String(bidAmountWei),
       )
+      await wait(2000)
+      await refetchNftIds()
+      let lastTokenId
+      // O último NFT ID será o mais recente
+      if (nftIds && (nftIds as any).length > 0) {
+        lastTokenId = nftIds[(nftIds as any).length - 1]
+        console.log('Último NFT criado com tokenId:', lastTokenId.toString())
+      }
+
       console.log('A resss')
       console.log(res)
       const dataDeployment = {
         name: deploymentName,
         evmHash: res?.transactionHash,
         evmAddress: address,
+        tokenId: lastTokenId.toString(),
       }
-      const resData2 = await callAxiosBackend(
-        'post',
-        '/blockchain/depin/functions/storeDeployment',
-        'userSessionToken',
-        dataDeployment,
+
+      const timeout = (ms: number) =>
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout')), ms),
+        )
+
+      try {
+        // Use Promise.race para competir entre a chamada da API e o timeout
+        const resData2 = await Promise.race([
+          callAxiosBackend(
+            'post',
+            '/blockchain/depin/functions/storeDeployment',
+            'userSessionToken',
+            dataDeployment,
+          ),
+          timeout(5000), // 5 segundos de timeout
+        ])
+
+        console.log('Deployment stored successfully:', resData2)
+      } catch (error) {
+        if (error.message === 'Timeout') {
+          console.log('Storing deployment timed out, but continuing...')
+        } else {
+          console.error('Error storing deployment:', error)
+        }
+      }
+      toast.success(
+        'Success, your deployment may take up to 30 minutes to complete',
       )
       await wait(3000)
       push('/feats/depin')
@@ -286,7 +333,6 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
     } catch (err) {
       console.log(err)
       console.log('Error: ' + err?.response?.data?.message)
-      toast.error('Error, check if your address has enough balance')
       setIsLoading(false)
     }
   }
@@ -500,7 +546,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
             {tokenPrice === 'loading' ? (
               <div className="h-5 w-32 animate-pulse rounded-[5px] bg-[#1d2144b0]"></div>
             ) : (
-              <div>~ tCORE 4.6</div>
+              <div>{chainToCopy[acoChain]?.depinDplEstPrice}</div>
             )}
           </div>
           <div className="mb-6">
@@ -508,7 +554,7 @@ const NewDeployment = ({ onUpdate }: ModalI) => {
               htmlFor="workspaceName"
               className="mb-2 block text-[14px] text-[#C5C4C4]"
             >
-              Amount to bid* (tCORE)
+              Amount to bid* ({chainToCopy[acoChain]?.currency})
             </label>
             <input
               type="text"

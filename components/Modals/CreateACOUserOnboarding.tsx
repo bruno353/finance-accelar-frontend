@@ -20,9 +20,11 @@ import { wait } from '@/utils/functions'
 import { callAxiosBackend } from '@/utils/general-api'
 import { AccountContext } from '@/contexts/AccountContext'
 import LottiePlayer from 'react-lottie-player'
-import { useSignMessage, useAccount } from 'wagmi'
+import { useSignMessage, useAccount, useReadContract } from 'wagmi'
 import type { Account } from 'viem'
 import { wagmiConfig } from '@/blockchain/config'
+import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
+
 export const optionsNetworkDeployment = [
   {
     name: 'Internet computer protocol',
@@ -42,7 +44,7 @@ const CreateACOUserOnboarding = ({ onUpdateM }) => {
     optionsNetworkDeployment[0],
   )
   const { address, chain } = useAccount()
-  const { acoUser, setAcoUser } = useContext(AccountContext)
+  const { acoUser, setAcoUser, acoChain } = useContext(AccountContext)
 
   const { signMessageAsync, isError, isSuccess, error } = useSignMessage({
     config: wagmiConfig,
@@ -56,12 +58,6 @@ const CreateACOUserOnboarding = ({ onUpdateM }) => {
       },
     },
   })
-
-  const handleInputChange = (e) => {
-    if (!isLoading) {
-      setAppName(e.target.value)
-    }
-  }
 
   const handleCreateAcoUser = async () => {
     setIsLoading(true)
@@ -117,7 +113,8 @@ const CreateACOUserOnboarding = ({ onUpdateM }) => {
         </div>
         <div className="mt-5 text-2xl font-bold">
           Create your Accelar Account in the{' '}
-          <span className="text-yellow">BTCfi</span> protocol
+          <span className="text-yellow">{chainToCopy[acoChain]?.name}</span>{' '}
+          protocol
         </div>
         <div className="mt-2 text-gray">
           You will be asked to sign the creation message

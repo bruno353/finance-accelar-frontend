@@ -129,11 +129,11 @@ const DepinTemplates = () => {
 
   return (
     <>
-      <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 lg:pt-44">
+      <section className="relative z-10 h-full overflow-hidden  pb-5 pt-28 lg:pt-44">
         <div className="absolute -right-44 top-20 z-[-1] rotate-180 opacity-20">
           <img src="/images/video/shape.svg" alt="shape" className="w-full" />
         </div>
-        <div className="mx-auto flex w-[1000px] items-center gap-x-5 text-4xl text-white">
+        <div className="mx-auto flex w-[1000px] items-center gap-x-5 text-2xl text-white  md:text-4xl">
           <div>
             <svg
               width="69"
@@ -250,7 +250,7 @@ const DepinTemplates = () => {
               </defs>
             </svg>
           </div>
-          <div>Depin Templates</div>
+          <div className="">Depin Templates</div>
         </div>
         <div className="mx-auto flex w-fit items-center justify-center gap-x-10">
           <img
@@ -259,7 +259,7 @@ const DepinTemplates = () => {
             className={`w-5 rotate-180 cursor-pointer ${isStart && 'hidden'}`}
             onClick={() => mySwiper.slidePrev()}
           />
-          <div className="mx-auto max-w-[1000px]">
+          <div className="mx-auto max-w-[800px] md:max-w-[1000px]">
             <Swiper
               ref={swiperRef}
               onInit={(ev) => {
@@ -285,7 +285,7 @@ const DepinTemplates = () => {
               {feats.map((feat, index) => (
                 <SwiperSlide key={index} className="flex justify-center py-5">
                   <div
-                    className={`relative h-[400px] w-[280px]  cursor-pointer rounded-lg  border-[1px] border-[#24262a] bg-[#1D1F23] px-5 py-4 text-base text-white transition-transform duration-300 hover:scale-105 hover:bg-[#25282C]`}
+                    className={`relative h-[400px] w-[230px] cursor-pointer rounded-lg  border-[1px] border-[#24262a]  bg-[#1D1F23] px-5 py-4 text-base text-white transition-transform duration-300 hover:scale-105 hover:bg-[#25282C] md:h-[400px] md:w-[280px]`}
                   >
                     <img
                       alt="image"

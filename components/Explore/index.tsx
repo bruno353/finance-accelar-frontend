@@ -141,7 +141,7 @@ const Explore = () => {
         </div>
         <div className="container">
           <div className="text-white">
-            <div className="pt-10 text-4xl font-semibold">
+            <div className="pt-16 text-4xl font-semibold">
               Multi-chain aggregational protocol for Core DAO
             </div>
             <div className="max-w-[500px] pt-2">
@@ -291,7 +291,7 @@ const Explore = () => {
             </ul>
           </div>
           <div className="mt-20 flex">
-            <ul className="mx-auto flex gap-x-20">
+            <ul className="mx-auto grid gap-x-20 gap-y-8 md:flex">
               {feats.map((option, index) => (
                 <li
                   key={index}

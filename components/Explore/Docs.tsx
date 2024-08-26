@@ -197,11 +197,11 @@ const Docs = () => {
 
   return (
     <>
-      <section className="relative z-10 h-full overflow-hidden  pb-52 pt-2 lg:pt-40">
+      <section className="relative z-10 h-full overflow-hidden pb-32 pt-24 md:pb-52 lg:pt-40">
         <div className="absolute -right-44 top-10 z-[-1] rotate-180 opacity-55">
           <img src="/images/video/shape.svg" alt="shape" className="w-full" />
         </div>
-        <div className="mx-auto mb-10 flex w-[1000px] items-center gap-x-5 text-4xl text-white">
+        <div className="mx-auto mb-10 flex w-[1000px] items-center gap-x-5 text-2xl text-white md:text-4xl">
           <div className="">
             <svg
               width="40"
@@ -218,7 +218,7 @@ const Docs = () => {
           </div>
           <div>Docs</div>
         </div>
-        <div className="grid grid-cols-2 justify-center gap-x-20 gap-y-10 px-20">
+        <div className="grid justify-center gap-x-20 gap-y-10 px-4 md:grid-cols-2 md:px-20">
           <div className="relative w-full">
             <img
               alt="image"
@@ -227,7 +227,9 @@ const Docs = () => {
             ></img>
             <div className="absolute bottom-8 left-5 text-white">
               <div className="text-base">Beta version live!</div>
-              <div className="text-2xl font-semibold">Accelar Protocol</div>
+              <div className="text-xl font-semibold md:text-2xl">
+                Accelar Protocol
+              </div>
               <div className="mt-4 w-fit cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-sm text-white hover:bg-[#3A51B0]">
                 Test now
               </div>
@@ -241,7 +243,9 @@ const Docs = () => {
             ></img>
             <div className="absolute bottom-8 left-5 text-white">
               <div className="text-base">Accelar integration with Akash</div>
-              <div className="text-2xl font-semibold">DePin on Crossfi</div>
+              <div className="text-xl font-semibold md:text-2xl">
+                DePin on Crossfi
+              </div>
               <div className="mt-4 w-fit cursor-pointer rounded-md border-[1px] border-[#D8AB15] bg-transparent px-5 py-1 text-sm text-[#D8AB15] hover:bg-[#d8aa1566]">
                 Create deployment
               </div>
@@ -255,7 +259,7 @@ const Docs = () => {
             ></img>
             <div className="absolute bottom-8 left-5 text-white">
               <div className="text-base">Real time trading</div>
-              <div className="text-2xl font-semibold">
+              <div className="text-xl font-semibold md:text-2xl">
                 Exposure to Real State market on Crossfi
               </div>
               <div className="mt-4 w-fit cursor-pointer rounded-md bg-[#4766EA] px-5 py-1 text-sm text-white hover:bg-[#3A51B0]">

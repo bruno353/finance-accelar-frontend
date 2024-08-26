@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useContext, useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import ThemeToggler from './ThemeToggler'
 import menuData from './menuData'
 import SubHeader from './SubHeader'
@@ -17,6 +17,7 @@ const Header = () => {
   const { address, chain } = useAccount()
   const { checkAndSetAcoUserExists } = useAcoUtils()
   const [acoUserExist, setAcoUserExist] = useState<boolean>(true)
+  const { push } = useRouter()
 
   const { acoUser, setAcoUser } = useContext(AccountContext)
 
@@ -65,7 +66,7 @@ const Header = () => {
   return (
     <>
       <header
-        className={`header left-0 top-0 z-40 flex w-full items-center bg-transparent bg-gradient-to-b from-[#222529] to-[#1a1d20] ${
+        className={`header left-0 top-0 z-40 flex w-full items-center bg-transparent bg-gradient-to-b from-[#222529] to-[#1a1d20] py-3 md:py-0 ${
           !sticky
             ? '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-100'
             : '!fixed !z-[9999] !bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm !transition dark:!bg-opacity-60'
@@ -98,7 +99,7 @@ const Header = () => {
                   onClick={navbarToggleHandler}
                   id="navbarToggler"
                   aria-label="Mobile Menu"
-                  className="absolute right-4 top-1/2 block translate-y-[-50%] rounded-lg px-3 py-[6px] ring-primary focus:ring-2 lg:hidden"
+                  className="absolute right-4 top-1/2 block translate-y-[-50%] rounded-lg px-3 py-[6px] ring-primary focus:ring-2 md:hidden"
                 >
                   <span
                     className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${
@@ -118,7 +119,7 @@ const Header = () => {
                 </button>
                 <nav
                   id="navbarCollapse"
-                  className={`navbar absolute right-0 z-30 w-[250px] rounded border-[.5px] border-body-color/50 bg-white px-6 py-4 duration-300 dark:border-body-color/20 dark:bg-dark lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 ${
+                  className={`navbar absolute right-0 z-30 w-[250px] -translate-x-2 translate-y-5 rounded border-[.5px] border-body-color/50 bg-white px-6 py-4 duration-300 dark:border-body-color/20 dark:bg-dark md:-translate-x-0 md:translate-y-0 lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 ${
                     navbarOpen
                       ? 'visibility top-full opacity-100'
                       : 'invisible top-[120%] opacity-0'
@@ -130,7 +131,9 @@ const Header = () => {
                         {menuItem.path ? (
                           <Link
                             href={menuItem.path}
-                            onClick={menuItem.onClick} // Adicione isso
+                            onClick={() => {
+                              push(menuItem.path)
+                            }} // Adicione isso
                             className={`${
                               menuItem.path?.length > 1 &&
                               pathName.includes(menuItem.path)
@@ -181,6 +184,9 @@ const Header = () => {
                       </li>
                     ))}
                   </ul>
+                  <div className="mx-auto mt-3 flex md:hidden">
+                    <ConnectButton />
+                  </div>
                 </nav>
               </div>
               <div className="flex items-center justify-end pr-16 lg:pr-0">
@@ -197,7 +203,7 @@ const Header = () => {
                     <div className=" text-sm text-red">Create user</div>
                   </div>
                 )}
-                <div className="mx-auto flex">
+                <div className="mx-auto hidden md:flex">
                   <ConnectButton />
                 </div>
                 {/* <div>
