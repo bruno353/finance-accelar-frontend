@@ -109,13 +109,13 @@ const metadata = {
 }
 
 export const wagmiConfig = defaultWagmiConfig({
-  chains: [coreDaoBTC, opSepolia], // required
+  chains: [crossfiTestnet, opSepolia], // required
   projectId, // required
   metadata, // required
   ssr: true,
   transports: {
-    [coreDaoBTC.id]: http('https://rpc.test.btcs.network'),
-    [fraxtalMainnet.id]: http('https://rpc.frax.com'),
+    // [coreDaoBTC.id]: http('https://rpc.test.btcs.network'),
+    // [fraxtalMainnet.id]: http('https://rpc.frax.com'),
     [crossfiTestnet.id]: http('https://rpc.testnet.ms'),
     [opSepolia.id]: http('https://sepolia.optimism.io'),
     [holesky.id]: http('https://endpoints.omniatech.io/v1/eth/holesky/public'),
