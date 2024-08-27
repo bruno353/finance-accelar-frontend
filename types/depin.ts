@@ -34,6 +34,7 @@ export interface NewDepinDeploymentProps {
   evmHash?: string
   evmAddress?: string
   deployment?: any
+  akashOwner?: string
   groups?: any
   escrow_account?: any
   lease: any

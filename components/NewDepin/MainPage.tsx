@@ -164,10 +164,7 @@ const MainPage = ({ id }) => {
       const newDepins = [...depins]
       const index = newDepins.findIndex((dp) => dp.id === id)
       if (resData?.dseq) {
-        const info = await getDepinInfo(
-          'akash1yyfpj5lr2lh0qat6hktqrnddfe0fvprk5zrwyw',
-          resData.dseq,
-        )
+        const info = await getDepinInfo(resData.akashOwner, resData.dseq)
         resData.deployment = info.deployment
         resData.groups = info.groups
         resData.escrow_account = info.escrow_account
@@ -205,7 +202,7 @@ const MainPage = ({ id }) => {
               console.log('tem dseq')
               await wait(500)
               const info = await getDepinInfo(
-                'akash1yyfpj5lr2lh0qat6hktqrnddfe0fvprk5zrwyw',
+                resData[i]?.akashOwner,
                 resData[i]?.dseq,
               )
               console.log('Info response')

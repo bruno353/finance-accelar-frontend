@@ -241,10 +241,7 @@ const MainPage = ({ id }) => {
 
         if (resData) {
           await wait(500)
-          const info = await getDepinInfo(
-            'akash1yyfpj5lr2lh0qat6hktqrnddfe0fvprk5zrwyw',
-            id,
-          )
+          const info = await getDepinInfo(resData?.akashOwner, id)
           resData.deployment = info.deployment
           resData.groups = info.groups
           resData.escrow_account = info.escrow_account
