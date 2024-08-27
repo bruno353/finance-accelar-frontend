@@ -45,6 +45,7 @@ import {
 } from '@/utils/functions'
 import LottiePlayer from 'react-lottie-player'
 import { useAccount } from 'wagmi'
+import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
 
 const MainPage = ({ id }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -62,6 +63,7 @@ const MainPage = ({ id }) => {
     depinOptionsNetwork[0],
   )
   const { address, chain } = useAccount()
+  const { acoUser, acoChain } = useContext(AccountContext)
 
   const [navBarSelected, setNavBarSelected] = useState('Deployments')
   const [blockchainWallets, setBlockchainWallets] = useState<
@@ -321,7 +323,7 @@ const MainPage = ({ id }) => {
                         <div className="flex gap-x-4">
                           Deploying:{' '}
                           <a
-                            href={`https://scan.test.btcs.network/tx/${app?.evmHash}`}
+                            href={`${chainToCopy[acoChain]?.explore}/${app?.evmHash}`}
                             target="_blank"
                             rel="noreferrer"
                             className="cursor-pointer text-blue"

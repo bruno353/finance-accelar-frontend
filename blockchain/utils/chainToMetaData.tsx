@@ -11,6 +11,7 @@ export const chainToCopy = {
   Crossfi: {
     label: 'Crossfi',
     docsLink: 'https://docs.crossfi.org/crossfi-chain',
+    explore: 'https://scan.testnet.ms',
     name: 'Crossfi',
     currency: 'XFI',
     contractAddress: '0xB8787cD673857529201c10B950d0b731255eCBBF',
