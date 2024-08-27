@@ -517,8 +517,10 @@ const MainPage = ({ id }) => {
                 <div className="w-14 text-gray">Model</div>
                 <div>
                   {
-                    depin?.groups?.at(0)?.group_spec?.resources?.at(0)?.resource
-                      ?.gpu?.attributes[0]
+                    depin?.groups
+                      ?.at(0)
+                      ?.group_spec?.resources?.at(0)
+                      ?.resource?.gpu?.attributes.at(-1).key
                   }{' '}
                 </div>
               </div>
