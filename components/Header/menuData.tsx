@@ -26,6 +26,12 @@ const menuData: Menu[] = [
     path: '/feats/depin',
     newTab: false,
   },
+  {
+    id: 2,
+    title: 'Synthetics',
+    path: '/feats/synthetics',
+    newTab: false,
+  },
   // {
   //   id: 33,
   //   title: "Blog",

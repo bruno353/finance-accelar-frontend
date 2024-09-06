@@ -1,0 +1,361 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react/no-unknown-property */
+/* eslint-disable dot-notation */
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-unused-vars */
+'use client'
+// import { useState } from 'react'
+import { useEffect, useState, ChangeEvent, FC, useContext, useRef } from 'react'
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
+import { useForm, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { Eye, EyeSlash, SmileySad } from 'phosphor-react'
+import * as Yup from 'yup'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import dynamic from 'next/dynamic'
+import 'react-quill/dist/quill.snow.css' // import styles
+import 'react-datepicker/dist/react-datepicker.css'
+import { parseCookies } from 'nookies'
+import { AccountContext } from '../../contexts/AccountContext'
+// import NewWorkspaceModal from './NewWorkspace'
+import { getBlockchainApps, getUserWorkspace, getWorkspace } from '@/utils/api'
+import { WorkspaceProps } from '@/types/workspace'
+import SubNavBar from '../Modals/SubNavBar'
+import { Logo } from '../Sidebar/Logo'
+import { BlockchainWalletProps } from '@/types/blockchain-app'
+import { getBlockchainWallets } from '@/utils/api-blockchain'
+// import NewAppModal from './Modals/NewAppModal'
+import Editor, { useMonaco } from '@monaco-editor/react'
+import Dropdown, { ValueObject } from '../Modals/Dropdown'
+import { depinOptionsFeatures, depinOptionsNetwork } from '@/types/consts/depin'
+import { callAxiosBackend } from '@/utils/general-api'
+import {
+  DepinDeploymentProps,
+  FakeDepinProps,
+  LeasesProps,
+  NewDepinDeploymentProps,
+} from '@/types/depin'
+import {
+  blockHeightToDate,
+  formatDate,
+  transformString,
+  wait,
+} from '@/utils/functions'
+import LottiePlayer from 'react-lottie-player'
+import { useAccount } from 'wagmi'
+import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
+import { Protocols, SynAsset, assetToStyle, syntethicAssets } from './Assets'
+import { Sparklines, SparklinesLine } from 'react-sparklines'
+
+const MainPage = ({ id }) => {
+  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingCompilation, setIsLoadingCompilation] = useState(false)
+  const [isInfoBalanceOpen, setIsInfoBalanceOpen] = useState(false)
+  const [value, setValue] = useState('// start your code here')
+  const [descRefresh, setDescRefresh] = useState<any>()
+  const [depinLoading, setDepinLoading] = useState<string[]>([])
+  const monaco = useMonaco()
+  const [depins, setDepins] = useState<NewDepinDeploymentProps[]>([])
+  const [synthetics, setSynthetics] = useState<SynAsset[]>([])
+
+  const [newDepins, setNewDepins] = useState<FakeDepinProps[]>([])
+  const [leases, setLeases] = useState<LeasesProps[]>([])
+  const [selected, setSelected] = useState<ValueObject>(depinOptionsFeatures[0])
+  const [selectedNetwork, setSelectedNetwork] = useState<ValueObject>(
+    depinOptionsNetwork[0],
+  )
+  const { address, chain } = useAccount()
+  const { acoUser, acoChain } = useContext(AccountContext)
+
+  const [navBarSelected, setNavBarSelected] = useState('Deployments')
+  const [blockchainWallets, setBlockchainWallets] = useState<
+    BlockchainWalletProps[]
+  >([])
+
+  const {
+    workspace,
+    user,
+    isDeployingNewDepinFeature,
+    setIsDeployingNewDepingFeature,
+  } = useContext(AccountContext)
+
+  const { push } = useRouter()
+  const pathname = usePathname()
+
+  const editorRef = useRef()
+  const [language, setLanguage] = useState('')
+
+  const onMount = (editor) => {
+    editorRef.current = editor
+    editor.focus()
+  }
+  const menuRef = useRef(null)
+
+  function formatDate(createdAt) {
+    const date = new Date(createdAt)
+    const hours = date.getHours().toString().padStart(2, '0')
+    const minutes = date.getMinutes().toString().padStart(2, '0')
+    const formattedDate = date.toISOString().split('T')[0]
+
+    return `${hours}:${minutes}, ${formattedDate}`
+  }
+
+  async function getDataHP(data: SynAsset) {
+    const dataPricing = await getLatestPrice(data.stickerPricing)
+
+    if (dataPricing.s === 'ok' && dataPricing.c && dataPricing.c.length > 0) {
+      const latestPrice = dataPricing.c[dataPricing.c.length - 1]
+      const price24HoursAgo = dataPricing.c[0] // O primeiro valor da lista
+
+      // Calculando a variação percentual
+      const priceChangePercent = (
+        ((latestPrice - price24HoursAgo) / price24HoursAgo) *
+        100
+      ).toFixed(2)
+      console.log('price change')
+      console.log(priceChangePercent)
+
+      return { latestPrice, priceChangePercent, priceArray24h: dataPricing.c }
+    } else {
+      console.log('Não foi possível obter os dados.')
+    }
+  }
+
+  async function getData() {
+    setIsLoading(true)
+    try {
+      const newAssets = [...syntethicAssets]
+      if (syntethicAssets?.length > 0) {
+        console.log('entrei aqui sim')
+        const volumeHorizonProtocol = await getVolume()
+        for (let i = 0; i < syntethicAssets?.length; i++) {
+          if (syntethicAssets[i].pool === Protocols.HORIZON_PROTOCOL) {
+            const res = await getDataHP(newAssets[i])
+            newAssets[i].price = res.latestPrice
+            newAssets[i].change24h = Number(res.priceChangePercent)
+            newAssets[i].priceArray24h = res.priceArray24h
+            newAssets[i].volume = Number(
+              (
+                Number(
+                  volumeHorizonProtocol.data.zassetTradingVolumes[0]
+                    .finalAmount,
+                ) /
+                10 ** 18
+              ).toFixed(2),
+            )
+            console.log('dados da pool ' + newAssets[i].name)
+            console.log(newAssets[i])
+          }
+        }
+      }
+
+      setSynthetics(newAssets)
+    } catch (err) {
+      console.log(err)
+      toast.error(`Error: ${err.response.data.message}`)
+    }
+    setIsLoading(false)
+  }
+
+  const getLatestPrice = async (sticker: string) => {
+    const currentTimestamp = Math.floor(Date.now() / 1000) // Timestamp atual
+    const oneDayAgo = currentTimestamp - 24 * 60 * 60 // 24 horas atrás
+
+    const url = `https://benchmarks.pyth.network/v1/shims/tradingview/history?symbol=${sticker}&resolution=60&from=${oneDayAgo}&to=${currentTimestamp}`
+
+    const response = await fetch(url)
+    const data = await response.json()
+    return data
+  }
+
+  const getVolume = async () => {
+    const currentTimestamp = Math.floor(Date.now() / 1000) // Timestamp atual
+    const oneDayAgo = currentTimestamp - 24 * 60 * 60 // 24 horas atrás
+
+    const data = {
+      query:
+        '\n                    query ($timestamp24H: BigInt!) {\n                        \n        zassetTradingVolumes(\n            first: 1\n            where: {\n                currencyKey: "zUSD"\n                timestamp_gte: $timestamp24H,\n                period: 86400\n            }\n            orderBy: timestamp\n            orderDirection: desc\n        ) {\n            finalAmount\n        }\n    \n                    }\n                ',
+      variables: {
+        timestamp24H: oneDayAgo,
+      },
+    }
+    const config = {
+      method: 'post',
+      url: `https://api.studio.thegraph.com/query/76663/mainnet-exchanges/v0.0.1`,
+      headers: {
+        'x-parse-application-id': `${process.env.NEXT_PUBLIC_API_BACKEND_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      data,
+    }
+
+    let dado
+
+    await axios(config).then(function (response) {
+      if (response.data) {
+        dado = response.data
+        console.log(dado)
+      }
+    })
+    return dado
+  }
+
+  useEffect(() => {
+    getData()
+  }, [])
+
+  useEffect(() => {
+    getData()
+  }, [address])
+
+  if (isLoading) {
+    return (
+      <div className="container grid w-full gap-y-[30px]  text-[16px] md:pb-20 lg:pb-28 lg:pt-40">
+        <div className="h-20 w-full animate-pulse rounded-[5px] bg-[#1d1f23b6]"></div>
+        <div className="h-40 w-full animate-pulse rounded-[5px] bg-[#1d1f23b6]"></div>
+      </div>
+    )
+  }
+
+  if (synthetics?.length === 0 && !isLoading) {
+    return (
+      <>
+        <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 text-center lg:pt-40">
+          <div className="mx-auto w-[300px]">
+            <LottiePlayer
+              loop
+              animationData={require('./mo.json')}
+              play
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+          <div className="text-2xl text-white 2xl:text-2xl">
+            No synthetics found
+          </div>
+          <div
+            onClick={() => {
+              push('/feats/depin/builder')
+            }}
+            className={`${
+              isLoading &&
+              '!hover:bg-current animate-pulse !cursor-auto !bg-[#4765eaad]'
+            } mx-auto mt-10 max-w-[200px] cursor-pointer rounded-md bg-[#4766EA] px-3 py-1 text-white hover:bg-[#3A51B0]`}
+          >
+            Soon
+          </div>
+        </section>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 lg:pt-40">
+        <div className="container px-12">
+          <div className="flex items-center gap-x-3">
+            <div className="w-[40px]">
+              <LottiePlayer
+                loop
+                animationData={require('./orb.json')}
+                play
+                style={{ width: '100%', height: 'auto' }}
+              />
+            </div>
+            <div className="text-2xl text-white 2xl:text-2xl">4 Assets</div>
+          </div>
+          <div className="mt-10">
+            <div className="flex w-full border-y-[0.5px] border-[#c9c9cb10] px-[15px] py-4 text-xs text-gray">
+              <div className="w-full max-w-[22%]">Asset</div>
+              <div className="w-full max-w-[23%]">Price</div>
+              <div className="w-full max-w-[15%]">Volume 24h</div>
+              <div className="w-full max-w-[20%]">Change 24h</div>
+              <div className="w-full max-w-[10%]">Pool</div>
+            </div>
+          </div>
+          {synthetics?.map((syn, index) => (
+            <div key={index} className="">
+              <div
+                onClick={(event) => {
+                  push(`/feats/synthetics/${syn?.ticker}`)
+                }}
+                key={index}
+                className={`flex items-center  ${
+                  index !== depins?.length - 1 &&
+                  'border-b-[1px] border-[#c5c4c41a]'
+                } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray hover:bg-[#7775840c]`}
+              >
+                <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                  <div className="flex items-center gap-x-4">
+                    <img
+                      alt="delete"
+                      src={assetToStyle[syn?.name]?.imgSource}
+                      className={assetToStyle[syn?.name]?.imgStyle}
+                    ></img>
+                    <div>{syn?.name}</div>
+                  </div>
+                </div>
+                <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                  USD {syn?.price?.toFixed(2)}
+                </div>
+                <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                  USD {syn?.volume}
+                </div>
+                <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                  <div className="flex items-center gap-x-4">
+                    <div className="w-12">
+                      <Sparklines
+                        data={syn?.priceArray24h}
+                        width={100}
+                        height={40}
+                      >
+                        <SparklinesLine
+                          style={{
+                            strokeWidth: 3,
+                            stroke: syn?.change24h > 0 ? '#6FD572' : '#FE886D',
+                            fill: 'none',
+                          }}
+                        />
+                      </Sparklines>
+                    </div>
+
+                    <div className="flex items-center gap-x-2">
+                      <div
+                        className={`text-sm ${
+                          syn?.change24h > 0
+                            ? 'text-[#6FD572]'
+                            : 'text-[#FE886D]'
+                        }`}
+                      >
+                        {syn?.change24h.toFixed(0)}%
+                      </div>
+                      <div
+                        className={`${
+                          syn?.change24h > 0
+                            ? 'rotate-45  font-bold text-[#6FD572]'
+                            : '-rotate-45 font-bold text-[#FE886D]'
+                        }`}
+                      >
+                        {syn?.change24h > 0 ? '↑' : '↓'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full max-w-[10%]">
+                  <img
+                    alt="delete"
+                    src="/images/synthetics/horizon-protocol.png"
+                    className="w-[25px]  cursor-pointer"
+                  ></img>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
+  )
+}
+
+export default MainPage
