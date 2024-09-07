@@ -1,5 +1,6 @@
 export enum Protocols {
   'HORIZON_PROTOCOL' = 'HORIZON_PROTOCOL',
+  'LANDX' = 'LANDX',
 }
 
 export const assetToStyle = {
@@ -12,9 +13,25 @@ export const assetToStyle = {
     imgStyle: 'w-[18px] 2xl:w-[20px]',
   },
   Nvidia: {
-    imgSource: '/images/synthetics/google.png',
-    imgStyle: 'w-[18px] 2xl:w-[20px]',
+    imgSource: '/images/synthetics/nvidia.png',
+    imgStyle: 'w-[18px] 2xl:w-[22px]',
   },
+  Gold: {
+    imgSource: '/images/synthetics/gold.png',
+    imgStyle: 'w-[18px] 2xl:w-[22px]',
+  },
+  Yen: {
+    imgSource: '/images/synthetics/yen.svg',
+    imgStyle: 'w-[14px] 2xl:w-[16px] ml-1',
+  },
+  xSoy: {
+    imgSource: '/images/synthetics/soy.svg',
+    imgStyle: 'w-[18px] 2xl:w-[22px]',
+  },
+}
+
+const nameToPrice = {
+  xSoy: 509600,
 }
 
 export interface SynAsset {
@@ -46,5 +63,23 @@ export const syntethicAssets: SynAsset[] = [
     ticker: 'zNVDA',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.NVDA/USD',
+  },
+  {
+    name: 'Gold',
+    ticker: 'zXAU',
+    pool: Protocols.HORIZON_PROTOCOL,
+    stickerPricing: 'Metal.XAU/USD',
+  },
+  {
+    name: 'Yen',
+    ticker: 'zJPY',
+    pool: Protocols.HORIZON_PROTOCOL,
+    stickerPricing: 'FX.USD/JPY',
+  },
+  {
+    name: 'xSoy',
+    ticker: 'xSoy',
+    pool: Protocols.LANDX,
+    stickerPricing: 'xSOY',
   },
 ]

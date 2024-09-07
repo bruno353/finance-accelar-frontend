@@ -123,6 +123,34 @@ const MainPage = ({ id }) => {
     }
   }
 
+  async function getDataLandx(data: SynAsset) {
+    const dataPricing = await getLatestPriceLandx(data.stickerPricing)
+
+    if (dataPricing?.data?.length > 0) {
+      const latestPrice = dataPricing?.data[dataPricing?.data?.length - 1]
+      const price24HoursAgo = dataPricing?.data[dataPricing?.data?.length - 2]
+
+      // Calculando a variação percentual
+      const priceChangePercent = (
+        ((latestPrice - price24HoursAgo) / price24HoursAgo) *
+        100
+      ).toFixed(2)
+      console.log('price change')
+      console.log(priceChangePercent)
+      const priceArray24hTreated = dataPricing?.data?.map(
+        (obj) => Object.values(obj)[0],
+      )
+
+      return {
+        latestPrice,
+        priceChangePercent,
+        priceArray24h: priceArray24hTreated,
+      }
+    } else {
+      console.log('Não foi possível obter os dados.')
+    }
+  }
+
   async function getData() {
     setIsLoading(true)
     try {
@@ -147,6 +175,11 @@ const MainPage = ({ id }) => {
             )
             console.log('dados da pool ' + newAssets[i].name)
             console.log(newAssets[i])
+          } else if (syntethicAssets[i].pool === Protocols.LANDX) {
+            const res = await getDataLandx(newAssets[i])
+            newAssets[i].price = res.latestPrice
+            newAssets[i].change24h = Number(res.priceChangePercent)
+            newAssets[i].priceArray24h = res.priceArray24h
           }
         }
       }
@@ -164,6 +197,14 @@ const MainPage = ({ id }) => {
     const oneDayAgo = currentTimestamp - 24 * 60 * 60 // 24 horas atrás
 
     const url = `https://benchmarks.pyth.network/v1/shims/tradingview/history?symbol=${sticker}&resolution=60&from=${oneDayAgo}&to=${currentTimestamp}`
+
+    const response = await fetch(url)
+    const data = await response.json()
+    return data
+  }
+
+  const getLatestPriceLandx = async (sticker: string) => {
+    const url = `https://api-mainnet.landx.fi/api/public/shards/price-chart?asset=${sticker}&period=1m`
 
     const response = await fetch(url)
     const data = await response.json()
