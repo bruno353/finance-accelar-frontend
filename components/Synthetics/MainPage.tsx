@@ -46,7 +46,7 @@ import {
 import LottiePlayer from 'react-lottie-player'
 import { useAccount } from 'wagmi'
 import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
-import { Protocols, SynAsset, assetToStyle, syntethicAssets } from './Assets'
+import { Protocols, SynAsset, assetToStyle, poolToStyle, syntethicAssets } from './Assets'
 import { Sparklines, SparklinesLine } from 'react-sparklines'
 
 const MainPage = ({ id }) => {
@@ -103,23 +103,44 @@ const MainPage = ({ id }) => {
   }
 
   async function getDataHP(data: SynAsset) {
-    const dataPricing = await getLatestPrice(data.stickerPricing)
+    const currentTimestamp = Math.floor(Date.now() / 1000)
+    const threeDaysAgo = currentTimestamp - 72 * 60 * 60 // 72 hours ago
+    const oneDayAgo = currentTimestamp - 24 * 60 * 60 // 24 hours ago
+
+    const dataPricing = await getLatestPrice(
+      data.stickerPricing,
+      threeDaysAgo,
+      currentTimestamp,
+    )
+
+    console.log('data pricing s')
+    console.log(dataPricing)
 
     if (dataPricing.s === 'ok' && dataPricing.c && dataPricing.c.length > 0) {
       const latestPrice = dataPricing.c[dataPricing.c.length - 1]
-      const price24HoursAgo = dataPricing.c[0] // O primeiro valor da lista
+      let price24HoursAgo = 0
+      let priceChangePercent: any = 0
 
-      // Calculando a variação percentual
-      const priceChangePercent = (
-        ((latestPrice - price24HoursAgo) / price24HoursAgo) *
-        100
-      ).toFixed(2)
-      console.log('price change')
-      console.log(priceChangePercent)
+      const prices24h = dataPricing.c.filter(
+        (price, index) => dataPricing.t[index] >= oneDayAgo && price > 0,
+      )
 
-      return { latestPrice, priceChangePercent, priceArray24h: dataPricing.c }
+      if (prices24h.length > 0) {
+        price24HoursAgo = prices24h[0] // First price in the last 24 hours
+        priceChangePercent = (
+          ((latestPrice - price24HoursAgo) / price24HoursAgo) *
+          100
+        ).toFixed(2)
+      }
+
+      return {
+        latestPrice,
+        priceChangePercent: Number(priceChangePercent),
+        priceArray24h: prices24h,
+      }
     } else {
       console.log('Não foi possível obter os dados.')
+      return { latestPrice: 0, priceChangePercent: 0, priceArray24h: [] }
     }
   }
 
@@ -127,7 +148,9 @@ const MainPage = ({ id }) => {
     const dataPricing = await getLatestPriceLandx(data.stickerPricing)
 
     if (dataPricing?.data?.length > 0) {
-      const latestPrice = dataPricing?.data[dataPricing?.data?.length - 1]
+      const values = dataPricing?.data?.map((obj) => Object.values(obj)[0])
+
+      const latestPrice = Number(values[dataPricing?.data?.length - 1])
       const price24HoursAgo = dataPricing?.data[dataPricing?.data?.length - 2]
 
       // Calculando a variação percentual
@@ -137,9 +160,8 @@ const MainPage = ({ id }) => {
       ).toFixed(2)
       console.log('price change')
       console.log(priceChangePercent)
-      const priceArray24hTreated = dataPricing?.data?.map(
-        (obj) => Object.values(obj)[0],
-      )
+      console.log(latestPrice)
+      const priceArray24hTreated = values
 
       return {
         latestPrice,
@@ -160,26 +182,28 @@ const MainPage = ({ id }) => {
         const volumeHorizonProtocol = await getVolume()
         for (let i = 0; i < syntethicAssets?.length; i++) {
           if (syntethicAssets[i].pool === Protocols.HORIZON_PROTOCOL) {
+            console.log('getting data for horizon protocol')
             const res = await getDataHP(newAssets[i])
-            newAssets[i].price = res.latestPrice
-            newAssets[i].change24h = Number(res.priceChangePercent)
-            newAssets[i].priceArray24h = res.priceArray24h
+            newAssets[i].price = res?.latestPrice
+            newAssets[i].change24h = Number(res?.priceChangePercent)
+            newAssets[i].priceArray24h = res?.priceArray24h
             newAssets[i].volume = Number(
               (
                 Number(
-                  volumeHorizonProtocol.data.zassetTradingVolumes[0]
-                    .finalAmount,
+                  volumeHorizonProtocol?.data?.zassetTradingVolumes[0]
+                    ?.finalAmount,
                 ) /
                 10 ** 18
               ).toFixed(2),
             )
-            console.log('dados da pool ' + newAssets[i].name)
+            console.log('dados da pool ' + newAssets[i]?.name)
             console.log(newAssets[i])
           } else if (syntethicAssets[i].pool === Protocols.LANDX) {
+            console.log('getting data no landx')
             const res = await getDataLandx(newAssets[i])
-            newAssets[i].price = res.latestPrice
-            newAssets[i].change24h = Number(res.priceChangePercent)
-            newAssets[i].priceArray24h = res.priceArray24h
+            newAssets[i].price = res?.latestPrice
+            newAssets[i].change24h = Number(res?.priceChangePercent)
+            newAssets[i].priceArray24h = res?.priceArray24h
           }
         }
       }
@@ -187,16 +211,13 @@ const MainPage = ({ id }) => {
       setSynthetics(newAssets)
     } catch (err) {
       console.log(err)
-      toast.error(`Error: ${err.response.data.message}`)
+      toast.error(`Error: ${err.response}`)
     }
     setIsLoading(false)
   }
 
-  const getLatestPrice = async (sticker: string) => {
-    const currentTimestamp = Math.floor(Date.now() / 1000) // Timestamp atual
-    const oneDayAgo = currentTimestamp - 24 * 60 * 60 // 24 horas atrás
-
-    const url = `https://benchmarks.pyth.network/v1/shims/tradingview/history?symbol=${sticker}&resolution=60&from=${oneDayAgo}&to=${currentTimestamp}`
+  const getLatestPrice = async (sticker: string, from: number, to: number) => {
+    const url = `https://benchmarks.pyth.network/v1/shims/tradingview/history?symbol=${sticker}&resolution=60&from=${from}&to=${to}`
 
     const response = await fetch(url)
     const data = await response.json()
@@ -208,6 +229,7 @@ const MainPage = ({ id }) => {
 
     const response = await fetch(url)
     const data = await response.json()
+    console.log('got price')
     return data
   }
 
@@ -304,7 +326,9 @@ const MainPage = ({ id }) => {
                 style={{ width: '100%', height: 'auto' }}
               />
             </div>
-            <div className="text-2xl text-white 2xl:text-2xl">4 Assets</div>
+            <div className="text-2xl text-white 2xl:text-2xl">
+              {synthetics?.length} Assets
+            </div>
           </div>
           <div className="mt-10">
             <div className="flex w-full border-y-[0.5px] border-[#c9c9cb10] px-[15px] py-4 text-xs text-gray">
@@ -338,56 +362,68 @@ const MainPage = ({ id }) => {
                   </div>
                 </div>
                 <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
-                  USD {syn?.price?.toFixed(2)}
+                  USD {syn?.price ? syn?.price?.toFixed(2) : 0}
                 </div>
                 <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
-                  USD {syn?.volume}
-                </div>
-                <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                  <div className="flex items-center gap-x-4">
-                    <div className="w-12">
-                      <Sparklines
-                        data={syn?.priceArray24h}
-                        width={100}
-                        height={40}
-                      >
-                        <SparklinesLine
-                          style={{
-                            strokeWidth: 3,
-                            stroke: syn?.change24h > 0 ? '#6FD572' : '#FE886D',
-                            fill: 'none',
-                          }}
-                        />
-                      </Sparklines>
-                    </div>
-
-                    <div className="flex items-center gap-x-2">
-                      <div
-                        className={`text-sm ${
-                          syn?.change24h > 0
-                            ? 'text-[#6FD572]'
-                            : 'text-[#FE886D]'
-                        }`}
-                      >
-                        {syn?.change24h.toFixed(0)}%
-                      </div>
-                      <div
-                        className={`${
-                          syn?.change24h > 0
-                            ? 'rotate-45  font-bold text-[#6FD572]'
-                            : '-rotate-45 font-bold text-[#FE886D]'
-                        }`}
-                      >
-                        {syn?.change24h > 0 ? '↑' : '↓'}
-                      </div>
-                    </div>
+                  <div className="flex items-center gap-x-2">
+                    <img
+                      alt="delete"
+                      src="/images/synthetics/usd.png"
+                      className="w-[18px]"
+                    ></img>
+                    <div>{syn?.volume > 0 ? syn?.volume : ''} </div>
                   </div>
                 </div>
-                <div className="w-full max-w-[10%]">
+                <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                  {syn?.change24h ? (
+                    <div className="flex items-center gap-x-4">
+                      <div className="w-12">
+                        <Sparklines
+                          data={syn?.priceArray24h}
+                          width={100}
+                          height={40}
+                        >
+                          <SparklinesLine
+                            style={{
+                              strokeWidth: 3,
+                              stroke:
+                                syn?.change24h > 0 ? '#6FD572' : '#FE886D',
+                              fill: 'none',
+                            }}
+                          />
+                        </Sparklines>
+                      </div>
+
+                      <div className="flex items-center gap-x-2">
+                        <div
+                          className={`text-sm ${
+                            syn?.change24h > 0
+                              ? 'text-[#6FD572]'
+                              : 'text-[#FE886D]'
+                          }`}
+                        >
+                          {syn?.change24h.toFixed(0)}%
+                        </div>
+                        <div
+                          className={`${
+                            syn?.change24h > 0
+                              ? 'rotate-45  font-bold text-[#6FD572]'
+                              : '-rotate-45 font-bold text-[#FE886D]'
+                          }`}
+                        >
+                          {syn?.change24h > 0 ? '↑' : '↓'}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>0%</div>
+                  )}
+                </div>
+                <div className="-ml-2 w-full max-w-[10%]">
                   <img
                     alt="delete"
-                    src="/images/synthetics/horizon-protocol.png"
-                    className="w-[25px]  cursor-pointer"
+                    src={poolToStyle[syn?.pool].imgSource}
+                    className={poolToStyle[syn?.pool].imgStyle}
                   ></img>
                 </div>
               </div>

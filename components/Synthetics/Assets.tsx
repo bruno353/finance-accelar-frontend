@@ -28,6 +28,21 @@ export const assetToStyle = {
     imgSource: '/images/synthetics/soy.svg',
     imgStyle: 'w-[18px] 2xl:w-[22px]',
   },
+  xRice: {
+    imgSource: '/images/synthetics/rice.svg',
+    imgStyle: 'w-[18px] 2xl:w-[22px]',
+  },
+}
+
+export const poolToStyle = {
+  HORIZON_PROTOCOL: {
+    imgSource: '/images/synthetics/horizon-protocol.png',
+    imgStyle: 'w-[25px]',
+  },
+  LANDX: {
+    imgSource: '/images/synthetics/lndx.webp',
+    imgStyle: 'w-[25px]',
+  },
 }
 
 const nameToPrice = {
@@ -81,5 +96,11 @@ export const syntethicAssets: SynAsset[] = [
     ticker: 'xSoy',
     pool: Protocols.LANDX,
     stickerPricing: 'xSOY',
+  },
+  {
+    name: 'xRice',
+    ticker: 'xRice',
+    pool: Protocols.LANDX,
+    stickerPricing: 'xRICE',
   },
 ]
