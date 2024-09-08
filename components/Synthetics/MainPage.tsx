@@ -46,7 +46,13 @@ import {
 import LottiePlayer from 'react-lottie-player'
 import { useAccount } from 'wagmi'
 import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
-import { Protocols, SynAsset, assetToStyle, poolToStyle, syntethicAssets } from './Assets'
+import {
+  Protocols,
+  SynAsset,
+  assetToStyle,
+  poolToStyle,
+  syntethicAssets,
+} from './Assets'
 import { Sparklines, SparklinesLine } from 'react-sparklines'
 
 const MainPage = ({ id }) => {
