@@ -1,6 +1,14 @@
 export enum Protocols {
   'HORIZON_PROTOCOL' = 'HORIZON_PROTOCOL',
   'LANDX' = 'LANDX',
+  'CLEARPOOL' = 'CLEARPOOL',
+}
+
+export enum AssetTypes {
+  'FIAT' = 'FIAT',
+  'COMMODITY' = 'COMMODITY',
+  'STOCK' = 'STOCK',
+  'LENDING' = 'LENDING',
 }
 
 export const assetToStyle = {
@@ -32,6 +40,10 @@ export const assetToStyle = {
     imgSource: '/images/synthetics/rice.svg',
     imgStyle: 'w-[18px] 2xl:w-[22px]',
   },
+  Bastion: {
+    imgSource: '/images/synthetics/bastion_trading.svg',
+    imgStyle: 'w-[18px] 2xl:w-[22px]',
+  },
 }
 
 export const poolToStyle = {
@@ -42,6 +54,31 @@ export const poolToStyle = {
   LANDX: {
     imgSource: '/images/synthetics/lndx.webp',
     imgStyle: 'w-[25px]',
+  },
+  CLEARPOOL: {
+    imgSource: '/images/synthetics/clearpool.svg',
+    imgStyle: 'w-[25px]',
+  },
+}
+
+export const clearpoolMetadata = {
+  Bastion: {
+    price: 1,
+    apr: 6.66,
+    poolSize: 1859325.69,
+  },
+}
+
+export const landrxMetadata = {
+  xRice: {
+    price: 2.81,
+    apr: 17.9,
+    poolSize: 497900,
+  },
+  xSoy: {
+    price: 5.84,
+    apr: 16.3,
+    poolSize: 509600,
   },
 }
 
@@ -58,6 +95,8 @@ export interface SynAsset {
   change24h?: number
   priceArray24h?: number[]
   stickerPricing?: string
+  apr?: string
+  type?: AssetTypes
 }
 
 export const syntethicAssets: SynAsset[] = [
@@ -66,41 +105,55 @@ export const syntethicAssets: SynAsset[] = [
     ticker: 'zTSLA',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.TSLA/USD',
+    type: AssetTypes.STOCK,
   },
   {
     name: 'Google',
     ticker: 'zGOOGL',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.GOOG/USD',
+    type: AssetTypes.STOCK,
   },
   {
     name: 'Nvidia',
     ticker: 'zNVDA',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.NVDA/USD',
+    type: AssetTypes.STOCK,
   },
   {
     name: 'Gold',
     ticker: 'zXAU',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Metal.XAU/USD',
+    type: AssetTypes.COMMODITY,
   },
   {
     name: 'Yen',
     ticker: 'zJPY',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'FX.USD/JPY',
+    type: AssetTypes.FIAT,
   },
   {
     name: 'xSoy',
     ticker: 'xSoy',
     pool: Protocols.LANDX,
     stickerPricing: 'xSOY',
+    type: AssetTypes.COMMODITY,
   },
   {
     name: 'xRice',
     ticker: 'xRice',
     pool: Protocols.LANDX,
     stickerPricing: 'xRICE',
+    type: AssetTypes.COMMODITY,
+  },
+  {
+    name: 'Bastion',
+    ticker: 'bastion',
+    pool: Protocols.CLEARPOOL,
+    stickerPricing: 'bastion',
+    type: AssetTypes.LENDING,
   },
 ]

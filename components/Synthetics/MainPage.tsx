@@ -47,9 +47,12 @@ import LottiePlayer from 'react-lottie-player'
 import { useAccount } from 'wagmi'
 import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
 import {
+  AssetTypes,
   Protocols,
   SynAsset,
   assetToStyle,
+  clearpoolMetadata,
+  landrxMetadata,
   poolToStyle,
   syntethicAssets,
 } from './Assets'
@@ -72,6 +75,15 @@ const MainPage = ({ id }) => {
   const [selectedNetwork, setSelectedNetwork] = useState<ValueObject>(
     depinOptionsNetwork[0],
   )
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([])
+  // Função para alternar a seleção de tipos de ativos
+  const toggleType = (type: string) => {
+    if (selectedTypes.includes(type)) {
+      setSelectedTypes(selectedTypes.filter((t) => t !== type))
+    } else {
+      setSelectedTypes([...selectedTypes, type])
+    }
+  }
   const { address, chain } = useAccount()
   const { acoUser, acoChain } = useContext(AccountContext)
 
@@ -206,10 +218,16 @@ const MainPage = ({ id }) => {
             console.log(newAssets[i])
           } else if (syntethicAssets[i].pool === Protocols.LANDX) {
             console.log('getting data no landx')
-            const res = await getDataLandx(newAssets[i])
-            newAssets[i].price = res?.latestPrice
-            newAssets[i].change24h = Number(res?.priceChangePercent)
-            newAssets[i].priceArray24h = res?.priceArray24h
+            const res = landrxMetadata[syntethicAssets[i].name]
+            newAssets[i].price = res?.price
+            newAssets[i].volume = res?.poolSize
+            newAssets[i].apr = res?.apr
+          } else if (syntethicAssets[i].pool === Protocols.CLEARPOOL) {
+            console.log('getting data no landx')
+            const res = clearpoolMetadata[syntethicAssets[i].name]
+            newAssets[i].price = res?.price
+            newAssets[i].volume = res?.poolSize
+            newAssets[i].apr = res?.apr
           }
         }
       }
@@ -336,105 +354,155 @@ const MainPage = ({ id }) => {
               {synthetics?.length} Assets
             </div>
           </div>
+          <div className="mb-4 flex gap-x-4">
+            {Object.values(AssetTypes).map((type) => (
+              <div key={type} className="flex items-center gap-x-2">
+                <input
+                  type="checkbox"
+                  id={type}
+                  checked={selectedTypes.includes(type)}
+                  onChange={() => toggleType(type)}
+                />
+                <label className="text-white">{type}</label>
+              </div>
+            ))}
+          </div>
+
           <div className="mt-10">
             <div className="flex w-full border-y-[0.5px] border-[#c9c9cb10] px-[15px] py-4 text-xs text-gray">
-              <div className="w-full max-w-[22%]">Asset</div>
-              <div className="w-full max-w-[23%]">Price</div>
-              <div className="w-full max-w-[15%]">Volume 24h</div>
-              <div className="w-full max-w-[20%]">Change 24h</div>
+              <div className="w-full max-w-[20%]">Asset</div>
+              <div className="w-full max-w-[15%]">Price</div>
+              <div className="w-full max-w-[25%]">Volume</div>
+              <div className="w-full max-w-[20%]">Info</div>
               <div className="w-full max-w-[10%]">Pool</div>
+              <div className="w-full max-w-[10%]">Type</div>
             </div>
           </div>
-          {synthetics?.map((syn, index) => (
-            <div key={index} className="">
-              <div
-                onClick={(event) => {
-                  push(`/feats/synthetics/${syn?.ticker}`)
-                }}
-                key={index}
-                className={`flex items-center  ${
-                  index !== depins?.length - 1 &&
-                  'border-b-[1px] border-[#c5c4c41a]'
-                } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray hover:bg-[#7775840c]`}
-              >
-                <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
-                  <div className="flex items-center gap-x-4">
-                    <img
-                      alt="delete"
-                      src={assetToStyle[syn?.name]?.imgSource}
-                      className={assetToStyle[syn?.name]?.imgStyle}
-                    ></img>
-                    <div>{syn?.name}</div>
-                  </div>
-                </div>
-                <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
-                  USD {syn?.price ? syn?.price?.toFixed(2) : 0}
-                </div>
-                <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
-                  <div className="flex items-center gap-x-2">
-                    <img
-                      alt="delete"
-                      src="/images/synthetics/usd.png"
-                      className="w-[18px]"
-                    ></img>
-                    <div>{syn?.volume > 0 ? syn?.volume : ''} </div>
-                  </div>
-                </div>
-                <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
-                  {syn?.change24h ? (
+          {synthetics
+            ?.filter((syn) => selectedTypes.includes(syn?.type)) // Filtra apenas os tipos selecionados
+            .map((syn, index) => (
+              <div key={index} className="">
+                <div
+                  onClick={(event) => {
+                    push(`/feats/synthetics/${syn?.ticker}`)
+                  }}
+                  key={index}
+                  className={`flex items-center  ${
+                    index !== depins?.length - 1 &&
+                    'border-b-[1px] border-[#c5c4c41a]'
+                  } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray hover:bg-[#7775840c]`}
+                >
+                  <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
                     <div className="flex items-center gap-x-4">
-                      <div className="w-12">
-                        <Sparklines
-                          data={syn?.priceArray24h}
-                          width={100}
-                          height={40}
-                        >
-                          <SparklinesLine
-                            style={{
-                              strokeWidth: 3,
-                              stroke:
-                                syn?.change24h > 0 ? '#6FD572' : '#FE886D',
-                              fill: 'none',
-                            }}
-                          />
-                        </Sparklines>
-                      </div>
-
-                      <div className="flex items-center gap-x-2">
-                        <div
-                          className={`text-sm ${
-                            syn?.change24h > 0
-                              ? 'text-[#6FD572]'
-                              : 'text-[#FE886D]'
-                          }`}
-                        >
-                          {syn?.change24h.toFixed(0)}%
-                        </div>
-                        <div
-                          className={`${
-                            syn?.change24h > 0
-                              ? 'rotate-45  font-bold text-[#6FD572]'
-                              : '-rotate-45 font-bold text-[#FE886D]'
-                          }`}
-                        >
-                          {syn?.change24h > 0 ? '↑' : '↓'}
-                        </div>
-                      </div>
+                      <img
+                        alt="delete"
+                        src={assetToStyle[syn?.name]?.imgSource}
+                        className={assetToStyle[syn?.name]?.imgStyle}
+                      ></img>
+                      <div>{syn?.name}</div>
                     </div>
-                  ) : (
-                    <div>0%</div>
-                  )}
-                </div>
-                <div className="-ml-2 w-full max-w-[10%]">
-                  <img
-                    alt="delete"
-                    src={poolToStyle[syn?.pool].imgSource}
-                    className={poolToStyle[syn?.pool].imgStyle}
-                  ></img>
+                  </div>
+                  <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                    USD {syn?.price ? syn?.price?.toFixed(2) : 0}
+                  </div>
+                  <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                    <div className="flex items-center gap-x-2">
+                      {syn?.pool === Protocols.HORIZON_PROTOCOL ? (
+                        <div className="text-xs text-gray">Volume 24h</div>
+                      ) : (
+                        <div className="text-xs text-gray">Pool size</div>
+                      )}
+                      <img
+                        alt="delete"
+                        src="/images/synthetics/usd.png"
+                        className="w-[18px]"
+                      ></img>
+                      <div>
+                        {syn?.volume > 0
+                          ? syn.volume.toLocaleString('en-US', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
+                          : ''}
+                      </div>{' '}
+                    </div>
+                  </div>
+                  <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+                    {syn?.pool === Protocols.HORIZON_PROTOCOL ? (
+                      <div className="">
+                        {' '}
+                        {syn?.change24h ? (
+                          <div className="flex items-center gap-x-4">
+                            <div className="text-xs text-gray">Change 24h:</div>
+                            <div className="w-12">
+                              <Sparklines
+                                data={syn?.priceArray24h}
+                                width={100}
+                                height={40}
+                              >
+                                <SparklinesLine
+                                  style={{
+                                    strokeWidth: 3,
+                                    stroke:
+                                      syn?.change24h > 0
+                                        ? '#6FD572'
+                                        : '#FE886D',
+                                    fill: 'none',
+                                  }}
+                                />
+                              </Sparklines>
+                            </div>
+
+                            <div className="flex items-center gap-x-2">
+                              <div
+                                className={`text-sm ${
+                                  syn?.change24h > 0
+                                    ? 'text-[#6FD572]'
+                                    : 'text-[#FE886D]'
+                                }`}
+                              >
+                                {syn?.change24h.toFixed(0)}%
+                              </div>
+                              <div
+                                className={`${
+                                  syn?.change24h > 0
+                                    ? 'rotate-45  font-bold text-[#6FD572]'
+                                    : '-rotate-45 font-bold text-[#FE886D]'
+                                }`}
+                              >
+                                {syn?.change24h > 0 ? '↑' : '↓'}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>0%</div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-white">
+                        <span className="mr-1 text-xs text-gray">APR:</span>{' '}
+                        {syn?.apr}%
+                      </div>
+                    )}
+                  </div>
+                  <div className="-ml-2 w-full max-w-[10%]">
+                    <img
+                      alt="delete"
+                      src={poolToStyle[syn?.pool].imgSource}
+                      className={poolToStyle[syn?.pool].imgStyle}
+                    ></img>
+                  </div>
+                  <div className="w-full max-w-[10%]">
+                    <div>
+                      {syn?.type
+                        ? syn.type.charAt(0).toUpperCase() +
+                          syn.type.slice(1).toLowerCase()
+                        : ''}
+                    </div>{' '}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </section>
     </>
