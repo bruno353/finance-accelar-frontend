@@ -58,23 +58,94 @@ import {
 } from './Assets'
 import { Sparklines, SparklinesLine } from 'react-sparklines'
 
+const getLatestPrice = async (sticker: string, from: number, to: number) => {
+  const url = `https://benchmarks.pyth.network/v1/shims/tradingview/history?symbol=${sticker}&resolution=60&from=${from}&to=${to}`
+
+  const response = await fetch(url)
+  const data = await response.json()
+  return data
+}
+
+export async function getDataHP(stickerPricing: string) {
+  const currentTimestamp = Math.floor(Date.now() / 1000)
+  const threeDaysAgo = currentTimestamp - 72 * 60 * 60 // 72 hours ago
+  const oneDayAgo = currentTimestamp - 24 * 60 * 60 // 24 hours ago
+
+  const dataPricing = await getLatestPrice(
+    stickerPricing,
+    threeDaysAgo,
+    currentTimestamp,
+  )
+
+  console.log('data pricing s')
+  console.log(dataPricing)
+
+  if (dataPricing.s === 'ok' && dataPricing.c && dataPricing.c.length > 0) {
+    const latestPrice = dataPricing.c[dataPricing.c.length - 1]
+    let price24HoursAgo = 0
+    let priceChangePercent: any = 0
+
+    const prices24h = dataPricing.c.filter(
+      (price, index) => dataPricing.t[index] >= oneDayAgo && price > 0,
+    )
+
+    if (prices24h.length > 0) {
+      price24HoursAgo = prices24h[0] // First price in the last 24 hours
+      priceChangePercent = (
+        ((latestPrice - price24HoursAgo) / price24HoursAgo) *
+        100
+      ).toFixed(2)
+    }
+
+    return {
+      latestPrice,
+      priceChangePercent: Number(priceChangePercent),
+      priceArray24h: prices24h,
+    }
+  } else {
+    console.log('Não foi possível obter os dados.')
+    return { latestPrice: 0, priceChangePercent: 0, priceArray24h: [] }
+  }
+}
+
+export const getVolume = async () => {
+  const currentTimestamp = Math.floor(Date.now() / 1000) // Timestamp atual
+  const oneDayAgo = currentTimestamp - 24 * 60 * 60 // 24 horas atrás
+
+  const data = {
+    query:
+      '\n                    query ($timestamp24H: BigInt!) {\n                        \n        zassetTradingVolumes(\n            first: 1\n            where: {\n                currencyKey: "zUSD"\n                timestamp_gte: $timestamp24H,\n                period: 86400\n            }\n            orderBy: timestamp\n            orderDirection: desc\n        ) {\n            finalAmount\n        }\n    \n                    }\n                ',
+    variables: {
+      timestamp24H: oneDayAgo,
+    },
+  }
+  const config = {
+    method: 'post',
+    url: `https://api.studio.thegraph.com/query/76663/mainnet-exchanges/v0.0.1`,
+    headers: {
+      'x-parse-application-id': `${process.env.NEXT_PUBLIC_API_BACKEND_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    data,
+  }
+
+  let dado
+
+  await axios(config).then(function (response) {
+    if (response.data) {
+      dado = response.data
+      console.log(dado)
+    }
+  })
+  return dado
+}
+
 const MainPage = ({ id }) => {
   const [isLoading, setIsLoading] = useState(true)
-  const [isLoadingCompilation, setIsLoadingCompilation] = useState(false)
-  const [isInfoBalanceOpen, setIsInfoBalanceOpen] = useState(false)
-  const [value, setValue] = useState('// start your code here')
-  const [descRefresh, setDescRefresh] = useState<any>()
-  const [depinLoading, setDepinLoading] = useState<string[]>([])
   const monaco = useMonaco()
   const [depins, setDepins] = useState<NewDepinDeploymentProps[]>([])
   const [synthetics, setSynthetics] = useState<SynAsset[]>([])
 
-  const [newDepins, setNewDepins] = useState<FakeDepinProps[]>([])
-  const [leases, setLeases] = useState<LeasesProps[]>([])
-  const [selected, setSelected] = useState<ValueObject>(depinOptionsFeatures[0])
-  const [selectedNetwork, setSelectedNetwork] = useState<ValueObject>(
-    depinOptionsNetwork[0],
-  )
   const [selectedTypes, setSelectedTypes] = useState<string[]>(
     Object.values(AssetTypes),
   )
@@ -122,48 +193,6 @@ const MainPage = ({ id }) => {
     return `${hours}:${minutes}, ${formattedDate}`
   }
 
-  async function getDataHP(data: SynAsset) {
-    const currentTimestamp = Math.floor(Date.now() / 1000)
-    const threeDaysAgo = currentTimestamp - 72 * 60 * 60 // 72 hours ago
-    const oneDayAgo = currentTimestamp - 24 * 60 * 60 // 24 hours ago
-
-    const dataPricing = await getLatestPrice(
-      data.stickerPricing,
-      threeDaysAgo,
-      currentTimestamp,
-    )
-
-    console.log('data pricing s')
-    console.log(dataPricing)
-
-    if (dataPricing.s === 'ok' && dataPricing.c && dataPricing.c.length > 0) {
-      const latestPrice = dataPricing.c[dataPricing.c.length - 1]
-      let price24HoursAgo = 0
-      let priceChangePercent: any = 0
-
-      const prices24h = dataPricing.c.filter(
-        (price, index) => dataPricing.t[index] >= oneDayAgo && price > 0,
-      )
-
-      if (prices24h.length > 0) {
-        price24HoursAgo = prices24h[0] // First price in the last 24 hours
-        priceChangePercent = (
-          ((latestPrice - price24HoursAgo) / price24HoursAgo) *
-          100
-        ).toFixed(2)
-      }
-
-      return {
-        latestPrice,
-        priceChangePercent: Number(priceChangePercent),
-        priceArray24h: prices24h,
-      }
-    } else {
-      console.log('Não foi possível obter os dados.')
-      return { latestPrice: 0, priceChangePercent: 0, priceArray24h: [] }
-    }
-  }
-
   async function getDataLandx(data: SynAsset) {
     const dataPricing = await getLatestPriceLandx(data.stickerPricing)
 
@@ -203,19 +232,20 @@ const MainPage = ({ id }) => {
         for (let i = 0; i < syntethicAssets?.length; i++) {
           if (syntethicAssets[i].pool === Protocols.HORIZON_PROTOCOL) {
             console.log('getting data for horizon protocol')
-            const res = await getDataHP(newAssets[i])
+            const res = await getDataHP(newAssets[i].stickerPricing)
             newAssets[i].price = res?.latestPrice
             newAssets[i].change24h = Number(res?.priceChangePercent)
             newAssets[i].priceArray24h = res?.priceArray24h
-            newAssets[i].volume = Number(
-              (
-                Number(
-                  volumeHorizonProtocol?.data?.zassetTradingVolumes[0]
-                    ?.finalAmount,
-                ) /
-                10 ** 18
-              ).toFixed(2),
-            )
+            newAssets[i].volume =
+              Number(
+                (
+                  Number(
+                    volumeHorizonProtocol?.data?.zassetTradingVolumes[0]
+                      ?.finalAmount,
+                  ) /
+                  10 ** 18
+                ).toFixed(2),
+              ) || 0
             console.log('dados da pool ' + newAssets[i]?.name)
             console.log(newAssets[i])
           } else if (syntethicAssets[i].pool === Protocols.LANDX) {
@@ -240,14 +270,6 @@ const MainPage = ({ id }) => {
       toast.error(`Error: ${err.response}`)
     }
     setIsLoading(false)
-  }
-
-  const getLatestPrice = async (sticker: string, from: number, to: number) => {
-    const url = `https://benchmarks.pyth.network/v1/shims/tradingview/history?symbol=${sticker}&resolution=60&from=${from}&to=${to}`
-
-    const response = await fetch(url)
-    const data = await response.json()
-    return data
   }
 
   const getLatestPriceLandx = async (sticker: string) => {
@@ -390,7 +412,9 @@ const MainPage = ({ id }) => {
               <div key={index} className="">
                 <div
                   onClick={(event) => {
-                    push(`/feats/synthetics/${syn?.ticker}`)
+                    if (syn.pool === Protocols.HORIZON_PROTOCOL) {
+                      push(`/feats/synthetics/stocks/${syn?.ticker}`)
+                    }
                   }}
                   key={index}
                   className={`flex items-center  ${
@@ -409,7 +433,7 @@ const MainPage = ({ id }) => {
                     </div>
                   </div>
                   <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
-                    USD {syn?.price ? syn?.price?.toFixed(2) : 0}
+                    $ {syn?.price ? syn?.price?.toFixed(2) : 0}
                   </div>
                   <div className="w-full max-w-[25%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
                     <div className="flex items-center gap-x-2">
@@ -424,12 +448,12 @@ const MainPage = ({ id }) => {
                         className="w-[18px]"
                       ></img>
                       <div>
-                        {syn?.volume > 0
+                        {syn?.volume
                           ? syn.volume.toLocaleString('en-US', {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })
-                          : ''}
+                          : '0.00'}
                       </div>{' '}
                     </div>
                   </div>
@@ -440,45 +464,51 @@ const MainPage = ({ id }) => {
                         {syn?.change24h ? (
                           <div className="flex items-center gap-x-4">
                             <div className="text-xs text-gray">Change 24h:</div>
-                            <div className="w-12">
-                              <Sparklines
-                                data={syn?.priceArray24h}
-                                width={100}
-                                height={40}
-                              >
-                                <SparklinesLine
-                                  style={{
-                                    strokeWidth: 3,
-                                    stroke:
-                                      syn?.change24h > 0
-                                        ? '#6FD572'
-                                        : '#FE886D',
-                                    fill: 'none',
-                                  }}
-                                />
-                              </Sparklines>
-                            </div>
+                            {Math.abs(syn?.change24h) < 0.9 ? (
+                              <div className="text-white">0%</div>
+                            ) : (
+                              <div className="flex items-center gap-x-4">
+                                <div className="w-12">
+                                  <Sparklines
+                                    data={syn?.priceArray24h}
+                                    width={100}
+                                    height={40}
+                                  >
+                                    <SparklinesLine
+                                      style={{
+                                        strokeWidth: 3,
+                                        stroke:
+                                          syn?.change24h > 0
+                                            ? '#6FD572'
+                                            : '#FE886D',
+                                        fill: 'none',
+                                      }}
+                                    />
+                                  </Sparklines>
+                                </div>
 
-                            <div className="flex items-center gap-x-2">
-                              <div
-                                className={`text-sm ${
-                                  syn?.change24h > 0
-                                    ? 'text-[#6FD572]'
-                                    : 'text-[#FE886D]'
-                                }`}
-                              >
-                                {syn?.change24h.toFixed(0)}%
+                                <div className="flex items-center gap-x-2">
+                                  <div
+                                    className={`text-sm ${
+                                      syn?.change24h > 0
+                                        ? 'text-[#6FD572]'
+                                        : 'text-[#FE886D]'
+                                    }`}
+                                  >
+                                    {syn?.change24h.toFixed(0)}%
+                                  </div>
+                                  <div
+                                    className={`${
+                                      syn?.change24h > 0
+                                        ? 'rotate-45  font-bold text-[#6FD572]'
+                                        : '-rotate-45 font-bold text-[#FE886D]'
+                                    }`}
+                                  >
+                                    {syn?.change24h > 0 ? '↑' : '↓'}
+                                  </div>
+                                </div>
                               </div>
-                              <div
-                                className={`${
-                                  syn?.change24h > 0
-                                    ? 'rotate-45  font-bold text-[#6FD572]'
-                                    : '-rotate-45 font-bold text-[#FE886D]'
-                                }`}
-                              >
-                                {syn?.change24h > 0 ? '↑' : '↓'}
-                              </div>
-                            </div>
+                            )}
                           </div>
                         ) : (
                           <div>0%</div>

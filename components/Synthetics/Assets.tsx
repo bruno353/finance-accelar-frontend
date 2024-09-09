@@ -15,6 +15,7 @@ export const assetToStyle = {
   Tesla: {
     imgSource: '/images/synthetics/tesla-logo.svg',
     imgStyle: 'w-[18px] 2xl:w-[20px]',
+    imgStyleBig: 'w-[18px] 2xl:w-[30px]',
   },
   Google: {
     imgSource: '/images/synthetics/google.png',
