@@ -75,7 +75,9 @@ const MainPage = ({ id }) => {
   const [selectedNetwork, setSelectedNetwork] = useState<ValueObject>(
     depinOptionsNetwork[0],
   )
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([])
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(
+    Object.values(AssetTypes),
+  )
   // Função para alternar a seleção de tipos de ativos
   const toggleType = (type: string) => {
     if (selectedTypes.includes(type)) {
@@ -354,16 +356,20 @@ const MainPage = ({ id }) => {
               {synthetics?.length} Assets
             </div>
           </div>
-          <div className="mb-4 flex gap-x-4">
+          <div className="mb-4 ml-auto mt-2 flex w-fit gap-x-4">
             {Object.values(AssetTypes).map((type) => (
               <div key={type} className="flex items-center gap-x-2">
-                <input
-                  type="checkbox"
-                  id={type}
-                  checked={selectedTypes.includes(type)}
-                  onChange={() => toggleType(type)}
-                />
-                <label className="text-white">{type}</label>
+                <div
+                  className={`h-3 w-3 rounded-sm ${
+                    selectedTypes.includes(type) ? 'bg-hoverBlue' : ''
+                  } cursor-pointer border-[1px] border-hoverBlue`}
+                  onClick={() => toggleType(type)}
+                ></div>
+                <label className="text-gray">
+                  {type
+                    ? type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
+                    : ''}
+                </label>
               </div>
             ))}
           </div>
