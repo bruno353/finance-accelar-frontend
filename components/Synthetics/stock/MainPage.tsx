@@ -92,7 +92,7 @@ const MainPage = ({ id }) => {
     value: string
   }
 
-  const [fundAmount, setFundAmount] = useState<CurrencyValue[]>()
+  const [fundAmount, setFundAmount] = useState<CurrencyValue[]>([])
   const [usdAmount, setUsdAmount] = useState('0.0')
 
   const onMount = (editor) => {
@@ -227,18 +227,70 @@ const MainPage = ({ id }) => {
 
   const nameRef = useRef(null)
 
+  const currencyOptions = ['usd', synthetic?.name]
+
   function handleValues(currency: string, value: string) {
+    // Esta expressão regular permite apenas números
+    const regex = /^\d*\.?\d*$/
+    if (!regex.test(value)) {
+      console.log('nao foi')
+      return
+    }
+
     const newFundAmount = [...fundAmount]
 
-    const index = newFundAmount.findIndex((nw) => nw.currency === currency)
-    if (!isLoading) {
-      // Esta expressão regular permite apenas números
-      const regex = /^\d*\.?\d*$/
+    const index = newFundAmount?.findIndex((nw) => nw.currency === currency)
 
-      if (regex.test(value)) {
+    const counterCurrencyName = currencyOptions?.find((nw) => nw !== currency)
+    const counterCurrencyIndex = newFundAmount?.findIndex(
+      (nw) => nw.currency === counterCurrencyName,
+    )
+
+    if (!newFundAmount[index]) {
+      newFundAmount.push({
+        currency,
+        value,
+      })
+    } else {
+      if (!isLoading) {
         newFundAmount[index].value = value
-        setFundAmount(newFundAmount)
       }
+    }
+
+    const numericValue = parseFloat(value)
+    let counterValue: string
+
+    console.log(numericValue)
+    if (!numericValue) {
+      counterValue = '0.00'
+    } else {
+      if (currency === 'usd') {
+        // Converting from USD to synthetic
+        counterValue = (numericValue / synthetic.price).toFixed(6)
+      } else {
+        // Converting from synthetic to USD
+        counterValue = (numericValue * synthetic.price).toFixed(2)
+      }
+    }
+
+    if (!newFundAmount[counterCurrencyIndex]) {
+      newFundAmount.push({
+        currency: counterCurrencyName,
+        value: counterValue,
+      })
+    } else {
+      newFundAmount[counterCurrencyIndex].value = counterValue
+    }
+
+    setFundAmount(newFundAmount)
+  }
+
+  function returnValue(name: string) {
+    const index = fundAmount?.findIndex((nw) => nw.currency === name)
+    if (!fundAmount[index]) {
+      return '0.00'
+    } else {
+      return fundAmount[index].value
     }
   }
 
@@ -514,7 +566,7 @@ const MainPage = ({ id }) => {
                       type={'text'}
                       id="workspaceName"
                       name="workspaceName"
-                      value={usdAmount}
+                      value={returnValue('usd')}
                       onChange={(e) => {
                         handleValues('usd', e.target.value)
                       }}
@@ -549,12 +601,7 @@ const MainPage = ({ id }) => {
                       type={'text'}
                       id="workspaceName"
                       name="workspaceName"
-                      value={() => {
-                        const index = fundAmount.findIndex(
-                          (nw) => nw.currency === synthetic?.name,
-                        )
-                        return fundAmount[index].value
-                      }}
+                      value={returnValue(synthetic.name)}
                       onChange={(e) => {
                         handleValues(synthetic?.name, e.target.value)
                       }}
@@ -564,7 +611,12 @@ const MainPage = ({ id }) => {
                 </div>
               </div>
 
-              <label className="mt-4 flex w-full justify-center rounded-md border-[1px] border-[#3a4155] bg-transparent py-2 text-lg text-gray/65">
+              <label
+                onClick={() => {
+                  console.log(fundAmount)
+                }}
+                className="mt-4 flex w-full justify-center rounded-md border-[1px] border-[#3a4155] bg-transparent py-2 text-lg text-gray/65"
+              >
                 {isRotated ? 'Sell' : 'Buy'} {synthetic?.ticker}
               </label>
             </div>
