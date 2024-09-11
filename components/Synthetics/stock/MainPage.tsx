@@ -43,10 +43,15 @@ import {
   transformString,
   wait,
 } from '@/utils/functions'
-import { useAccount } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
 import { getDataHP, getVolume } from '../MainPage'
 import { assetToStyle, SynAsset, syntethicAssets } from '../Assets'
 import TradingViewChart from './TradingViewChart'
+import { parseEther } from 'ethers'
+import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
+import { useContractWrite } from '@/components/IDE/hooks/useContract'
+import { syntheticABI } from '@/types/consts/syntheticABI'
+import { Abi } from 'viem'
 
 const MainPage = ({ id }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -66,8 +71,27 @@ const MainPage = ({ id }) => {
   const [selectedNetwork, setSelectedNetwork] = useState<ValueObject>(
     depinOptionsNetwork[0],
   )
-
   const { address, chain } = useAccount()
+  const { acoUser, acoChain } = useContext(AccountContext)
+
+  const [balance, setBalance] = useState<number>(0)
+
+  // Hook para pegar o balance do usuário
+  const { data: balanceData, isError } = useBalance({
+    address,
+  })
+
+  useEffect(() => {
+    if (balanceData) {
+      setBalance(formatBalance(balanceData.value)) // Converte o balance para formato legível
+    }
+  }, [balanceData])
+
+  const formatBalance = (value: bigint | string) => {
+    const weiValue = BigInt(value)
+    const etherValue = Number(weiValue) / 10 ** 18
+    return etherValue
+  }
 
   const [navBarSelected, setNavBarSelected] = useState('Deployments')
   const [blockchainWallets, setBlockchainWallets] = useState<
@@ -83,6 +107,7 @@ const MainPage = ({ id }) => {
 
   const { push } = useRouter()
   const pathname = usePathname()
+  const { write } = useContractWrite()
 
   const editorRef = useRef()
   const [language, setLanguage] = useState('')
@@ -291,6 +316,90 @@ const MainPage = ({ id }) => {
       return '0.00'
     } else {
       return fundAmount[index].value
+    }
+  }
+
+  const usdData = fundAmount.find((nwt) => nwt.currency === 'usd')
+  const counterData = fundAmount.find((nwt) => nwt.currency !== 'usd')
+
+  function isSubmitOpen() {
+    if (
+      Number(usdData?.value) > 0 &&
+      address &&
+      Number(balance) >= Number(usdData?.value)
+    ) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  const handleEVMDeployment = async () => {
+    if (!address) {
+      toast.error('Address not found')
+      return
+    }
+    setIsLoading(true)
+    const amountCounterCurrency = counterData.value
+    const addressTointeract = address
+    console.log('the counter amount ' + amountCounterCurrency)
+    try {
+      const bidAmountWei = parseEther(usdAmount)
+      console.log(String(bidAmountWei))
+      console.log(addressTointeract)
+      console.log(chainToCopy[acoChain]?.synContractAddress)
+      console.log(chain)
+      const res = await write(
+        'createDeployment',
+        [synthetic?.ticker, address, 'HorizonProtocol'],
+        syntheticABI as Abi,
+        chain,
+        addressTointeract,
+        chainToCopy[acoChain]?.contractAddress,
+        String(bidAmountWei),
+      )
+      await wait(2000)
+
+      console.log('A resss')
+      console.log(res)
+      const dataDeployment = {
+        address,
+        evmHash: res?.transactionHash,
+        synthetic: synthetic?.ticker,
+        network: chainToCopy[acoChain]?.network,
+        bidAmount: bidAmountWei,
+        amountCounterCurrency,
+      }
+
+      try {
+        // Use Promise.race para competir entre a chamada da API e o timeout
+        const resData2 = await Promise.race([
+          callAxiosBackend(
+            'post',
+            '/blockchain/synthetic/functions/createDeploymentOrderMetamaskHP',
+            'userSessionToken',
+            dataDeployment,
+          ),
+          await wait(2000),
+        ])
+
+        console.log('Deployment stored successfully:', resData2)
+      } catch (error) {
+        if (error.message === 'Timeout') {
+          console.log('Storing deployment timed out, but continuing...')
+        } else {
+          console.error('Error storing deployment:', error)
+        }
+      }
+      toast.success(
+        'Success, your deployment may take up to 30 minutes to complete',
+      )
+      await wait(3000)
+      setIsLoading(false)
+    } catch (err) {
+      console.log(err)
+      console.log('Error: ' + err?.response?.data?.message)
+      setIsLoading(false)
     }
   }
 
@@ -559,7 +668,9 @@ const MainPage = ({ id }) => {
                       <div>$</div>
                       <div>USD</div>
                     </div>
-                    <div>Balance: $0.00</div>
+                    <div className="mt-1 text-sm text-gray">
+                      Balance: ${balance.toFixed(4)}
+                    </div>
                   </div>
                   <div className="w-fit">
                     <input
@@ -594,7 +705,7 @@ const MainPage = ({ id }) => {
                       ></img>
                       <div>{synthetic?.ticker}</div>
                     </div>
-                    <div>Balance: $0.00</div>
+                    <div className="mt-1 text-sm text-gray">Balance: $0.00</div>
                   </div>
                   <div className="w-fit">
                     <input
@@ -610,15 +721,57 @@ const MainPage = ({ id }) => {
                   </div>
                 </div>
               </div>
+              <div className="mt-3 grid gap-y-1 text-sm">
+                <div className="flex justify-between">
+                  <div className="text-gray">Est. fee cost</div>
+                  <div className="text-white">0.22%</div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="text-gray">Fee</div>
+                  <div className="text-white">
+                    ${' '}
+                    {fundAmount.find((nwt) => nwt.currency === 'usd')?.value
+                      ? (
+                          Number(
+                            fundAmount.find((nwt) => nwt.currency === 'usd')
+                              ?.value,
+                          ) * 0.022
+                        )?.toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                      : '0.00'}
+                  </div>
+                </div>
+                <div className="mt-1 flex justify-between">
+                  <div className="text-gray">Oracle max. slippage</div>
+                  <div className="text-white">1%</div>
+                </div>
+              </div>
 
               <label
                 onClick={() => {
-                  console.log(fundAmount)
+                  if (isSubmitOpen() && !isLoading) {
+                    handleEVMDeployment()
+                  }
                 }}
-                className="mt-4 flex w-full justify-center rounded-md border-[1px] border-[#3a4155] bg-transparent py-2 text-lg text-gray/65"
+                className={` ${
+                  isSubmitOpen() &&
+                  'cursor-pointer !bg-blue !text-white hover:bg-hoverBlue'
+                } mt-4 flex w-full justify-center rounded-md border-[1px] border-[#3a4155] bg-transparent py-2 text-lg text-gray/65`}
               >
                 {isRotated ? 'Sell' : 'Buy'} {synthetic?.ticker}
               </label>
+              {Number(fundAmount[0]?.value) > 0 && !address && (
+                <div className="mt-2 text-sm text-darkRed">
+                  * Connect your wallet to continue.
+                </div>
+              )}
+              {Number(balance) < Number(usdData?.value) && address && (
+                <div className="mt-2 text-sm text-darkRed">
+                  * Insufficient balance.
+                </div>
+              )}
             </div>
           </div>
         </div>
