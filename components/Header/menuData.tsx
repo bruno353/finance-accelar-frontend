@@ -12,6 +12,7 @@ const menuData: Menu[] = [
     title: 'Explore',
     path: '/',
     newTab: false,
+    isBeta: false,
     onClick: (e) => {
       e.preventDefault()
       const section = document.getElementById('features')
@@ -25,12 +26,14 @@ const menuData: Menu[] = [
     title: 'DePin',
     path: '/feats/depin',
     newTab: false,
+    isBeta: false,
   },
   {
     id: 2,
     title: 'Synthetics',
     path: '/feats/synthetics',
     newTab: false,
+    isBeta: true,
   },
   // {
   //   id: 33,

@@ -24,6 +24,7 @@ export async function callAxiosBackend(
   }
 
   let finalData
+  console.log('chamando axios')
 
   await axios(config).then(function (response) {
     if (response.data) {

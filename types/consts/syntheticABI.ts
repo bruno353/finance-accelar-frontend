@@ -400,14 +400,14 @@ export const syntheticABI = [
         type: 'uint256',
       },
       {
-        internalType: 'string',
-        name: 'asset',
-        type: 'string',
-      },
-      {
         internalType: 'uint256',
         name: 'bidAmount',
         type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: 'asset',
+        type: 'string',
       },
       {
         internalType: 'string',
@@ -432,6 +432,11 @@ export const syntheticABI = [
       {
         internalType: 'enum DPLSynthetic.PaymentType',
         name: 'paymentType',
+        type: 'uint8',
+      },
+      {
+        internalType: 'enum DPLSynthetic.Pool',
+        name: 'pool',
         type: 'uint8',
       },
     ],
@@ -601,6 +606,11 @@ export const syntheticABI = [
         internalType: 'address',
         name: '_to',
         type: 'address',
+      },
+      {
+        internalType: 'enum DPLSynthetic.Pool',
+        name: '_pool',
+        type: 'uint8',
       },
     ],
     name: 'createDeployment',

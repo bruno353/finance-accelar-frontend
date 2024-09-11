@@ -1,3 +1,4 @@
+/* eslint-disable promise/param-names */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable dot-notation */
@@ -341,24 +342,26 @@ const MainPage = ({ id }) => {
     }
     setIsLoading(true)
     const amountCounterCurrency = counterData.value
+    const amountUsd = usdData.value
+
     const addressTointeract = address
     console.log('the counter amount ' + amountCounterCurrency)
     try {
-      const bidAmountWei = parseEther(usdAmount)
+      const bidAmountWei = parseEther(amountUsd)
       console.log(String(bidAmountWei))
       console.log(addressTointeract)
       console.log(chainToCopy[acoChain]?.synContractAddress)
       console.log(chain)
       const res = await write(
         'createDeployment',
-        [synthetic?.ticker, address, 'HorizonProtocol'],
+        [synthetic?.ticker, address, 0],
         syntheticABI as Abi,
         chain,
         addressTointeract,
-        chainToCopy[acoChain]?.contractAddress,
+        chainToCopy[acoChain]?.synContractAddress,
         String(bidAmountWei),
       )
-      await wait(2000)
+      await wait(6000)
 
       console.log('A resss')
       console.log(res)
@@ -367,24 +370,24 @@ const MainPage = ({ id }) => {
         evmHash: res?.transactionHash,
         synthetic: synthetic?.ticker,
         network: chainToCopy[acoChain]?.network,
-        bidAmount: bidAmountWei,
+        bidAmount: String(bidAmountWei),
         amountCounterCurrency,
       }
 
       try {
+        console.log('chamadno funcaeo')
         // Use Promise.race para competir entre a chamada da API e o timeout
-        const resData2 = await Promise.race([
-          callAxiosBackend(
-            'post',
-            '/blockchain/synthetic/functions/createDeploymentOrderMetamaskHP',
-            'userSessionToken',
-            dataDeployment,
-          ),
-          await wait(2000),
-        ])
+        const resData2 = await callAxiosBackend(
+          'post',
+          '/blockchain/synthetic/functions/createDeploymentOrderMetamaskHP',
+          'userSessionToken',
+          dataDeployment,
+        )
 
         console.log('Deployment stored successfully:', resData2)
       } catch (error) {
+        console.log('error calling here')
+        console.log(error)
         if (error.message === 'Timeout') {
           console.log('Storing deployment timed out, but continuing...')
         } else {
@@ -392,7 +395,7 @@ const MainPage = ({ id }) => {
         }
       }
       toast.success(
-        'Success, your deployment may take up to 30 minutes to complete',
+        'Success, your multi-chain trade may take up to 30 minutes to complete',
       )
       await wait(3000)
       setIsLoading(false)

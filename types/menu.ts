@@ -3,6 +3,7 @@ export type Menu = {
   title: string
   path?: string
   newTab: boolean
+  isBeta?: boolean
   submenu?: Menu[]
   onClick?: any
 }

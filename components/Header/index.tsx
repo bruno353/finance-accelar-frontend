@@ -129,25 +129,32 @@ const Header = () => {
                     {menuData.map((menuItem, index) => (
                       <li key={menuItem.id} className="group relative">
                         {menuItem.path ? (
-                          <Link
-                            href={menuItem.path}
-                            onClick={() => {
-                              push(menuItem.path)
-                            }} // Adicione isso
-                            className={`${
-                              menuItem.path?.length > 1 &&
-                              pathName.includes(menuItem.path)
-                                ? 'border-b-[1px] border-[#fff] !text-white'
-                                : ''
-                            } ${
-                              pathName?.length <= 1 &&
-                              pathName.includes(menuItem.path)
-                                ? 'border-b-[1px] border-[#fff] !text-white'
-                                : ''
-                            } flex py-2 text-base text-dark group-hover:border-b-[1px] group-hover:border-[#adadae] dark:text-[#adadae] lg:mr-0 lg:inline-flex lg:px-0 lg:py-6`}
-                          >
-                            {menuItem.title}
-                          </Link>
+                          <>
+                            <Link
+                              href={menuItem.path}
+                              onClick={() => {
+                                push(menuItem.path)
+                              }} // Adicione isso
+                              className={`${
+                                menuItem.path?.length > 1 &&
+                                pathName.includes(menuItem.path)
+                                  ? 'border-b-[1px] border-[#fff] !text-white'
+                                  : ''
+                              } ${
+                                pathName?.length <= 1 &&
+                                pathName.includes(menuItem.path)
+                                  ? 'border-b-[1px] border-[#fff] !text-white'
+                                  : ''
+                              } flex py-2 text-base text-dark group-hover:border-b-[1px] group-hover:border-[#adadae] dark:text-[#adadae] lg:mr-0 lg:inline-flex lg:px-0 lg:py-6`}
+                            >
+                              {menuItem.title}
+                            </Link>
+                            {menuItem.isBeta && (
+                              <div className="absolute -right-8 top-3 text-sm text-yellow">
+                                Beta
+                              </div>
+                            )}
+                          </>
                         ) : (
                           <>
                             <a
