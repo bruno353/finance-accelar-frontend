@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, memo } from 'react'
 // import './tradingview-custom.css'; // Importa o arquivo de estilo
 
-function TradingViewChart() {
+interface TradingViewChartProps {
+  symbol: string
+}
+
+function TradingViewChart({ symbol }: TradingViewChartProps) {
   const container = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -15,7 +19,7 @@ function TradingViewChart() {
       script.innerHTML = `
         {
           "autosize": true,
-          "symbol": "NASDAQ:AAPL",
+          "symbol": ${symbol},
           "interval": "D",
           "timezone": "Etc/UTC",
           "theme": "dark",
@@ -35,7 +39,7 @@ function TradingViewChart() {
         container?.current?.appendChild(script)
       }
     }
-  }, [])
+  }, [symbol])
 
   return (
     <div

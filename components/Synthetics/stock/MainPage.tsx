@@ -689,7 +689,7 @@ const MainPage = ({ id }) => {
           <div className="mb-4 mt-8 w-full border-b-[0.5px] border-[#c9c9cb2e]"></div>
           <div className="flex justify-between">
             <div className="h-[450px] w-[70%]">
-              <TradingViewChart />
+              <TradingViewChart symbol={synthetic?.stickerPricing} />
             </div>
             <div className="relative w-[25%] ">
               <div className="relative grid h-fit gap-y-2">
