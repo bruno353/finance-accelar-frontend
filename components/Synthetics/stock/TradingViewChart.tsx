@@ -1,3 +1,6 @@
+/* eslint-disable new-cap */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable no-new */
 import React, { useEffect, useRef, memo } from 'react'
 // import './tradingview-custom.css'; // Importa o arquivo de estilo
 
@@ -9,34 +12,45 @@ function TradingViewChart({ symbol }: TradingViewChartProps) {
   const container = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    // Verificar se o script já existe
-    if (!document.querySelector('.tradingview-widget-script')) {
+    const widgetOptions = {
+      autosize: true,
+      symbol: symbol,
+      interval: 'D',
+      timezone: 'Etc/UTC',
+      theme: 'dark',
+      toolbar_bg: '#f1f3f6',
+      style: '1',
+      locale: 'en',
+      allow_symbol_change: false,
+      calendar: false,
+      hide_side_toolbar: false,
+      show_popup_button: true,
+      withdateranges: true,
+      support_host: 'https://www.tradingview.com',
+    }
+
+    if (
+      container.current &&
+      !container.current.querySelector('.tradingview-widget-script')
+    ) {
       const script = document.createElement('script')
       script.src =
         'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js'
       script.type = 'text/javascript'
       script.async = true
-      script.innerHTML = `
-        {
-          "autosize": true,
-          "symbol": ${symbol},
-          "interval": "D",
-          "timezone": "Etc/UTC",
-          "theme": "dark",
-          "toolbar_bg": "#f1f3f6",
-          "style": "1",
-          "locale": "en",
-          "allow_symbol_change": true,
-          "calendar": false,
-          "hide_side_toolbar": false,
-          "show_popup_button": true,
-          "withdateranges": true,
-          "allow_symbol_change": false,
-          "support_host": "https://www.tradingview.com"
-        }`
+      script.innerHTML = JSON.stringify(widgetOptions)
       script.classList.add('tradingview-widget-script')
-      if (container?.current) {
-        container?.current?.appendChild(script)
+      container.current.appendChild(script)
+    } else if (container.current) {
+      // Se o script já existe, atualize apenas o símbolo
+      const existingWidget = container.current.querySelector(
+        '.tradingview-widget-container__widget',
+      )
+      if (existingWidget) {
+        // @ts-ignore
+        existingWidget.innerHTML = ''
+        // @ts-ignore
+        new window.TradingView.widget(widgetOptions)
       }
     }
   }, [symbol])
@@ -67,4 +81,4 @@ function TradingViewChart({ symbol }: TradingViewChartProps) {
   )
 }
 
-export default memo(TradingViewChart)
+export default TradingViewChart

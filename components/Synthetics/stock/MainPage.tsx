@@ -85,6 +85,8 @@ const MainPage = ({ id }) => {
   const { acoUser, acoChain } = useContext(AccountContext)
 
   const [balance, setBalance] = useState<number>(0)
+  const [balanceCounterCurrency, setBalanceCounterCurrency] =
+    useState<number>(0)
 
   // Hook para pegar o balance do usuário
   const { data: balanceData, isError } = useBalance({
@@ -248,6 +250,11 @@ const MainPage = ({ id }) => {
       )
       if (resData?.length > 0) {
         const resToSet = resData.filter((nwt) => nwt.counterCurrency === id)
+        let totalBalance = 0
+        for (let i = 0; i < resToSet?.length; i++) {
+          totalBalance += Number(resToSet[i].amountCounterCurrency)
+        }
+        setBalanceCounterCurrency(totalBalance)
         setTxHistory(resToSet)
       }
     }
@@ -682,14 +689,23 @@ const MainPage = ({ id }) => {
             <div className="gap-y-3 pt-6 text-white">
               <div className="flex ">
                 <div className="w-28 text-gray  ">Your Balance</div>
-                <div className="">$0.00</div>
+                <div className="">
+                  $
+                  {balanceCounterCurrency?.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </div>
               </div>
             </div>
           </div>
           <div className="mb-4 mt-8 w-full border-b-[0.5px] border-[#c9c9cb2e]"></div>
           <div className="flex justify-between">
             <div className="h-[450px] w-[70%]">
-              <TradingViewChart symbol={synthetic?.stickerPricingA} />
+              <TradingViewChart
+                key={synthetic?.stickerPricingA}
+                symbol={synthetic?.stickerPricingA || 'AAPL'}
+              />
             </div>
             <div className="relative w-[25%] ">
               <div className="relative grid h-fit gap-y-2">
