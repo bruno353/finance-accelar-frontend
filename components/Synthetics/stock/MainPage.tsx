@@ -41,6 +41,7 @@ import {
 import {
   blockHeightToDate,
   formatDate,
+  isMarketOpen,
   transformString,
   truncateString,
   wait,
@@ -359,7 +360,9 @@ const MainPage = ({ id }) => {
     if (
       Number(usdData?.value) > 0 &&
       address &&
-      Number(balance) >= Number(usdData?.value)
+      Number(balance) >= Number(usdData?.value) &&
+      synthetic?.usaStock &&
+      isMarketOpen()
     ) {
       return true
     } else {

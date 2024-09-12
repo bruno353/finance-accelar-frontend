@@ -68,7 +68,7 @@ function TradingViewChart({ symbol }: TradingViewChartProps) {
           width: '100%',
         }}
       ></div>
-      <div className="tradingview-widget-copyright">
+      {/* <div className="tradingview-widget-copyright">
         <a
           href="https://www.tradingview.com/"
           rel="noopener nofollow noreferrer"
@@ -76,7 +76,7 @@ function TradingViewChart({ symbol }: TradingViewChartProps) {
         >
           <span className="blue-text">Track all markets on TradingView</span>
         </a>
-      </div>
+      </div> */}
     </div>
   )
 }
