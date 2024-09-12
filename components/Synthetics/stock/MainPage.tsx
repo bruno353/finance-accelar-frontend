@@ -42,6 +42,7 @@ import {
   blockHeightToDate,
   formatDate,
   transformString,
+  truncateString,
   wait,
 } from '@/utils/functions'
 import { useAccount, useBalance } from 'wagmi'
@@ -418,10 +419,13 @@ const MainPage = ({ id }) => {
           console.error('Error storing deployment:', error)
         }
       }
+      await wait(8000)
       toast.success(
         'Success, your multi-chain trade may take up to 30 minutes to complete',
       )
-      await wait(3000)
+      await wait(2000)
+      getData()
+      getHistoryTx()
     } catch (err) {
       console.log(err)
       console.log('Error: ' + err?.response?.data?.message)
@@ -803,7 +807,7 @@ const MainPage = ({ id }) => {
               )}
             </div>
           </div>
-          <div className="mt-5 text-white">
+          <div className="mt-8 text-white">
             <div>Transaction History</div>
             <div className="grid max-w-[70%]">
               <div className="mt-2">
@@ -832,14 +836,25 @@ const MainPage = ({ id }) => {
                     <div>{tx?.amountCounterCurrency}</div>
                   </div>
                   <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
-                    <div>{tx?.amountCurrency}</div>
+                    <div>{Number(tx?.amountCurrency) / 10 ** 18}</div>
                   </div>
-                  <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                  <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
                     <div>
-                      {Number(tx?.amountCurrency) /
-                        Number(tx?.amountCounterCurrency)}
+                      {Number(tx?.amountCounterCurrency) /
+                        Number(tx?.amountCurrency)}
                     </div>
                   </div>
+                  <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                    <a
+                      href={`${chainToCopy[acoChain]?.explore}/${tx?.evmHash}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="cursor-pointer text-blue"
+                    >
+                      {truncateString(tx?.evmHash, 12)}
+                    </a>
+                  </div>
+                  <div>{formatDate(tx?.createdAt)}</div>
                 </div>
               ))}
             </div>
