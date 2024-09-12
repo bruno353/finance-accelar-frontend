@@ -1,5 +1,11 @@
 'use client'
-import { formatDistanceToNow } from 'date-fns'
+import {
+  formatDistanceToNow,
+  format,
+  getDay,
+  isWithinInterval,
+  set,
+} from 'date-fns'
 import DOMPurify from 'dompurify'
 import ReactHtmlParser, { convertNodeToElement } from 'react-html-parser'
 import AnsiToHtml from 'ansi-to-html'
@@ -66,6 +72,37 @@ export function formatHours(createdAt) {
     minute: '2-digit',
     hour12: false, // Altere para true se preferir formato 12 horas
   })
+}
+
+export const isMarketOpen = () => {
+  const now = new Date()
+  const localOffset = now.getTimezoneOffset() * 60000 // Offset do horário local
+  const newYorkOffset = -240 * 60000 // Offset de Nova York (UTC-4 durante o horário de verão)
+  const nyTime = new Date(now.getTime() + localOffset + newYorkOffset) // Ajusta o horário para Nova York
+
+  const day = getDay(nyTime) // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+
+  // Verifique se é um dia útil (Segunda a Sexta)
+  if (day < 1 || day > 5) {
+    return false
+  }
+
+  // Defina o horário de abertura da bolsa: 9:30 AM (ET)
+  const marketOpen = set(nyTime, {
+    hours: 9,
+    minutes: 30,
+    seconds: 0,
+    milliseconds: 0,
+  })
+  // Defina o horário de fechamento da bolsa: 4:00 PM (ET)
+  const marketClose = set(nyTime, {
+    hours: 16,
+    minutes: 0,
+    seconds: 0,
+    milliseconds: 0,
+  })
+
+  return isWithinInterval(nyTime, { start: marketOpen, end: marketClose })
 }
 
 export function formatDateWithoutTime(createdAt) {

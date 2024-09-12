@@ -107,6 +107,7 @@ export interface SynAsset {
   apr?: string
   type?: AssetTypes
   live?: boolean
+  usaStock?: boolean
 }
 
 export interface SynAssetHistoryTx {
@@ -132,6 +133,7 @@ export const syntethicAssets: SynAsset[] = [
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.TSLA/USD',
     stickerPricingA: 'NASDAQ:TSLA',
+    usaStock: true,
     type: AssetTypes.STOCK,
     live: true,
   },
@@ -148,6 +150,7 @@ export const syntethicAssets: SynAsset[] = [
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.GOOG',
     stickerPricingA: 'NASDAQ:GOOG',
+    usaStock: true,
     type: AssetTypes.STOCK,
     live: true,
   },
@@ -171,6 +174,7 @@ export const syntethicAssets: SynAsset[] = [
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.NVDA/USD',
     stickerPricingA: 'NASDAQ:NVDA',
+    usaStock: true,
     type: AssetTypes.STOCK,
     live: true,
   },

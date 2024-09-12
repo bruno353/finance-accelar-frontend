@@ -40,6 +40,7 @@ import {
 import {
   blockHeightToDate,
   formatDate,
+  isMarketOpen,
   transformString,
   wait,
 } from '@/utils/functions'
@@ -439,6 +440,11 @@ const MainPage = ({ id }) => {
                         {!syn?.live && (
                           <div className="absolute right-0 top-0 translate-x-8 text-[10px] text-gray">
                             soon
+                          </div>
+                        )}
+                        {syn?.usaStock && !isMarketOpen() && (
+                          <div className="absolute right-0 top-0 translate-x-8 text-[10px] text-gray">
+                            Closed
                           </div>
                         )}
                       </div>
