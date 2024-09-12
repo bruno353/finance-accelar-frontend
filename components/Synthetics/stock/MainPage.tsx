@@ -458,7 +458,7 @@ const MainPage = ({ id }) => {
 
   return (
     <>
-      <section className="relative z-10 h-full overflow-hidden  pb-5 pt-2 lg:pt-40">
+      <section className="relative z-10 h-full overflow-hidden  pb-8 pt-2 lg:pt-28">
         <div className="container px-12">
           <div className="relative flex gap-x-9">
             <div className="relative flex w-fit items-center gap-x-4">
@@ -803,12 +803,43 @@ const MainPage = ({ id }) => {
               )}
             </div>
           </div>
-          <div className="mt-5">
+          <div className="mt-5 text-white">
             <div>Transaction History</div>
-            <div className="grid ">
+            <div className="grid max-w-[70%]">
+              <div className="mt-2">
+                <div className="flex w-full border-y-[0.5px] border-[#c9c9cb10] px-[15px] py-4 text-xs text-gray">
+                  <div className="w-full max-w-[20%]">Type</div>
+                  <div className="w-full max-w-[15%]">
+                    Amount {synthetic?.name}
+                  </div>
+                  <div className="w-full max-w-[15%]">Amount USD</div>
+                  <div className="w-full max-w-[20%]">Price</div>
+                  <div className="w-full max-w-[20%]">Tx</div>
+                </div>
+              </div>
               {txHistory.map((tx, index) => (
-                <div key={index} className="py-2">
-                  {tx?.evmHash}
+                <div
+                  key={index}
+                  className={`py-2 ${
+                    index !== txHistory?.length - 1 &&
+                    'border-b-[1px] border-[#c5c4c41a]'
+                  } flex items-center px-[15px]`}
+                >
+                  <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                    <div>Buy</div>
+                  </div>
+                  <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                    <div>{tx?.amountCounterCurrency}</div>
+                  </div>
+                  <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                    <div>{tx?.amountCurrency}</div>
+                  </div>
+                  <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
+                    <div>
+                      {Number(tx?.amountCurrency) /
+                        Number(tx?.amountCounterCurrency)}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

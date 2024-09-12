@@ -151,7 +151,7 @@ const Header = () => {
                             </Link>
                             {menuItem.isBeta && (
                               <div className="absolute -right-8 top-3 text-sm text-yellow">
-                                Beta
+                                Demo
                               </div>
                             )}
                           </>

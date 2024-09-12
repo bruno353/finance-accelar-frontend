@@ -50,6 +50,7 @@ const Explore = () => {
       imgSource: '/images/explore/cloud.svg',
       imgStyle: 'w-6',
       active: true,
+      path: '/feats/depin',
     },
     {
       title: 'Synthetics',
@@ -57,7 +58,8 @@ const Explore = () => {
       subDescription: '12 assets',
       imgSource: '/images/explore/money.svg',
       imgStyle: 'w-6',
-      active: false,
+      active: true,
+      path: '/feats/synthetics',
     },
     {
       title: 'Real State',
@@ -298,6 +300,11 @@ const Explore = () => {
               {feats.map((option, index) => (
                 <li
                   key={index}
+                  onClick={() => {
+                    if (option?.active) {
+                      push(option?.path)
+                    }
+                  }}
                   className={`relative h-36 w-56 ${
                     option?.active
                       ? 'cursor-pointer border-[#6fd572c0] shadow-sm shadow-[#6fd572c0]'
