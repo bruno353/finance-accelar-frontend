@@ -865,7 +865,7 @@ const MainPage = ({ id }) => {
                   </div>
                   <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
                     <a
-                      href={`${chainToCopy[acoChain]?.explore}/${tx?.evmHash}`}
+                      href={`${chainToCopy[acoChain]?.explore}/tx/${tx?.evmHash}`}
                       target="_blank"
                       rel="noreferrer"
                       className="cursor-pointer text-blue"
