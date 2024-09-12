@@ -103,6 +103,7 @@ export interface SynAsset {
   change24h?: number
   priceArray24h?: number[]
   stickerPricing?: string
+  stickerPricingA?: string
   apr?: string
   type?: AssetTypes
   live?: boolean
@@ -130,6 +131,7 @@ export const syntethicAssets: SynAsset[] = [
     ticker: 'zTSLA',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.TSLA/USD',
+    stickerPricingA: 'NASDAQ:TSLA',
     type: AssetTypes.STOCK,
     live: true,
   },
@@ -144,7 +146,8 @@ export const syntethicAssets: SynAsset[] = [
     name: 'Google',
     ticker: 'zGOOGL',
     pool: Protocols.HORIZON_PROTOCOL,
-    stickerPricing: 'Equity.US.GOOG/USD',
+    stickerPricing: 'Equity.US.GOOG',
+    stickerPricingA: 'NASDAQ:GOOG',
     type: AssetTypes.STOCK,
     live: true,
   },
@@ -167,6 +170,7 @@ export const syntethicAssets: SynAsset[] = [
     ticker: 'zNVDA',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.NVDA/USD',
+    stickerPricingA: 'NASDAQ:NVDA',
     type: AssetTypes.STOCK,
     live: true,
   },
@@ -175,6 +179,7 @@ export const syntethicAssets: SynAsset[] = [
     ticker: 'zXAU',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Metal.XAU/USD',
+    stickerPricingA: 'XAUUSD',
     type: AssetTypes.COMMODITY,
   },
   {
@@ -182,6 +187,7 @@ export const syntethicAssets: SynAsset[] = [
     ticker: 'zJPY',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'FX.USD/JPY',
+    stickerPricingA: 'USDJPY',
     type: AssetTypes.FIAT,
     live: true,
   },
