@@ -20,30 +20,37 @@ export const assetToStyle = {
   Google: {
     imgSource: '/images/synthetics/google.png',
     imgStyle: 'w-[18px] 2xl:w-[20px]',
+    imgStyleBig: 'w-[18px] 2xl:w-[30px]',
   },
   Nvidia: {
     imgSource: '/images/synthetics/nvidia.png',
     imgStyle: 'w-[18px] 2xl:w-[22px]',
+    imgStyleBig: 'w-[18px] 2xl:w-[30px]',
   },
   Gold: {
     imgSource: '/images/synthetics/gold.png',
     imgStyle: 'w-[18px] 2xl:w-[22px]',
+    imgStyleBig: 'w-[18px] 2xl:w-[30px]',
   },
   Yen: {
     imgSource: '/images/synthetics/yen.svg',
     imgStyle: 'w-[14px] 2xl:w-[16px] ml-1',
+    imgStyleBig: 'w-[18px] 2xl:w-[30px]',
   },
   xSoy: {
     imgSource: '/images/synthetics/soy.svg',
     imgStyle: 'w-[18px] 2xl:w-[22px]',
+    imgStyleBig: 'w-[18px] 2xl:w-[30px]',
   },
   xRice: {
     imgSource: '/images/synthetics/rice.svg',
     imgStyle: 'w-[18px] 2xl:w-[22px]',
+    imgStyleBig: 'w-[18px] 2xl:w-[30px]',
   },
   Bastion: {
     imgSource: '/images/synthetics/bastion_trading.svg',
     imgStyle: 'w-[18px] 2xl:w-[22px]',
+    imgStyleBig: 'w-[18px] 2xl:w-[30px]',
   },
 }
 
@@ -98,6 +105,23 @@ export interface SynAsset {
   stickerPricing?: string
   apr?: string
   type?: AssetTypes
+  live?: boolean
+}
+
+export interface SynAssetHistoryTx {
+  currency: string
+  counterCurrency: string
+  type: string
+  amountCurrency?: string
+  amountCounterCurrency?: string
+  evmHash?: string
+  protocolHash?: string
+  blockHeight?: string
+  loading?: boolean
+  evmAddress?: string
+  chain?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export const syntethicAssets: SynAsset[] = [
@@ -107,6 +131,7 @@ export const syntethicAssets: SynAsset[] = [
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.TSLA/USD',
     type: AssetTypes.STOCK,
+    live: true,
   },
   {
     name: 'Bastion',
@@ -121,6 +146,7 @@ export const syntethicAssets: SynAsset[] = [
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.GOOG/USD',
     type: AssetTypes.STOCK,
+    live: true,
   },
   {
     name: 'xSoy',
@@ -142,6 +168,7 @@ export const syntethicAssets: SynAsset[] = [
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.NVDA/USD',
     type: AssetTypes.STOCK,
+    live: true,
   },
   {
     name: 'Gold',
@@ -156,5 +183,6 @@ export const syntethicAssets: SynAsset[] = [
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'FX.USD/JPY',
     type: AssetTypes.FIAT,
+    live: true,
   },
 ]

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, memo } from 'react'
 // import './tradingview-custom.css'; // Importa o arquivo de estilo
 
 function TradingViewChart() {
-  const container = useRef()
+  const container = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     // Verificar se o script já existe
@@ -31,7 +31,9 @@ function TradingViewChart() {
           "support_host": "https://www.tradingview.com"
         }`
       script.classList.add('tradingview-widget-script')
-      container?.current?.appendChild(script)
+      if (container?.current) {
+        container?.current?.appendChild(script)
+      }
     }
   }, [])
 

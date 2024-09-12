@@ -46,7 +46,12 @@ import {
 } from '@/utils/functions'
 import { useAccount, useBalance } from 'wagmi'
 import { getDataHP, getVolume } from '../MainPage'
-import { assetToStyle, SynAsset, syntethicAssets } from '../Assets'
+import {
+  assetToStyle,
+  SynAsset,
+  SynAssetHistoryTx,
+  syntethicAssets,
+} from '../Assets'
 import TradingViewChart from './TradingViewChart'
 import { parseEther } from 'ethers'
 import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
@@ -56,7 +61,7 @@ import { Abi } from 'viem'
 
 const MainPage = ({ id }) => {
   const [isLoading, setIsLoading] = useState(true)
-  const [isLoadingCompilation, setIsLoadingCompilation] = useState(false)
+  const [isLoadingTransaction, setIsLoadingTransaction] = useState(false)
   const [subMenuOption, setSubMenuOption] = useState<string>('Lease')
   const [isRotated, setIsRotated] = useState(false)
 
@@ -65,6 +70,9 @@ const MainPage = ({ id }) => {
   const [languageSelectorOpen, setLanguageSelectorOpen] = useState(false)
   const monaco = useMonaco()
   const [depin, setDepin] = useState<NewDepinDeploymentProps>()
+
+  const [txHistory, setTxHistory] = useState<SynAssetHistoryTx[]>([])
+
   const [synthetic, setSynthetic] = useState<SynAsset>()
   const [provider, setProvider] = useState<any>()
 
@@ -230,12 +238,28 @@ const MainPage = ({ id }) => {
     setIsLoading(false)
   }
 
+  async function getHistoryTx() {
+    if (address) {
+      const resData: SynAssetHistoryTx[] = await callAxiosBackend(
+        'get',
+        `/blockchain/synthetic/functions/deployments?address=${address}`,
+        'userSessionToken',
+      )
+      if (resData?.length > 0) {
+        const resToSet = resData.filter((nwt) => nwt.counterCurrency === id)
+        setTxHistory(resToSet)
+      }
+    }
+  }
+
   useEffect(() => {
     getData()
+    getHistoryTx()
   }, [])
 
   useEffect(() => {
     getData()
+    getHistoryTx()
   }, [address])
 
   const subMenu = ['Lease', 'Console']
@@ -340,7 +364,7 @@ const MainPage = ({ id }) => {
       toast.error('Address not found')
       return
     }
-    setIsLoading(true)
+    setIsLoadingTransaction(true)
     const amountCounterCurrency = counterData.value
     const amountUsd = usdData.value
 
@@ -398,11 +422,11 @@ const MainPage = ({ id }) => {
         'Success, your multi-chain trade may take up to 30 minutes to complete',
       )
       await wait(3000)
-      setIsLoading(false)
     } catch (err) {
       console.log(err)
       console.log('Error: ' + err?.response?.data?.message)
-      setIsLoading(false)
+    } finally {
+      setIsLoadingTransaction(false)
     }
   }
 
@@ -440,7 +464,7 @@ const MainPage = ({ id }) => {
             <div className="relative flex w-fit items-center gap-x-4">
               <img
                 onClick={() => {
-                  push(`/feats/depin`)
+                  push(`/feats/synthetics`)
                 }}
                 alt="image"
                 src="/images/explore/arrow.svg"
@@ -754,11 +778,13 @@ const MainPage = ({ id }) => {
 
               <label
                 onClick={() => {
-                  if (isSubmitOpen() && !isLoading) {
+                  if (isSubmitOpen() && !isLoadingTransaction) {
                     handleEVMDeployment()
                   }
                 }}
-                className={` ${
+                className={`${
+                  isLoadingTransaction && 'animate-pulse cursor-auto !bg-blue'
+                } ${
                   isSubmitOpen() &&
                   'cursor-pointer !bg-blue !text-white hover:bg-hoverBlue'
                 } mt-4 flex w-full justify-center rounded-md border-[1px] border-[#3a4155] bg-transparent py-2 text-lg text-gray/65`}
@@ -775,6 +801,16 @@ const MainPage = ({ id }) => {
                   * Insufficient balance.
                 </div>
               )}
+            </div>
+          </div>
+          <div className="mt-5">
+            <div>Transaction History</div>
+            <div className="grid ">
+              {txHistory.map((tx, index) => (
+                <div key={index} className="py-2">
+                  {tx?.evmHash}
+                </div>
+              ))}
             </div>
           </div>
         </div>

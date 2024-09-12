@@ -420,7 +420,11 @@ const MainPage = ({ id }) => {
                   className={`flex items-center  ${
                     index !== depins?.length - 1 &&
                     'border-b-[1px] border-[#c5c4c41a]'
-                  } cursor-pointer gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray hover:bg-[#7775840c]`}
+                  } ${
+                    syn?.live
+                      ? 'cursor-pointer hover:bg-[#7775840c]'
+                      : 'cursor-auto'
+                  }  gap-x-[2px] px-[15px] py-[20px] text-[15px] font-normal text-gray `}
                 >
                   <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
                     <div className="flex items-center gap-x-4">
@@ -429,7 +433,15 @@ const MainPage = ({ id }) => {
                         src={assetToStyle[syn?.name]?.imgSource}
                         className={assetToStyle[syn?.name]?.imgStyle}
                       ></img>
-                      <div>{syn?.name}</div>
+                      <div className="relative w-fit">
+                        {' '}
+                        <div>{syn?.name}</div>
+                        {!syn?.live && (
+                          <div className="absolute right-0 top-0 translate-x-8 text-[10px] text-gray">
+                            soon
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="w-full max-w-[15%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
