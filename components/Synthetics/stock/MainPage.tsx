@@ -688,7 +688,7 @@ const MainPage = ({ id }) => {
           </div>
           <div className="mb-4 mt-8 w-full border-b-[0.5px] border-[#c9c9cb2e]"></div>
           <div className="flex justify-between">
-            <div className="h-[400px] w-[70%]">
+            <div className="h-[450px] w-[70%]">
               <TradingViewChart />
             </div>
             <div className="relative w-[25%] ">
