@@ -132,7 +132,7 @@ export const syntethicAssets: SynAsset[] = [
     ticker: 'zTSLA',
     pool: Protocols.HORIZON_PROTOCOL,
     stickerPricing: 'Equity.US.TSLA/USD',
-    stickerPricingA: 'NASDAQ:TSLA',
+    stickerPricingA: 'NASDAQ-TSLA',
     usaStock: true,
     type: AssetTypes.STOCK,
     live: true,
@@ -143,6 +143,7 @@ export const syntethicAssets: SynAsset[] = [
     pool: Protocols.CLEARPOOL,
     stickerPricing: 'bastion',
     type: AssetTypes.LENDING,
+    live: false,
   },
   {
     name: 'Google',
@@ -160,6 +161,7 @@ export const syntethicAssets: SynAsset[] = [
     pool: Protocols.LANDX,
     stickerPricing: 'xSOY',
     type: AssetTypes.COMMODITY,
+    live: false,
   },
   {
     name: 'xRice',
@@ -167,6 +169,7 @@ export const syntethicAssets: SynAsset[] = [
     pool: Protocols.LANDX,
     stickerPricing: 'xRICE',
     type: AssetTypes.COMMODITY,
+    live: false,
   },
   {
     name: 'Nvidia',
@@ -185,6 +188,7 @@ export const syntethicAssets: SynAsset[] = [
     stickerPricing: 'Metal.XAU/USD',
     stickerPricingA: 'XAUUSD',
     type: AssetTypes.COMMODITY,
+    live: true,
   },
   {
     name: 'Yen',
