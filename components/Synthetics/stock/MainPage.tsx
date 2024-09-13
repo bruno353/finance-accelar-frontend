@@ -360,9 +360,7 @@ const MainPage = ({ id }) => {
     if (
       Number(usdData?.value) > 0 &&
       address &&
-      Number(balance) >= Number(usdData?.value) &&
-      synthetic?.usaStock &&
-      isMarketOpen()
+      Number(balance) >= Number(usdData?.value)
     ) {
       return true
     } else {
