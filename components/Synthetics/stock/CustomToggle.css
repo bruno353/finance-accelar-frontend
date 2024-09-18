@@ -1,0 +1,35 @@
+/* Diminuir o tamanho do toggle */
+.custom-toggle.react-toggle {
+    width: 30px;
+    height: 12px;
+  }
+  
+  .custom-toggle.react-toggle-thumb {
+    width: 12px;
+    height: 12px;
+    top: 2px;
+    left: 2px;
+    border-radius: 50%;
+    background-color: white;
+  }
+  
+  /* Mudar a cor para quando o toggle estiver ativo */
+  .custom-toggle.react-toggle--checked .react-toggle-track {
+    background-color: #4caf50; /* Cor para o estado ativo (verde) */
+  }
+  
+  /* Mudar a cor para quando o toggle estiver desativado */
+  .custom-toggle .react-toggle-track {
+    background-color: #ccc; /* Cor para o estado inativo (cinza) */
+  }
+  
+  /* Personalizar as bordas e o efeito de transição */
+  .custom-toggle .react-toggle-track {
+    border-radius: 30px;
+    transition: all 0.2s;
+  }
+  
+  .custom-toggle .react-toggle-thumb {
+    transition: all 0.25s ease;
+  }
+  

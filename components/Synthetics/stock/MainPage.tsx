@@ -60,12 +60,25 @@ import { chainToCopy } from '@/blockchain/utils/chainToMetaData'
 import { useContractWrite } from '@/components/IDE/hooks/useContract'
 import { syntheticABI } from '@/types/consts/syntheticABI'
 import { Abi } from 'viem'
+import Toggle from 'react-toggle'
+import 'react-toggle/style.css'
+import './CustomToggle.css'
+import OnRampModal from '@/components/BlockchainWallets/Modals/OnRamp'
+import OnRampModalSyn from './OnRamp'
 
 const MainPage = ({ id }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingTransaction, setIsLoadingTransaction] = useState(false)
   const [subMenuOption, setSubMenuOption] = useState<string>('Lease')
   const [isRotated, setIsRotated] = useState(false)
+
+  const [isOnRampOpen, setIsOnRampOpen] = useState(false)
+
+  const [isPixSelected, setIsPixSelected] = useState(false)
+
+  const handlePixToggle = () => {
+    setIsPixSelected(!isPixSelected)
+  }
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [value, setValue] = useState('// start your code here')
@@ -261,6 +274,32 @@ const MainPage = ({ id }) => {
     }
   }
 
+  async function getFHistory() {
+    const h = {
+      id: 'e769dffd-f4ef-4f40-9894-51bc6754739e',
+      counterCurrency: synthetic?.name,
+      amountCurrency: usdData?.value,
+      amountCounterCurrency: counterData?.value,
+      currency: counterData?.currency,
+      type: 'BUY',
+      evmHash:
+        '0xd397ad64055e12f3966cc26c4b589488875c028eca9a6fc56523d9b851a35fba',
+      protocolHash:
+        '0x77903bc3b3197fe7518fca7e31cf1010bf0e01cbcc1813dda9243a32f25062a0',
+      loading: false,
+      evmAddress: address,
+      chain: 'CROSSFI_TESTNET',
+    }
+    const totalBalance =
+      Number(balanceCounterCurrency) + Number(counterData?.value)
+
+    setBalanceCounterCurrency(Number(totalBalance))
+
+    const newTx = [...txHistory]
+    newTx.push(h)
+    setTxHistory(newTx)
+  }
+
   useEffect(() => {
     getData()
     getHistoryTx()
@@ -360,7 +399,7 @@ const MainPage = ({ id }) => {
     if (
       Number(usdData?.value) > 0 &&
       address &&
-      Number(balance) >= Number(usdData?.value)
+      (Number(balance) >= Number(usdData?.value) || isPixSelected)
     ) {
       return true
     } else {
@@ -373,7 +412,13 @@ const MainPage = ({ id }) => {
       toast.error('Address not found')
       return
     }
+
+    if (isPixSelected) {
+      setIsOnRampOpen(true)
+      return
+    }
     setIsLoadingTransaction(true)
+
     const amountCounterCurrency = counterData.value
     const amountUsd = usdData.value
 
@@ -796,32 +841,44 @@ const MainPage = ({ id }) => {
                   <div className="text-white">1%</div>
                 </div>
               </div>
+              <div className="grid gap-y-2">
+                <label
+                  onClick={() => {
+                    if (isSubmitOpen() && !isLoadingTransaction) {
+                      handleEVMDeployment()
+                    }
+                  }}
+                  className={`${
+                    isLoadingTransaction && 'animate-pulse cursor-auto !bg-blue'
+                  } ${
+                    isSubmitOpen() &&
+                    'cursor-pointer !bg-blue !text-white hover:bg-hoverBlue'
+                  } mt-4 flex w-full justify-center rounded-md border-[1px] border-[#3a4155] bg-transparent py-2 text-lg text-gray/65`}
+                >
+                  {isRotated ? 'Sell' : 'Buy'} {synthetic?.ticker}
+                </label>
+                <div className="ml-auto mt-3 flex items-center gap-x-2">
+                  <Toggle
+                    checked={isPixSelected}
+                    onChange={() => setIsPixSelected(!isPixSelected)}
+                    icons={false}
+                  />
+                  <label className=" text-sm text-white">Pay with Pix</label>
+                </div>
+              </div>
 
-              <label
-                onClick={() => {
-                  if (isSubmitOpen() && !isLoadingTransaction) {
-                    handleEVMDeployment()
-                  }
-                }}
-                className={`${
-                  isLoadingTransaction && 'animate-pulse cursor-auto !bg-blue'
-                } ${
-                  isSubmitOpen() &&
-                  'cursor-pointer !bg-blue !text-white hover:bg-hoverBlue'
-                } mt-4 flex w-full justify-center rounded-md border-[1px] border-[#3a4155] bg-transparent py-2 text-lg text-gray/65`}
-              >
-                {isRotated ? 'Sell' : 'Buy'} {synthetic?.ticker}
-              </label>
               {Number(fundAmount[0]?.value) > 0 && !address && (
                 <div className="mt-2 text-sm text-darkRed">
                   * Connect your wallet to continue.
                 </div>
               )}
-              {Number(balance) < Number(usdData?.value) && address && (
-                <div className="mt-2 text-sm text-darkRed">
-                  * Insufficient balance.
-                </div>
-              )}
+              {Number(balance) < Number(usdData?.value) &&
+                address &&
+                !isPixSelected && (
+                  <div className="mt-2 text-sm text-darkRed">
+                    * Insufficient balance.
+                  </div>
+                )}
             </div>
           </div>
           <div className="mt-8 text-white">
@@ -876,6 +933,20 @@ const MainPage = ({ id }) => {
               ))}
             </div>
           </div>
+          <OnRampModalSyn
+            address={address}
+            amountToPay={String(Number(usdData?.value) * 5.5)}
+            token={synthetic?.ticker}
+            amountToReceive={counterData?.value}
+            isOpen={isOnRampOpen}
+            onClose={() => {
+              getFHistory()
+              setIsOnRampOpen(false)
+            }}
+            onUpdateM={() => {
+              setIsOnRampOpen(false)
+            }}
+          />
         </div>
       </section>
     </>

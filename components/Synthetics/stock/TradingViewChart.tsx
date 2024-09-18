@@ -50,7 +50,9 @@ function TradingViewChart({ symbol }: TradingViewChartProps) {
         // @ts-ignore
         existingWidget.innerHTML = ''
         // @ts-ignore
-        new window.TradingView.widget(widgetOptions)
+        try {
+          new (window as any).TradingView.widget(widgetOptions)
+        } catch (err) {}
       }
     }
   }, [symbol])
