@@ -107,9 +107,9 @@ const OnRampModalSyn = ({
       setPixData(res)
       //   startCheckOrder(res.id)
       setIsLoading(false)
-    //   setTimeout(() => {
-    //     onUpdateM()
-    //   }, 10000)
+      //   setTimeout(() => {
+      //     onUpdateM()
+      //   }, 30000)
     } catch (err) {
       console.log(err)
       toast.error(`Error: ${err.response.data.message}`)

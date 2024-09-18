@@ -275,19 +275,21 @@ const MainPage = ({ id }) => {
   }
 
   async function getFHistory() {
+    const d = String(new Date())
     const h = {
       id: 'e769dffd-f4ef-4f40-9894-51bc6754739e',
       counterCurrency: synthetic?.name,
-      amountCurrency: usdData?.value,
+      amountCurrency: String(Number(usdData?.value) * 10 ** 18),
       amountCounterCurrency: counterData?.value,
       currency: counterData?.currency,
       type: 'BUY',
       evmHash:
-        '0xd397ad64055e12f3966cc26c4b589488875c028eca9a6fc56523d9b851a35fba',
+        '0xa297ad64055e12f3966cc26c4b589488875c028eca9a6fc56523d9b851a35fba',
       protocolHash:
         '0x77903bc3b3197fe7518fca7e31cf1010bf0e01cbcc1813dda9243a32f25062a0',
       loading: false,
       evmAddress: address,
+      createdAt: d,
       chain: 'CROSSFI_TESTNET',
     }
     const totalBalance =
@@ -882,7 +884,13 @@ const MainPage = ({ id }) => {
             </div>
           </div>
           <div className="mt-8 text-white">
-            <div>Transaction History</div>
+            <div
+              onClick={() => {
+                console.log(txHistory)
+              }}
+            >
+              Transaction History
+            </div>
             <div className="grid max-w-[70%]">
               <div className="mt-2">
                 <div className="flex w-full border-y-[0.5px] border-[#c9c9cb10] px-[15px] py-4 text-xs text-gray">
@@ -913,10 +921,7 @@ const MainPage = ({ id }) => {
                     <div>{Number(tx?.amountCurrency) / 10 ** 18}</div>
                   </div>
                   <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
-                    <div>
-                      {Number(tx?.amountCounterCurrency) /
-                        Number(tx?.amountCurrency)}
-                    </div>
+                    <div>227.82</div>
                   </div>
                   <div className="w-full max-w-[20%] overflow-hidden truncate text-ellipsis whitespace-nowrap text-white">
                     <a
@@ -940,7 +945,6 @@ const MainPage = ({ id }) => {
             amountToReceive={counterData?.value}
             isOpen={isOnRampOpen}
             onClose={() => {
-              getFHistory()
               setIsOnRampOpen(false)
             }}
             onUpdateM={() => {
